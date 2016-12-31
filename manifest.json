@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "Badge Printer",
+  "version": "0.1",
+  "page_action": {
+    "default_title": "Print badge"
+  },
+  "permissions": [
+    "declarativeContent",
+	"https://manage.webconnex.com/"
+  ],
+  "background": {
+    "scripts": ["event_page.js"],
+	"persistent": false
+  }
+}
