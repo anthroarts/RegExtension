@@ -53,7 +53,7 @@ var iFrameHtml = `
 
 body {
 	font-family: sans-serif;
-	margin-top: 0.04in;
+	margin-top: 0in;
 	margin-bottom: 0;
 	margin-left: 0.06in;
 	margin-right: 0;
@@ -62,29 +62,29 @@ body {
 
 .badge-name1 {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: 10px;
+	left: 7px;
 	font-size: 21px;
 }
 
 .badge-name2 {
 	position: absolute;
-	top: 22px;
-	left: 0px;
+	top: 35px;
+	left: 7px;
 	font-size: 19px;
 }
 
 .registration-number {
 	position: absolute;
-	top: 55px;
-	left: 0px;
+	top: 60px;
+	left: 7px;
 	font-size: 14px;
 	text-align: left;
 }
 
 .registration-level {
 	position: absolute;
-	top: 52px;
+	top: 60px;
 	left: 0px;
 	font-size: 16px;
 	text-align: center;
@@ -92,7 +92,7 @@ body {
 }
 .minor {
 	position: absolute;
-	top: 55px;
+	top: 60px;
 	left: 0px;
 	width: 261px;
 	font-size: 14px;
