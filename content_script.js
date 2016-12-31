@@ -57,57 +57,56 @@ body {
 	margin-bottom: 0;
 	margin-left: 0.06in;
 	margin-right: 0;
+	width: 261px;
 }
 
 .badge-name1 {
-	column-span: 3;
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	font-size: 21px;
 }
 
 .badge-name2 {
-	column-span: 3;
+	position: absolute;
+	top: 22px;
+	left: 0px;
 	font-size: 19px;
 }
 
 .registration-number {
-	font-size: 16px;
+	position: absolute;
+	top: 55px;
+	left: 0px;
+	font-size: 14px;
 	text-align: left;
-	width: 87px;
 }
 
 .registration-level {
-	font-size: 20px;
+	position: absolute;
+	top: 52px;
+	left: 0px;
+	font-size: 16px;
 	text-align: center;
-	vertical-align: middle;
-	width: 87px;
+	width: 261px;
 }
 .minor {
-	font-size: 16px;
+	position: absolute;
+	top: 55px;
+	left: 0px;
+	width: 261px;
+	font-size: 14px;
 	text-align: right;
-	width: 87px;
 }
-
-table{
-    table-layout: fixed;
-    width: 261px;
-}
-
 
 </style>
+
 <body>
-	<table>
-		<tr>
-			<td colspan="3" class="badge-name1">${firstLine}</td>
-		</tr>
-		<tr>
-			<td colspan="3" class="badge-name2">${secondLine}</td>
-		</tr>
-		<tr>
-			<td class="registration-number">${regNumber}</td>
-			<td class="registration-level">${regLevel}</td>
-			<td class="minor">${minorStatus}</td>
-		</tr>
-	</table>
+	<div class="badge-name1">${firstLine}</div>
+	<div class="badge-name2">${secondLine}</div>
+	<div class="registration-number">${regNumber}</div>
+	<div class="registration-level">${regLevel}</div>
+	<div class="minor">${minorStatus}</div>
 </body>
 </html>
 `;

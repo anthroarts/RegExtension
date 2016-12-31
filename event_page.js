@@ -7,7 +7,11 @@ chrome.runtime.onInstalled.addListener(function() {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { hostEquals: 'manage.webconnex.com',
-					   pathContains: 'reports/orders/'},
+					             pathContains: 'reports/orders/'},
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostEquals: 'manage.webconnex.com',
+                       pathContains: 'reports/registrants/'},
           })
         ],
         actions: [ new chrome.declarativeContent.ShowPageAction() ]
