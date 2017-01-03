@@ -26,7 +26,13 @@ function getBadgeLine2() {
 
 function getRegLevel() {
 	var regLevel = $("th:contains('Membership Levels')");
-	return regLevel.next().text();
+	
+	regLevel = regLevel.next().text();
+	
+	if(regLevel.includes("Friday") || regLevel.includes("Saturday") || regLevel.includes("Sunday")) {
+		return regLevel.toUpperCase();
+	}
+	return regLevel;
 }
 
 function getMinorStatus() {
@@ -70,14 +76,15 @@ body {
 	position: absolute;
 	top: 10px;
 	left: 7px;
-	font-size: 21px;
+	font-weight: bold;
+	font-size: 25px;
 }
 
 .badge-name2 {
 	position: absolute;
-	top: 35px;
+	top: 40px;
 	left: 7px;
-	font-size: 19px;
+	font-size: 11px;
 }
 
 .registration-number {
