@@ -41,9 +41,15 @@ function getMinorStatus() {
 	return "&nbsp;";
 }
 
+function getRegId() {
+	var regNumber = document.location.href.split("/").pop();
+	console.log(regNumber);
+	return regNumber;
+}
+
 var firstLine = getBadgeLine1();
 var secondLine = getBadgeLine2();
-var regNumber = "1234";
+var regNumber = getRegId();
 var regLevel = getRegLevel();
 var minorStatus = getMinorStatus();
 
@@ -76,9 +82,9 @@ body {
 
 .registration-number {
 	position: absolute;
-	top: 60px;
+	top: 65px;
 	left: 7px;
-	font-size: 14px;
+	font-size: 10px;
 	text-align: left;
 }
 
