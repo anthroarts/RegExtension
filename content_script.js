@@ -26,7 +26,13 @@ function getBadgeLine2() {
 
 function getRegLevel() {
 	var regLevel = $("th:contains('Membership Levels')");
-	return regLevel.next().text();
+	
+	regLevel = regLevel.next().text();
+	
+	if(regLevel.includes("Friday") || regLevel.includes("Saturday") || regLevel.includes("Sunday")) {
+		return regLevel.toUpperCase();
+	}
+	return regLevel;
 }
 
 function getMinorStatus() {
@@ -48,9 +54,15 @@ function getMinorStatus() {
 	return return_string;
 }
 
+function getRegId() {
+	var regNumber = document.location.href.split("/").pop();
+	console.log(regNumber);
+	return regNumber;
+}
+
 var firstLine = getBadgeLine1();
 var secondLine = getBadgeLine2();
-var regNumber = "1234";
+var regNumber = getRegId();
 var regLevel = getRegLevel();
 var minorStatus = getMinorStatus();
 
@@ -60,7 +72,7 @@ var iFrameHtml = `
 
 body {
 	font-family: sans-serif;
-	margin-top: 0.04in;
+	margin-top: 0in;
 	margin-bottom: 0;
 	margin-left: 0.06in;
 	margin-right: 0;
@@ -69,29 +81,30 @@ body {
 
 .badge-name1 {
 	position: absolute;
-	top: 0px;
-	left: 0px;
-	font-size: 21px;
+	top: 10px;
+	left: 7px;
+	font-weight: bold;
+	font-size: 25px;
 }
 
 .badge-name2 {
 	position: absolute;
-	top: 22px;
-	left: 0px;
-	font-size: 19px;
+	top: 40px;
+	left: 7px;
+	font-size: 11px;
 }
 
 .registration-number {
 	position: absolute;
-	top: 55px;
-	left: 0px;
-	font-size: 14px;
+	top: 65px;
+	left: 7px;
+	font-size: 10px;
 	text-align: left;
 }
 
 .registration-level {
 	position: absolute;
-	top: 52px;
+	top: 60px;
 	left: 0px;
 	font-size: 16px;
 	text-align: center;
@@ -99,7 +112,7 @@ body {
 }
 .minor {
 	position: absolute;
-	top: 55px;
+	top: 60px;
 	left: 0px;
 	width: 261px;
 	font-size: 14px;
