@@ -30,15 +30,22 @@ function getRegLevel() {
 }
 
 function getMinorStatus() {
-	var ms_cell = $("th:contains('Age as of January 12, 2017')");
-	var minor_Status = ms_cell.next().text();
+	var ms_cell1 = $("th:contains('Age as of January 12, 2017')");
+	var ms_cell2 = $("th:contains('Age')");
+
+	var minor_Status = (ms_cell1.length) ? ms_cell1.next().text() : ms_cell2.next().text();
 	var age = minor_Status.split("-")[0];
 	
+	console.log(ms_cell1)
+	console.log(ms_cell2)
+
+	var return_string = "&nbsp;"
+
 	if(age < 18) {
-		return "Minor";
+		return_string = "Minor" ;
 	}
-	
-	return "&nbsp;";
+
+	return return_string;
 }
 
 var firstLine = getBadgeLine1();
