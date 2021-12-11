@@ -2,6 +2,8 @@
 
 This little extension provides a way to quickly and easily scan IDs and print con-goer badges.
 
+**Note!** this is only for FC (1311) and only works for the year 2022 (372652).
+
 ## User Installation
 
 TODO...

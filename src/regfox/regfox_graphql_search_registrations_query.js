@@ -52,6 +52,11 @@ query RegistrantsSearch($query: ElasticQueryInput) {
 }
 `;
 
+/**
+ * Returns a json object ready to be passed to Regfox that will search registrations for term.
+ * 
+ * @param {*} term name, email, etc
+ */
 const buildSearchRegistrationsBody = (term) => {
   return {
     "operationName": "RegistrantsSearch",
@@ -68,7 +73,7 @@ const buildSearchRegistrationsBody = (term) => {
             "email",
             "name",
             "registrationEmail",
-            // Add whatever fields you want from above to search on.
+            // Add whatever fields you want from to search on.
           ],
           "value": term
         },
@@ -84,9 +89,19 @@ const buildSearchRegistrationsBody = (term) => {
             "field": "formId",
             "value": [
               372652 // Magic value that means Further Confusion 2022 Registration.
+              // You can find this by filtering registrations on "Page".
             ],
             "type": "match"
-          }
+          },
+          {
+            "field": "status",
+            "value": [
+              "3" // Magic value that means "Completed" registration.
+              // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
+              // You can find this by filtering registrations on "Status".
+            ],
+            "type": "match"
+          },
         ]
       }
     },
