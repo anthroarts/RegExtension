@@ -1,5 +1,8 @@
 var $ = require("jquery");
 
+var RegfoxApi = require("./regfox/regfox_api");
+RegfoxApi.searchRegistrations("julia", "GetYourOwn")
+
 function getBadgeLine1() {
 	var Badge_Line_1;
 	Badge_Line_1 = $("th:contains('Badge Line 1 Text')");
