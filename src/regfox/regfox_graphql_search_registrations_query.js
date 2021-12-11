@@ -59,53 +59,53 @@ query RegistrantsSearch($query: ElasticQueryInput) {
  */
 const buildSearchRegistrationsBody = (term) => {
   return {
-    "operationName": "RegistrantsSearch",
-    "variables": {
-      "query": {
-        "productNames": [
-          "regfox"
+    'operationName': 'RegistrantsSearch',
+    'variables': {
+      'query': {
+        'productNames': [
+          'regfox'
         ],
-        "offset": 0,
-        "length": 25,
-        "search": {
-          "fields": [
-            "billingName",
-            "email",
-            "name",
-            "registrationEmail",
+        'offset': 0,
+        'length': 25,
+        'search': {
+          'fields': [
+            'billingName',
+            'email',
+            'name',
+            'registrationEmail',
             // Add whatever fields you want from to search on.
           ],
-          "value": term
+          'value': term
         },
-        "sort": [
+        'sort': [
           {
-            "field": "dateCreated",
-            "order": "desc",
-            "sortOrderForNulls": "_last"
+            'field': 'dateCreated',
+            'order': 'desc',
+            'sortOrderForNulls': '_last'
           }
         ],
-        "filters": [
+        'filters': [
           {
-            "field": "formId",
-            "value": [
+            'field': 'formId',
+            'value': [
               372652 // Magic value that means Further Confusion 2022 Registration.
-              // You can find this by filtering registrations on "Page".
+              // You can find this by filtering registrations on 'Page'.
             ],
-            "type": "match"
+            'type': 'match'
           },
           {
-            "field": "status",
-            "value": [
-              "3" // Magic value that means "Completed" registration.
+            'field': 'status',
+            'value': [
+              '3' // Magic value that means 'Completed' registration.
               // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
-              // You can find this by filtering registrations on "Status".
+              // You can find this by filtering registrations on 'Status'.
             ],
-            "type": "match"
+            'type': 'match'
           },
         ]
       }
     },
-    "query": GRAPHQL_SEARCH_REGISTRATIONS_QUERY
+    'query': GRAPHQL_SEARCH_REGISTRATIONS_QUERY
   };
 }
 

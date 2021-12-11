@@ -2,7 +2,7 @@ const { data } = require('jquery');
 const { get } = require('lodash');
 const { buildSearchRegistrationsBody } = require('./regfox_graphql_search_registrations_query');
 
-const REGFOX_URL = 'https://api.webconnex.com/apollo/graphql';
+const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
 
 /**
  * Returns the bearer token out of local storage, assuming the user is logged in.
@@ -21,7 +21,7 @@ const getBearerToken = () => {
  * @param {*} bearerToken the bearer token of the logged in user (from getBearerToken)
  */
 const searchRegistrations = async (term, bearerToken) => {
-  return fetch(REGFOX_URL, {
+  return fetch(REGFOX_GRAPHQL_URL, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -39,8 +39,8 @@ const searchRegistrations = async (term, bearerToken) => {
         throw new Error(response);
       }
 
-      return data.response;
+      return response.data.response;
     });
 };
 
-module.exports = { searchRegistrations, getBearerToken };
+module.exports = { searchRegistrations, getBearerToken, REGFOX_GRAPHQL_URL };

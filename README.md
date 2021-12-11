@@ -31,3 +31,9 @@ Then follow these instructions to see your app:
 
 Builds the app for production to the build folder.
 Zip the build folder and your app is ready to be published on Chrome Web Store.
+
+### Testing
+
+`npm run test`
+
+Executes the files that contain unit tests.
