@@ -29,14 +29,7 @@ chrome.action.onClicked.addListener(function (tab) {
   chrome.scripting.executeScript(
     {
       target: { tabId: tab.id },
-      files: ["jquery-3.1.1.min.js"],
-    },
-    () => {
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: tab.id },
-          files: ["content_script.js"],
-        });
+      files: ["content_script.js"],
     });
 });
 

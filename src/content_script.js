@@ -1,11 +1,13 @@
+var $ = require("jquery");
+
 function getBadgeLine1() {
 	var Badge_Line_1;
 	Badge_Line_1 = $("th:contains('Badge Line 1 Text')");
-	
+
 	console.log("Badge line 1: ");
 	console.log(Badge_Line_1.length);
-	
-	if(Badge_Line_1) {
+
+	if (Badge_Line_1) {
 		console.log(Badge_Line_1.next().text());
 		return Badge_Line_1.next().text();
 	}
@@ -15,21 +17,21 @@ function getBadgeLine1() {
 function getBadgeLine2() {
 	var Badge_Line_2;
 	Badge_Line_2 = $("th:contains('Badge Line 2 Text')");
-	
-	if(Badge_Line_2.length != 0) {
+
+	if (Badge_Line_2.length != 0) {
 		console.log(Badge_Line_2.next().text());
 		return Badge_Line_2.next().text();
 	}
-	
+
 	return "&nbsp;"
 }
 
 function getRegLevel() {
 	var regLevel = $("th:contains('Membership Levels')");
-	
+
 	regLevel = regLevel.next().text();
-	
-	if(regLevel.includes("Friday") || regLevel.includes("Saturday") || regLevel.includes("Sunday")) {
+
+	if (regLevel.includes("Friday") || regLevel.includes("Saturday") || regLevel.includes("Sunday")) {
 		return regLevel.toUpperCase();
 	}
 	return regLevel;
@@ -41,14 +43,14 @@ function getMinorStatus() {
 
 	var minor_Status = (ms_cell1.length) ? ms_cell1.next().text() : ms_cell2.next().text();
 	var age = minor_Status.split("-")[0];
-	
+
 	console.log(ms_cell1)
 	console.log(ms_cell2)
 
 	var return_string = "&nbsp;"
 
-	if(age < 18) {
-		return_string = "Minor" ;
+	if (age < 18) {
+		return_string = "Minor";
 	}
 
 	return return_string;
@@ -133,7 +135,7 @@ body {
 
 var iFrame = document.createElement('iFrame');
 //iFrame.style.display = 'none';
-iFrame.onload = function() { 
+iFrame.onload = function () {
 	console.log('iFrame loaded');
 };
 document.body.appendChild(iFrame);
