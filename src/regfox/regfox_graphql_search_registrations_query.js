@@ -111,8 +111,8 @@ const buildSearchRegistrationsBody = (term) => {
 
 module.exports = { buildSearchRegistrationsBody };
 
-// All possible fields under registrants for graphql search and response
-// See https://api.webconnex.com/v1/cp/report/regfox.com/registrant for examples
+// All possible fields under registrants for graphql search and response.
+// See https://api.webconnex.com/v1/cp/report/regfox.com/registrant for examples.
 /*
 id
 organizationId
