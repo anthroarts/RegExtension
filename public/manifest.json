@@ -3,7 +3,8 @@
   "name": "Badge Printer",
   "version": "1.0.0",
   "action": {
-    "default_title": "Print badge"
+    "default_title": "Print badge",
+    "default_popup": "popup.html"
   },
   "permissions": [
     "declarativeContent",

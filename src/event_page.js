@@ -1,35 +1,18 @@
-chrome.runtime.onInstalled.addListener(function () {
-  // Replace all rules ...
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-    // With a new rule ...
-    chrome.declarativeContent.onPageChanged.addRules([
+
+const getCurrentTab = async () => {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+};
+
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  if (request.type === 'print-legacy-plz') {
+    // TODO, should probably just use content scripts?
+    const tab = await getCurrentTab();
+    chrome.scripting.executeScript(
       {
-        conditions: [
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: {
-              hostEquals: 'manage.webconnex.com',
-              pathContains: 'reports/orders/'
-            },
-          }),
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: {
-              hostEquals: 'manage.webconnex.com',
-              pathContains: 'reports/registrants/'
-            },
-          })
-        ],
-        actions: [new chrome.declarativeContent.ShowAction()]
-      }
-    ]);
-  });
+        target: { tabId: tab.id },
+        files: ["content_script.js"],
+      });
+  }
 });
-
-chrome.action.onClicked.addListener(function (tab) {
-  // TODO, should probably just use content scripts?
-  chrome.scripting.executeScript(
-    {
-      target: { tabId: tab.id },
-      files: ["content_script.js"],
-    });
-});
-
