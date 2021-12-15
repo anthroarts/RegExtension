@@ -37,3 +37,10 @@ Zip the build folder and your app is ready to be published on Chrome Web Store.
 `npm run test`
 
 Executes the files that contain unit tests.
+
+## Thanks!
+
+* ArcTheCollie - Initial development of the working extension
+* Kobaj
+* Cellivar Kangaroorat
+* Binaryfox
