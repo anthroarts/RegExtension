@@ -3,6 +3,12 @@
     chrome.runtime.sendMessage({ type, payload });
   }
 
+  const setupRegDeskButton = () => {
+    document.getElementById('regDesk').addEventListener('click', () => {
+      chrome.tabs.create({'url': chrome.runtime.getURL('regdesk.html')}, function(tab) {});
+    })
+  }
+
   const setupPrintLegacyButton = () => {
     document.getElementById('printLegacy').addEventListener('click', () => {
       sendBackgroundScriptAMessage('print-legacy-plz');
@@ -19,6 +25,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     setupPrintLegacyButton();
     setupDisableAutoLogoutToggle();
+    setupRegDeskButton();
   });
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
