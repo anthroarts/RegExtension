@@ -12,6 +12,7 @@ const config = (env, argv) => merge(common, {
     event_page: PATHS.src + '/event_page.js',
     popup: PATHS.src + '/popup.js',
     disable_auto_logout: PATHS.src + '/disable_auto_logout.js',
+    regdesk: PATHS.src + "/regdesk/regdesk.js",
   },
   devtool: argv.mode === 'production' ? false : 'source-map'
 });
