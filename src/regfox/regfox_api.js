@@ -1,12 +1,11 @@
-const { data } = require('jquery');
-const { get } = require('lodash');
-const { buildSearchRegistrationsBody } = require('./regfox_graphql_search_registrations_query');
+import { get } from 'lodash-es';
+import { buildSearchRegistrationsBody } from './regfox_graphql_search_registrations_query.js';
 
 const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
 
 /**
  * Returns the bearer token out of local storage, assuming the user is logged in.
- * Returns undefined if the bearer token cannot be found. 
+ * Returns undefined if the bearer token cannot be found.
  */
 const getBearerToken = () => {
   const session = JSON.parse(localStorage.getItem('wbcx_sessions'));
@@ -16,7 +15,7 @@ const getBearerToken = () => {
 /**
  * Returns an object that contains a list of completed (fully paid and accepted) registrants.
  * Returns a Promise Error if the network is down or some other technical issue.
- * 
+ *
  * @param {*} term name or email (check regfox_graphql_search_registrations_query for other search fields)
  * @param {*} bearerToken the bearer token of the logged in user (from getBearerToken)
  */
@@ -43,4 +42,4 @@ const searchRegistrations = async (term, bearerToken) => {
     });
 };
 
-module.exports = { searchRegistrations, getBearerToken, REGFOX_GRAPHQL_URL };
+export { searchRegistrations, getBearerToken, REGFOX_GRAPHQL_URL };

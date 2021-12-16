@@ -1,6 +1,6 @@
-const { expect } = require('chai');
+import { expect } from 'chai';
 
-const { buildSearchRegistrationsBody } = require('../../src/regfox/regfox_graphql_search_registrations_query');
+import { buildSearchRegistrationsBody } from '../../src/regfox/regfox_graphql_search_registrations_query.js';
 
 describe('regfox_graphsql_search_registrations_query', () => {
   describe('buildSearchRegistrationsBody', () => {

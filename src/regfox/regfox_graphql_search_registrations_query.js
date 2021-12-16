@@ -54,7 +54,7 @@ query RegistrantsSearch($query: ElasticQueryInput) {
 
 /**
  * Returns a json object ready to be passed to Regfox that will search registrations for term.
- * 
+ *
  * @param {*} term name, email, etc
  */
 const buildSearchRegistrationsBody = (term) => {
@@ -109,7 +109,7 @@ const buildSearchRegistrationsBody = (term) => {
   };
 }
 
-module.exports = { buildSearchRegistrationsBody };
+export { buildSearchRegistrationsBody };
 
 // All possible fields under registrants for graphql search and response.
 // See https://api.webconnex.com/v1/cp/report/regfox.com/registrant for examples.
