@@ -1,5 +1,5 @@
-const { graphql } = require('msw');
-const { REGFOX_GRAPHQL_URL } = require('../../src/regfox/regfox_api');
+import { graphql } from 'msw';
+import { REGFOX_GRAPHQL_URL } from '../../src/regfox/regfox_api.js';
 
 const regfox = graphql.link(REGFOX_GRAPHQL_URL)
 
@@ -13,4 +13,4 @@ const getRegistrantsSearchHandler = (getResponse) => {
   ];
 }
 
-module.exports = { getRegistrantsSearchHandler };
+export { getRegistrantsSearchHandler };

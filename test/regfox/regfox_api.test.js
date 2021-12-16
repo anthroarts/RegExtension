@@ -1,17 +1,19 @@
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+import chai, { use, should } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
-chai.use(chaiAsPromised);
-chai.should();
+use(chaiAsPromised);
+should();
 const { expect } = chai;
 
-const sinon = require("sinon");
+import { stub } from "sinon";
 
-const { getRegistrantsSearchHandler } = require('../mocks/mws_handler');
-const { setupServer } = require('msw/node');
+import { getRegistrantsSearchHandler } from '../mocks/mws_handler.js';
+import { setupServer } from 'msw/node/lib/index.js'
 
-global.fetch = require('node-fetch');
-const { searchRegistrations, getBearerToken } = require('../../src/regfox/regfox_api');
+import fetch from 'node-fetch';
+global.fetch = fetch;
+
+import { searchRegistrations, getBearerToken } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('getBearerToken', () => {
@@ -34,7 +36,7 @@ describe('regfox_api', () => {
   });
 
   describe('searchRegistrations', () => {
-    const getResponse = sinon.stub();
+    const getResponse = stub();
     const server = setupServer(...getRegistrantsSearchHandler(getResponse));
     before(() => server.listen());
     afterEach(() => getResponse.reset());

@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 
 const getCurrentTab = async () => {
   let queryOptions = { active: true, currentWindow: true };
