@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build on Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci --ignore-scripts
+      - run: npm run test -- --reporter json --reporter-options output=test-results.json
+      - name: Test Reporter
+        if: success() || failure()
+        uses: dorny/test-reporter@v1.5.0
+        with:
+          name: 'Mocha Results'
+          path: 'test-results.json'
+          reporter: 'mocha-json'
+          fail-on-error: 'true'
+
+
