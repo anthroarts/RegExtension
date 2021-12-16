@@ -27,10 +27,6 @@ describe('regfox_api', () => {
       expect(bearerToken).to.be.undefined;
     });
 
-    it('Always fails', () => {
-      expect(true).to.be.false;
-    })
-
     it('returns a good value', () => {
       const expectedToken = 'foxbutts';
       localStorage.setItem('wbcx_sessions', JSON.stringify({ '1311': { token: expectedToken } }));
