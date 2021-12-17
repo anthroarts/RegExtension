@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { buildSearchRegistrationsBody } from '../../src/regfox/regfox_graphql_search_registrations_query.js';
+import { buildSearchRegistrationsBody } from '../../../src/regfox/queries/regfox_graphql_search_registrations_query.js';
 
 describe('regfox_graphsql_search_registrations_query', () => {
   describe('buildSearchRegistrationsBody', () => {
