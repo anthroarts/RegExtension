@@ -1,24 +1,24 @@
-(function () {
-  const sendBackgroundScriptAMessage = (type, payload) => {
-    chrome.runtime.sendMessage({ type, payload });
-  }
+import { isScript } from './startup/startup.js';
+import { sendBackgroundScriptAMessage, MESSAGE_TYPE } from './coms/communication.js';
 
+const DISABLE_AUTO_LOGOUT_ID = 'disableAutoLogout';
+
+const init = () => {
   const setupRegDeskButton = () => {
     document.getElementById('regDesk').addEventListener('click', () => {
-      chrome.tabs.create({'url': chrome.runtime.getURL('regdesk.html')}, function(tab) {});
+      chrome.tabs.create({ 'url': chrome.runtime.getURL('regdesk.html') });
     })
   }
 
   const setupPrintLegacyButton = () => {
     document.getElementById('printLegacy').addEventListener('click', () => {
-      sendBackgroundScriptAMessage('print-legacy-plz');
+      sendBackgroundScriptAMessage(MESSAGE_TYPE.printLegacy);
     });
   };
 
   const setupDisableAutoLogoutToggle = () => {
-    // TODO make this id constant...
-    document.getElementById('disableAutoLogout').addEventListener('change', (e) => {
-      sendBackgroundScriptAMessage('change-logout-plz', e.target.checked);
+    document.getElementById(DISABLE_AUTO_LOGOUT_ID).addEventListener('change', (e) => {
+      sendBackgroundScriptAMessage(MESSAGE_TYPE.changeLogout, e.target.checked);
     });
   };
 
@@ -29,12 +29,17 @@
   });
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // FIXME/TODO the request type should be part of a shared package
-    // The sendBackgroundScript a message and such should all be too
-    if (request.type === 'change-logout-plz') {
-      document.getElementById('disableAutoLogout').checked = request.payload;
+    if (request.type === MESSAGE_TYPE.changeLogout) {
+      document.getElementById(DISABLE_AUTO_LOGOUT_ID).checked = request.payload;
     }
   });
 
-  sendBackgroundScriptAMessage('loaded-plz', 'popup');
-})();
+  sendBackgroundScriptAMessage(MESSAGE_TYPE.finishLoad, 'popup');
+};
+
+if (isScript()) {
+  // When running as a script (on a webpage) auto execute.
+  init();
+}
+
+export { init };
