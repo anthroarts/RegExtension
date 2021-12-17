@@ -23,4 +23,14 @@ const exchangeBearerTokenHandler = (getResponse) => {
   ];
 }
 
-export { getRegistrantsSearchHandler, exchangeBearerTokenHandler };
+const loginHandler = (getResponse) => {
+  return [
+    regfox.mutation('AuthLoginMutation', (req, res, ctx) => {
+      return res(
+        ctx.data({ mutationResponse: getResponse(req) }),
+      );
+    }),
+  ];
+}
+
+export { getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler };

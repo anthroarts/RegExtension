@@ -7,13 +7,13 @@ const { expect } = chai;
 
 import { stub } from "sinon";
 
-import { exchangeBearerTokenHandler, getRegistrantsSearchHandler } from '../mocks/mws_handler.js';
+import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler } from '../mocks/mws_handler.js';
 import { setupServer } from 'msw/node/lib/index.js'
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { exchangeBearerToken, searchRegistrations } from '../../src/regfox/regfox_api.js';
+import { exchangeBearerToken, searchRegistrations, login } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
@@ -93,6 +93,47 @@ describe('regfox_api', () => {
         userId: 144247,
       });
       return exchangeBearerToken('anything').should.eventually.be.rejected;
+    });
+  });
+
+  describe('login', () => {
+    const getResponse = stub();
+    const server = setupServer(...loginHandler(getResponse));
+    before(() => server.listen());
+    afterEach(() => getResponse.reset());
+    afterEach(() => server.resetHandlers());
+    after(() => server.close());
+
+    it('logs in Bob', async () => {
+      getResponse.returns({
+        "success": true,
+        "errors": null,
+        "token": {
+          "tokenType": "REDIRECT",
+          "token": "user-wbcx-61dfe34a-2416-44ea-8e25-136d68448222",
+          "accountId": 1311,
+          "prompt2FA": null,
+          "__typename": "Token"
+        },
+        "__typename": "AuthLoginResponse"
+      });
+      const result = await login('anything', 'none');
+
+      expect(result).to.deep.nested.include({ 'token.token': 'user-wbcx-61dfe34a-2416-44ea-8e25-136d68448222' });
+    });
+
+    it('handles a failure in the API', async () => {
+      getResponse.returns({
+        errors: ['heky!'],
+      });
+      return login('anything', 'none').should.eventually.be.rejected;
+    });
+
+    it('handles a failure in mutation', async () => {
+      getResponse.returns({
+        success: false,
+      });
+      return login('anything', 'none').should.eventually.be.rejected;
     });
   });
 });

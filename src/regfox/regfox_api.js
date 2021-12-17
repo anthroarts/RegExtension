@@ -1,5 +1,6 @@
 import { get } from 'lodash-es';
-import { buildSearchRegistrationsBody } from './regfox_graphql_search_registrations_query.js';
+import { buildSearchRegistrationsBody } from './queries/regfox_graphql_search_registrations_query.js';
+import { buildAuthLoginMutationBody } from './queries/regfox_graphql_auth_login_mutation_query.js';
 
 const REGFOX_EXCHANGE_TOKEN_URL = 'https://api.webconnex.com/auth/exchange-token';
 const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
@@ -61,4 +62,32 @@ const exchangeBearerToken = async (bearerToken) => {
     });
 }
 
-export { searchRegistrations, exchangeBearerToken, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL };
+/**
+ * Returns an object that contains a bearer token of the email/password passed in.
+ * Returns a promise Error if the network is down or login failed.
+ * 
+ * Doesn't support 2fa!
+ * 
+ * @param {*} email 
+ * @param {*} password 
+ */
+const login = async (email, password) => {
+  return fetch(REGFOX_GRAPHQL_URL, {
+    method: 'POST',
+    headers: buildHeaders(undefined),
+    body: JSON.stringify(buildAuthLoginMutationBody(email, password))
+  }).then(response => response.json())
+    .then(response => {
+      if (get(response, 'data.mutationResponse.errors')) {
+        throw new Error(response);
+      }
+
+      if (!get(response, 'data.mutationResponse.success', false)) {
+        throw new Error(response);
+      }
+
+      return response.data.mutationResponse;
+    });
+}
+
+export { searchRegistrations, exchangeBearerToken, login, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL };
