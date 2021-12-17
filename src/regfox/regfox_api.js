@@ -4,15 +4,6 @@ import { buildSearchRegistrationsBody } from './regfox_graphql_search_registrati
 const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
 
 /**
- * Returns the bearer token out of local storage, assuming the user is logged in.
- * Returns undefined if the bearer token cannot be found.
- */
-const getBearerToken = () => {
-  const session = JSON.parse(localStorage.getItem('wbcx_sessions'));
-  return get(session, '1311.token'); // 1311 is a magic number that means "FC", you can find it in the URL.
-}
-
-/**
  * Returns an object that contains a list of completed (fully paid and accepted) registrants.
  * Returns a Promise Error if the network is down or some other technical issue.
  *
@@ -42,4 +33,4 @@ const searchRegistrations = async (term, bearerToken) => {
     });
 };
 
-export { searchRegistrations, getBearerToken, REGFOX_GRAPHQL_URL };
+export { searchRegistrations, REGFOX_GRAPHQL_URL };

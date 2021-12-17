@@ -13,28 +13,9 @@ import { setupServer } from 'msw/node/lib/index.js'
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { searchRegistrations, getBearerToken } from '../../src/regfox/regfox_api.js';
+import { searchRegistrations } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
-  describe('getBearerToken', () => {
-    afterEach(() => {
-      localStorage.clear();
-      localStorage.itemInsertionCallback = null;
-    });
-
-    it('returns undefined when not found', () => {
-      const bearerToken = getBearerToken();
-      expect(bearerToken).to.be.undefined;
-    });
-
-    it('returns a good value', () => {
-      const expectedToken = 'foxbutts';
-      localStorage.setItem('wbcx_sessions', JSON.stringify({ '1311': { token: expectedToken } }));
-      const bearerToken = getBearerToken();
-      expect(bearerToken).to.equal(expectedToken);
-    });
-  });
-
   describe('searchRegistrations', () => {
     const getResponse = stub();
     const server = setupServer(...getRegistrantsSearchHandler(getResponse));
