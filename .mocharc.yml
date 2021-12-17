@@ -1,3 +1,5 @@
 
 recursive: true
-require: 'mock-local-storage'
+require: 
+  - 'mock-local-storage'
+  - 'global-jsdom/register'
