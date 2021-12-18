@@ -9,6 +9,8 @@ export class PrinterManager {
 
   #printerType = LP2844;
 
+  #nav;
+
   /**
    * Initializes a new instance of the PrinterManager class.
    *
@@ -26,8 +28,10 @@ export class PrinterManager {
     // Convenience array
     this.#dropdowns = [this.#adultDropdown, this.#minorDropdown];
 
-    nav.usb.addEventListener('connect', async (e) => this.handleConnectPrinter(e));
-    nav.usb.addEventListener('disconnect', async (e) => this.handleDisconnectPrinter(e));
+    this.#nav = nav;
+
+    this.#nav.usb.addEventListener('connect', async (e) => this.handleConnectPrinter(e));
+    this.#nav.usb.addEventListener('disconnect', async (e) => this.handleDisconnectPrinter(e));
   }
 
   /**
@@ -109,7 +113,7 @@ export class PrinterManager {
   async pairPrinter(dropdown) {
     var device;
     try {
-      device = await navigator.usb.requestDevice({
+      device = await this.#nav.usb.requestDevice({
         filters: [
           { vendorId: this.#printerType.usbVendorId }
         ]
@@ -161,7 +165,7 @@ export class PrinterManager {
       await d.removePrinter();
     })
 
-    navigator.usb.getDevices().then((devices) => {
+    await this.#nav.usb.getDevices().then((devices) => {
       devices.forEach(async d => {
         let printer = await this.handleConnectPrinter({ device: d });
         await this.assignPrinter(printer);
