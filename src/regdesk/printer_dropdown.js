@@ -140,7 +140,7 @@ export class PrinterDropdown extends EventTarget {
       await this.#printer.printTestPage();
     }
     catch (error) {
-      console.error(`Failed to print test page: ${error}`);
+      console.error("Failed to print test page.", error);
     }
   }
 
@@ -156,7 +156,7 @@ export class PrinterDropdown extends EventTarget {
       await this.#printer.feed(1);
     }
     catch (error) {
-      console.error(`Failed to feed label: ${error}`);
+      console.error("Failed to feed label.", error);
     }
   }
 

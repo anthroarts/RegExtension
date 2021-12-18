@@ -19,11 +19,9 @@ export class PrinterManager {
   constructor(nav, adultDropdown, minorDropdown) {
     this.#adultDropdown = adultDropdown;
     this.#adultDropdown.addEventListener(PrinterDropdown.ConnectEventName, async (e) => this.handleRequestConnect(e));
-    this.#adultDropdown.addEventListener(PrinterDropdown.DisconnectEventName, async (e) => this.handleRequestDisconnect(e));
 
     this.#minorDropdown = minorDropdown;
     this.#minorDropdown.addEventListener(PrinterDropdown.ConnectEventName, async (e) => this.handleRequestConnect(e));
-    this.#minorDropdown.addEventListener(PrinterDropdown.DisconnectEventName, async (e) => this.handleRequestDisconnect(e));
 
     // Convenience array
     this.#dropdowns = [this.#adultDropdown, this.#minorDropdown];
@@ -37,7 +35,7 @@ export class PrinterManager {
    * @param {LP2844} printer
    * @param {PrinterDropdown} dropdown
    */
-  assignPrinter(printer, dropdown) {
+  async assignPrinter(printer, dropdown) {
     // Find the first dropdown in order, hope it's the right one!
     // TODO: Make this smarter and pull from a cache or something for assignment
     // instead of just first past the post.
@@ -46,6 +44,7 @@ export class PrinterManager {
       dropdown.setPrinter(printer);
     } else {
       console.warn("Connected to a printer that we couldn't assign anywhere!");
+      await printer.dispose();
     }
   }
 
@@ -67,12 +66,14 @@ export class PrinterManager {
    *
    * @param {Object} o - Event Object.
    * @param {USBDevice} o.device - The USB device to connect to as a printer.
-   * @returns
+   * @returns The printer connected to, or {undefined} if no printer was connected.
    */
   async handleConnectPrinter({ device }) {
     // If we already have a tracked printer we shouldn't try to add it.
     if (this.#dropdowns.some((d) => d.printer?.device === device)) {
-      return;
+      // TODO: Display something more useful.
+      console.warn("Reconnected to a printer already managed by a dropdown.");
+      return undefined;
     }
 
     let printer = new this.#printerType(device);
@@ -80,7 +81,7 @@ export class PrinterManager {
       await printer.connect();
     } catch (e) {
       // TODO: Display something more useful.
-      console.error("Failed to connect to printer: " + e);
+      console.error("Failed to connect to printer, ", e);
     }
 
     return printer;
@@ -90,7 +91,6 @@ export class PrinterManager {
    * Disconnect a printer from the page.
    * @param {Object} o - Container object
    * @param {USBDevice} o.device - The device to disconnect.
-   * @returns
    */
   async handleDisconnectPrinter({ device }) {
     let dropdown = this.#dropdowns.filter(d => d.printer?.device === device);
@@ -104,7 +104,7 @@ export class PrinterManager {
   /**
    * Add a new printer to the page and connect to it.
    * @param {PrinterDropdown} dropdown - The dropdown to add the printer to.
-   * @returns {LP2844} connected printer.
+   * @returns {LP2844} connected printer, or {undefined} if the printer couldn't connect..
    */
   async pairPrinter(dropdown) {
     var device;
@@ -117,13 +117,13 @@ export class PrinterManager {
     } catch (e) {
       // TODO: One of the exceptions we can catch here is "user clicked cancel."
       // Figure out how to separate that out as 'not an actual exception'.
-      console.error("Couldn't add new printer: " + e);
+      console.error("Couldn't add new printer.", e);
       return undefined; // Nothing to return, can't proceed here.
     }
 
     let printer = await this.handleConnectPrinter({ device: device });
     if (printer) {
-      this.assignPrinter(printer, dropdown);
+      await this.assignPrinter(printer, dropdown);
     }
   }
 
@@ -164,7 +164,7 @@ export class PrinterManager {
     navigator.usb.getDevices().then((devices) => {
       devices.forEach(async d => {
         let printer = await this.handleConnectPrinter({ device: d });
-        this.assignPrinter(printer);
+        await this.assignPrinter(printer);
       });
     });
   }
