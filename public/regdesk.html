@@ -4,10 +4,70 @@
 <head>
   <meta charset="UTF-8">
   <title>FC RegDesk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#111111" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#eeeeee" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="regdesk.css" />
+  <link rel="stylesheet" href="regdesk_override.css" />
 </head>
 
 <body>
-    <h1>This will be an awesome page with stuff!</h1>
+  <div class="container-fluid container-no-gutter">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid container-no-gutter d-flex">
+        <span class="navbar-brand me-auto" href="#">
+          <span id="regfoxStatusIcon">✔</span>
+          Connected
+        </span>
+        <div>
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <span id="minorPrintIcon">❌</span> Minor <span id="minorPrintName">(No Printer)</span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li id="minorPrintConnect"><a class="dropdown-item" href="#">Connect</a></li>
+                <li id="minorPrintDisconnect"><a class="dropdown-item" href="#">Disconnect</a></li>
+                <li id="minorPrintTest"><a class="dropdown-item" href="#">Print Test Page</a></li>
+                <li id="minorPrintFeed"><a class="dropdown-item" href="#">Feed one label</a></li>
+                <li id="minorPrintConfig"><a class="dropdown-item" href="#">Configure Printer</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <span id="adultPrintIcon">❌</span> Adult <span id="adultPrintName">(No Printer)</span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li id="adultPrintConnect"><a class="dropdown-item" href="#">Connect</a></li>
+                <li id="adultPrintDisconnect"><a class="dropdown-item" href="#">Disconnect</a></li>
+                <li id="adultPrintTest"><a class="dropdown-item" href="#">Print Test Page</a></li>
+                <li id="adultPrintFeed"><a class="dropdown-item" href="#">Feed one label</a></li>
+                <li id="adultPrintConfig"><a class="dropdown-item" href="#">Configure Printer</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="row container-no-gutter">
+      <div id="buttonGutterLeft" class="col-2 d-grid gap-2 container-no-gutter">
+        <button id="cancelButton" class="btn btn-danger btn-fullheight">CANCEL</button>
+      </div>
+      <div class="col-8 pt-3">
+        <div class="d-grid gap-2 mb-3">
+          <button class="btn btn-primary" id="newSearch">🔎 New Search</button>
+        </div>
+      </div>
+      <div id="buttonGutterRight" class="col-2 d-grid gap-2 container-no-gutter">
+        <button id="printButton" class="btn btn-success btn-fullheight">PRINT</button>
+      </div>
+    </div>
+  </div>
+  <script src="regdesk.js"></script>
 </body>
 
 </html>
