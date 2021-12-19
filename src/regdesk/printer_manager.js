@@ -30,7 +30,10 @@ export class PrinterManager {
 
     this.#nav = nav;
 
-    this.#nav.usb.addEventListener('connect', async (e) => this.handleConnectPrinter(e));
+    this.#nav.usb.addEventListener('connect', async (e) => {
+      const printer = await this.handleConnectPrinter(e);
+      if (printer) { await this.assignPrinter(printer); }
+    });
     this.#nav.usb.addEventListener('disconnect', async (e) => this.handleDisconnectPrinter(e));
   }
 
@@ -41,8 +44,8 @@ export class PrinterManager {
    */
   async assignPrinter(printer, dropdown) {
     // Find the first dropdown in order, hope it's the right one!
-    // TODO: Make this smarter and pull from a cache or something for assignment
-    // instead of just first past the post.
+    // TODO: Make this smarter and pull from a page-refresh-durable cache or
+    // something for assignment instead of just first past the post.
     dropdown = dropdown || this.#dropdowns.find(d => !d.printer);
     if (dropdown) {
       dropdown.setPrinter(printer);
@@ -98,11 +101,11 @@ export class PrinterManager {
    */
   async handleDisconnectPrinter({ device }) {
     let dropdown = this.#dropdowns.filter(d => d.printer?.device === device);
-    if (!dropdown) {
+    if (!dropdown || dropdown.length !== 1) {
       return;
     }
 
-    await dropdown.removePrinter();
+    await dropdown[0].removePrinter();
   }
 
   /**
@@ -119,9 +122,11 @@ export class PrinterManager {
         ]
       });
     } catch (e) {
-      // TODO: One of the exceptions we can catch here is "user clicked cancel."
-      // Figure out how to separate that out as 'not an actual exception'.
-      console.error("Couldn't add new printer.", e);
+      if (e.name === "NotFoundError") {
+        // User clicked cancel, this is okay to ignore.
+      } else {
+        console.error("Couldn't add new printer.", e);
+      }
       return undefined; // Nothing to return, can't proceed here.
     }
 
@@ -158,18 +163,27 @@ export class PrinterManager {
   }
 
   /**
-   * Disconnect and reconnect to all printers. NOTE: May shuffle position of printers!
+   * Disconnect and reconnect to all printers.
    */
   async refreshPrinters() {
-    this.#dropdowns.forEach(async d => {
-      await d.removePrinter();
-    })
+    // On initial page load these won't be connected anyway, but just to be safe..
+    await Promise.all(this.#dropdowns.map(async d => await d.removePrinter()));
 
-    await this.#nav.usb.getDevices().then((devices) => {
-      devices.forEach(async d => {
-        let printer = await this.handleConnectPrinter({ device: d });
+    return this.#nav.usb.getDevices().then(async (devices) => {
+      if (devices.length > 1) {
+        // TODO: Show a UI popup telling the user to manually connect.
+        // TODO: Remove this if we have a page-refresh-durable cache we can
+        // positively identify printers in for reassignment? Probably will still
+        // need a fallback to tell the user to manually select them.
+        console.warn("Can't assign printers");
+        return;
+      }
+
+      // Connect to the printers and hand them off for assignment to dropdowns.
+      return Promise.all(devices.map(async device => {
+        const printer = await this.handleConnectPrinter({ device });
         await this.assignPrinter(printer);
-      });
+      }));
     });
   }
 }

@@ -95,7 +95,15 @@ export class PrinterDropdown extends EventTarget {
    */
   async removePrinter() {
     if (this.#printer) {
+      try {
       await this.#printer.dispose();
+      } catch (e) {
+        if (e.name === "NotFoundError") {
+          // Device was already disconnected, we tried to disconnect again. This is fine.
+        } else {
+          throw e;
+        }
+      }
     }
     this.#printer = undefined;
 
