@@ -100,12 +100,12 @@ export class PrinterManager {
    * @param {USBDevice} o.device - The device to disconnect.
    */
   async handleDisconnectPrinter({ device }) {
-    let dropdown = this.#dropdowns.filter(d => d.printer?.device === device);
-    if (!dropdown || dropdown.length !== 1) {
+    let dropdown = this.#dropdowns.find(d => d.printer?.device === device);
+    if (!dropdown) {
       return;
     }
 
-    await dropdown[0].removePrinter();
+    await dropdown.removePrinter();
   }
 
   /**
