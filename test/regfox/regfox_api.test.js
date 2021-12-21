@@ -7,13 +7,13 @@ const { expect } = chai;
 
 import { stub } from "sinon";
 
-import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler } from '../mocks/mws_handler.js';
+import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler } from '../mocks/mws_handler.js';
 import { setupServer } from 'msw/node/lib/index.js'
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { exchangeBearerToken, searchRegistrations, login } from '../../src/regfox/regfox_api.js';
+import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
@@ -29,6 +29,8 @@ describe('regfox_api', () => {
         success: true,
         registrants: [{
           name: 'Bob',
+          id: 123455,
+          registrationId: "593409403",
         }]
       });
       const result = await searchRegistrations('anything', 'none');
@@ -134,6 +136,38 @@ describe('regfox_api', () => {
         success: false,
       });
       return login('anything', 'none').should.eventually.be.rejected;
+    });
+  });
+
+  describe('getRegistrationInfo', () => {
+    const getResponse = stub();
+    const server = setupServer(...getRegistrationInfoHandler(123455, getResponse));
+    before(() => server.listen());
+    afterEach(() => getResponse.reset());
+    afterEach(() => server.resetHandlers());
+    after(() => server.close());
+
+    it('returns data as requested', async () => {
+      getResponse.returns({
+        "code": 200,
+        "error": null,
+        "data": {
+          "id": 123455,
+          "accountId": 1311,
+          "registrationId": "593409403",
+          "transactionCount": 1
+        }
+      });
+      const result = await getRegistrationInfo(123455);
+
+      expect(result).to.include({ 'transactionCount': 1 });
+    });
+
+    it('handles a failure in the API', async () => {
+      getResponse.returns({
+        error: ['heky!'],
+      });
+      return getRegistrationInfo(123455).should.eventually.be.rejected;
     });
   });
 });

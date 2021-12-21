@@ -1,7 +1,9 @@
 import { get } from 'lodash-es';
 import { buildSearchRegistrationsBody } from './queries/regfox_graphql_search_registrations_query.js';
 import { buildAuthLoginMutationBody } from './queries/regfox_graphql_auth_login_mutation_query.js';
+import { parseRegfoxGetRegistrationResponse } from './responses/regfox_api_get_registration_info_parser.js';
 
+const REGFOX_GET_REGISTRATION_URL = 'https://api.webconnex.com/v1/cp/report/regfox.com/registrant/${id}';
 const REGFOX_EXCHANGE_TOKEN_URL = 'https://api.webconnex.com/auth/exchange-token';
 const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
 
@@ -90,4 +92,34 @@ const login = async (email, password) => {
     });
 }
 
-export { searchRegistrations, exchangeBearerToken, login, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL };
+/**
+ * Returns a nicely parsed object containing registration info given an id.
+ * Returns a promise Error if the network is down or parsing failed.
+ * 
+ * @param {*} id of a registration, note this is **not** the RegistrationId, its just the id
+ */
+const getRegistrationInfo = async (id) => {
+  const fullUrl = getRegistrationInfoUrl(id);
+  return fetch(fullUrl, {
+    method: 'GET',
+    headers: buildHeaders(undefined)
+  }).then(response => response.json())
+    .then(response => {
+      if (get(response, 'error')) {
+        throw new Error(response);
+      }
+
+      if (!get(response, 'data')) {
+        throw new Error(response);
+      }
+
+      return parseRegfoxGetRegistrationResponse(response.data);
+    });
+}
+
+// Only exported for testing, DONT CALL THIS METHOD!
+const getRegistrationInfoUrl = (id) => {
+  return REGFOX_GET_REGISTRATION_URL.replace('${id}', id);
+}
+
+export { getRegistrationInfo, searchRegistrations, exchangeBearerToken, login, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl };
