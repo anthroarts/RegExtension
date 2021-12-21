@@ -57,6 +57,22 @@ describe('regfox_api', () => {
       });
       return searchRegistrations('anything', 'none').should.eventually.be.rejected;
     });
+
+    it('failures get parsed correctly', async () => {
+      getResponse.returns({
+        success: false,
+        registrants: [{
+          name: 'Bob',
+        }]
+      });
+      try {
+        await searchRegistrations('anything', 'none');
+        expect.fail("searchRegistrations should have thrown an exception");
+      } catch (error) {
+        expect(error.message).to.include("\"success\":false");
+        expect(error.message).to.include("registrants");
+      }
+    });
   });
 
   describe('exchangeBearerToken', () => {

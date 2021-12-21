@@ -28,11 +28,11 @@ const searchRegistrations = async (term, bearerToken) => {
   }).then(response => response.json())
     .then(response => {
       if (get(response, 'data.response.errors')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       if (!get(response, 'data.response.success', false)) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       return response.data.response;
@@ -53,11 +53,11 @@ const exchangeBearerToken = async (bearerToken) => {
   }).then(response => response.json())
     .then(response => {
       if (get(response, 'errors')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       if (!get(response, 'token')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       return response;
@@ -81,11 +81,11 @@ const login = async (email, password) => {
   }).then(response => response.json())
     .then(response => {
       if (get(response, 'data.mutationResponse.errors')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       if (!get(response, 'data.mutationResponse.success', false)) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       return response.data.mutationResponse;
@@ -106,11 +106,11 @@ const getRegistrationInfo = async (id) => {
   }).then(response => response.json())
     .then(response => {
       if (get(response, 'error')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       if (!get(response, 'data')) {
-        throw new Error(response);
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
 
       return parseRegfoxGetRegistrationResponse(response.data);
