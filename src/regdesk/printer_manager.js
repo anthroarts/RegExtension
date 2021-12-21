@@ -136,6 +136,16 @@ export class PrinterManager {
     }
   }
 
+  getAdultLabel(){
+    if (!this.#adultDropdown.printer) {
+      // TODO: Make this more clear
+      console.error("Adult printer not present to print to!");
+      return;
+    }
+
+    return this.#adultDropdown.printer.getLabel();
+  }
+
   /**
    * Print a badge label to the adult printer.
    * @param {LabelEpl} label
@@ -144,9 +154,20 @@ export class PrinterManager {
     if (!this.#adultDropdown.printer) {
       // TODO: Make this more clear
       console.error("Adult printer not present to print to!");
+      return;
     }
 
     await this.#adultDropdown.printer.printLabel(label);
+  }
+
+  getMinorLabel(){
+    if (!this.#minorDropdown.printer) {
+      // TODO: Make this more clear
+      console.error("Minor printer not present to print to!");
+      return;
+    }
+
+    return this.#minorDropdown.printer.getLabel();
   }
 
   /**
@@ -157,6 +178,7 @@ export class PrinterManager {
     if (!this.#minorDropdown.printer) {
       // TODO: Make this more clear
       console.error("Minor printer not present to print to!");
+      return;
     }
 
     await this.#minorDropdown.printer.printLabel(label);
