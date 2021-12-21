@@ -3,3 +3,8 @@
   padding-left: 0rem;
   padding-right: 0rem;
 }
+
+.row-no-margin {
+  margin-left: 0rem;
+  margin-right: 0rem;
+}
