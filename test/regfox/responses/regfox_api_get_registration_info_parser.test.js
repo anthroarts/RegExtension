@@ -4,12 +4,12 @@ import { parseRegfoxGetRegistrationResponse } from '../../../src/regfox/response
 
 describe('regfox_api_get_registration_info_parser', () => {
   describe('parseRegfoxGetRegistrationResponse', () => {
-    it('doesn\'nt crash and burn on undefined input', () => {
+    it('doesn not crash and burn on undefined input', () => {
       const body = parseRegfoxGetRegistrationResponse();
       expect(body).to.deep.equal({});
     });
 
-    it('doesn\'nt crash and burn on empty input', () => {
+    it('does not crash and burn on empty input', () => {
       const body = parseRegfoxGetRegistrationResponse({});
       expect(body).to.deep.equal({});
     });
@@ -59,7 +59,7 @@ describe('regfox_api_get_registration_info_parser', () => {
       expect(body).to.deep.include({ id: 1234, registrationOptions: "standard" });
     });
 
-    it('gets the god damn birthdate like we wanted from the search api', () => {
+    it('gets the birthdate like we wanted from the search api', () => {
       const body = parseRegfoxGetRegistrationResponse({
         id: 1234, registrationOptions: 'standard', data: [{
           "path": "dateOfBirth",
