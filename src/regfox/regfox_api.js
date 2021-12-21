@@ -96,7 +96,7 @@ const login = async (email, password) => {
  * Returns a nicely parsed object containing registration info given an id.
  * Returns a promise Error if the network is down or parsing failed.
  * 
- * @param {*} id of a registration, note this is **not** the RegistrationId, its just the id
+ * @param {string} id of a registration, note this is **not** the RegistrationId, its just the id
  */
 const getRegistrationInfo = async (id) => {
   const fullUrl = getRegistrationInfoUrl(id);
