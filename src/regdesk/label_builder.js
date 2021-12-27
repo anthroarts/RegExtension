@@ -170,7 +170,7 @@ export class BadgeLabelBuilder {
     const maxX = offsets.maxWidth !== LineOffset.fullLabelWidth ? offsets.maxWidth : maxWidth;
     const offsetX = offsets.offsetX !== LineOffset.centeredOnLabel ? offsets.offsetX : (maxWidth / 2);
 
-    let size = this.#getMaxFontSizeInPx(ctx, text, maxX, offsets.maxHeight, bold);
+    let size = this.#getMaxFontSizeInPx(ctx, text, maxX, offsets.maxHeight, offsets.isBold);
     ctx.font = this.#getFont(size, offsets.isBold);
     ctx.textAlign = offsets.alignmentPoint;
     ctx.fillText(text, offsetX, offsets.offsetY);
