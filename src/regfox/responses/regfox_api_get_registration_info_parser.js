@@ -1,8 +1,8 @@
 
 /**
  * Brings some of the "dynamic" data objects and places them directly on the main response.
- * 
- * So instead of 
+ *
+ * So instead of
  * {
  *  id: 1234
  *  data: [{
@@ -10,15 +10,15 @@
  *    value: "2022-02-02"
  *  }]
  * }
- * 
+ *
  * We get
  * {
  *  id: 1234,
  *  dataOfBirth: "2022-02-02"
  * }
- * 
+ *
  * @param {*} rawResponse see below
- * @returns 
+ * @return {*} The object and the raw response
  */
 const parseRegfoxGetRegistrationResponse = (rawResponse) => {
   const dataObject = rawResponse?.data?.reduce((acc, i) => {
@@ -28,12 +28,12 @@ const parseRegfoxGetRegistrationResponse = (rawResponse) => {
     return { [i.path]: i.value, ...acc };
   }, {});
   return { ...dataObject, ...rawResponse };
-}
+};
 
 export { parseRegfoxGetRegistrationResponse };
 
 // The raw response looks something like the below:
-/*{
+/* {
   "code":
   "error":
   "data": {

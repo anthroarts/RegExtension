@@ -1,7 +1,8 @@
-import { LP2844 } from 'WebZLP/src/LP2844'
 
+/**
+ * Class for managing a printer dropdown
+ */
 export class PrinterDropdown extends EventTarget {
-
   /**
    * The printer displayed by this class.
    * @type {LP2844}
@@ -10,13 +11,17 @@ export class PrinterDropdown extends EventTarget {
   /**
    * Get the printer this dropdown is bound to.
    */
-  get printer() { return this.#printer; }
+  get printer() {
+    return this.#printer;
+  }
 
   #dropdownName;
   /**
    * Get the name of this dropdown
    */
-  get dropdownName() { return this.#dropdownName; }
+  get dropdownName() {
+    return this.#dropdownName;
+  }
 
   // Icon next to printer name
   #iconElement;
@@ -83,10 +88,13 @@ export class PrinterDropdown extends EventTarget {
     this.removePrinter();
   }
 
+  /**
+   * Request a connection for htis printer.
+   */
   #connectPrinter() {
-    let event = new CustomEvent(
+    const event = new CustomEvent(
       this.constructor.ConnectEventName,
-      { target: this,  });
+      { target: this });
     this.dispatchEvent(event);
   }
 
@@ -96,9 +104,9 @@ export class PrinterDropdown extends EventTarget {
   async removePrinter() {
     if (this.#printer) {
       try {
-      await this.#printer.dispose();
+        await this.#printer.dispose();
       } catch (e) {
-        if (e.name === "NotFoundError") {
+        if (e.name === 'NotFoundError') {
           // Device was already disconnected, we tried to disconnect again. This is fine.
         } else {
           throw e;
@@ -107,8 +115,8 @@ export class PrinterDropdown extends EventTarget {
     }
     this.#printer = undefined;
 
-    this.#iconElement.textContent = "❌"
-    this.#printerNameElement.textContent = "(No Printer)"
+    this.#iconElement.textContent = '❌';
+    this.#printerNameElement.textContent = '(No Printer)';
     this.#show(this.#connectElement);
     this.#hide(
       this.#disconnectElement,
@@ -125,7 +133,7 @@ export class PrinterDropdown extends EventTarget {
   setPrinter(printer) {
     this.#printer = printer;
 
-    this.#iconElement.textContent = "🖨";
+    this.#iconElement.textContent = '🖨';
     this.#printerNameElement.textContent = `(${this.#printer.serial})`;
     this.#hide(this.#connectElement);
     this.#show(
@@ -141,14 +149,13 @@ export class PrinterDropdown extends EventTarget {
    */
   async printTest() {
     if (!this.#printer) {
-      console.error("No printer selected, can't print test page.");
+      console.error('No printer selected, can\'t print test page.');
     }
 
     try {
       await this.#printer.printTestPage();
-    }
-    catch (error) {
-      console.error("Failed to print test page.", error);
+    } catch (error) {
+      console.error('Failed to print test page.', error);
     }
   }
 
@@ -157,21 +164,27 @@ export class PrinterDropdown extends EventTarget {
    */
   async feedLabel() {
     if (!this.#printer) {
-      console.error("No printer selected, can't feed a label.");
+      console.error('No printer selected, can\'t feed a label.');
     }
 
     try {
       await this.#printer.feed(1);
-    }
-    catch (error) {
-      console.error("Failed to feed label.", error);
+    } catch (error) {
+      console.error('Failed to feed label.', error);
     }
   }
 
+  /**
+   * Show the configuration for this printer.
+   */
   showConfig() {
     // idk figure out how to show the modal with the printer config.
   }
 
+  /**
+   * Hide all elements shown by #show.
+   * @param  {...any} elements - The elements to hide.
+   */
   #hide(...elements) {
     elements.forEach((e) => {
       e.classList.remove('visible');
@@ -179,6 +192,10 @@ export class PrinterDropdown extends EventTarget {
     });
   }
 
+  /**
+   * Show all elements hidden by #hide.
+   * @param  {...Element} elements - The elements to show.
+   */
   #show(...elements) {
     elements.forEach((e) => {
       e.classList.remove('invisible');
@@ -189,14 +206,16 @@ export class PrinterDropdown extends EventTarget {
   /**
    * Gets the connect event name
    */
-  static get ConnectEventName() { return "connect"; }
+  static get ConnectEventName() {
+    return 'connect';
+  }
 
   /**
    * Query the document for the elements that make up a dropdown.
    *
    * @param {string} prefix - The prefix for this dropdown's element collection. Usually either "minor" or "clear"
    * @param {Document} doc - The Document object to query for IDs.
-   * @returns An object containing all of the elements for a dropdown's constructor.
+   * @return {*} An object containing all of the elements for a dropdown's constructor.
    */
   static getElementsOnPage(prefix, doc) {
     return {

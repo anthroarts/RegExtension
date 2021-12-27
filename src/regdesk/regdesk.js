@@ -13,36 +13,37 @@ import 'bootstrap-dark-5/dist/css/bootstrap-dark-plugin.min.css';
  * @param {PrinterManager} o.mgr - The printer manager to configure
  * @param {PrinterDropdown} o.adultDropdown - The dropdown object managing the Clear printer.
  * @param {PrinterDropdown} o.minorDropdown - The dropdown object managing the Minor printer.
- * @param {Navigator} o.nav - The browser Navigator
+ * @param {Navigator} o.nav - The browser Navigator.
+ * @return {PrinterManager} - The resulting printer manager.
  */
 function configureManager({
   mgr,
-  adultDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage("adult", document)),
-  minorDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage("minor", document)),
+  adultDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage('adult', document)),
+  minorDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage('minor', document)),
   nav = navigator,
 } = {}) {
   mgr = mgr || new PrinterManager(nav, adultDropdown, minorDropdown);
   return mgr;
 }
 
-var printerMgr;
-var fontLoader = BadgeLabelBuilder.loadCustomFonts(document);
+let printerMgr;
+const fontLoader = BadgeLabelBuilder.loadCustomFonts(document);
 
 document.addEventListener('readystatechange', async () => {
-  if (document.readyState === "complete") {
+  if (document.readyState === 'complete') {
     printerMgr = configureManager();
     await printerMgr.refreshPrinters();
     await fontLoader;
 
-    ///////////////////
+    // ///////////////// Note!
     // Demonstration code! This will work on -your- machine!
 
-    let canvas = document.getElementById("canvas");
-    let label = new BadgeLabelBuilder({
-      line1: "A Furry 🍑",
-      line2: "Just some furry name",
-      badgeId: "12345678",
-      level: "Super Sponsor",
+    const canvas = document.getElementById('canvas');
+    const label = new BadgeLabelBuilder({
+      line1: 'A Furry 🍑',
+      line2: 'Just some furry name',
+      badgeId: '12345678',
+      level: 'Super Sponsor',
       isMinor: false,
     });
 

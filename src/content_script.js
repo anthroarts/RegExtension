@@ -1,74 +1,73 @@
-import $ from "jquery";
+/* eslint-disable require-jsdoc */
+import $  from 'jquery';
 
 function getBadgeLine1() {
-    var Badge_Line_1;
-    Badge_Line_1 = $("th:contains('Badge Line 1 Text')");
+  const badgeLine1 = $('th:contains(\'Badge Line 1 Text\')');
 
-    console.log("Badge line 1: ");
-    console.log(Badge_Line_1.length);
+  console.log('Badge line 1: ');
+  console.log(badgeLine1.length);
 
-    if (Badge_Line_1) {
-        console.log(Badge_Line_1.next().text());
-        return Badge_Line_1.next().text();
-    }
-    return "&nbsp;"
+  if (badgeLine1) {
+    console.log(badgeLine1.next().text());
+    return badgeLine1.next().text();
+  }
+  return '&nbsp;';
 }
 
 function getBadgeLine2() {
-    var Badge_Line_2;
-    Badge_Line_2 = $("th:contains('Badge Line 2 Text')");
+  const badgeLine2 = $('th:contains(\'Badge Line 2 Text\')');
 
-    if (Badge_Line_2.length != 0) {
-        console.log(Badge_Line_2.next().text());
-        return Badge_Line_2.next().text();
-    }
+  if (badgeLine2.length != 0) {
+    console.log(badgeLine2.next().text());
+    return badgeLine2.next().text();
+  }
 
-    return "&nbsp;"
+  return '&nbsp;';
 }
 
 function getRegLevel() {
-    var regLevel = $("th:contains('Membership Levels')");
+  let regLevel = $('th:contains(\'Membership Levels\')');
 
-    regLevel = regLevel.next().text();
+  regLevel = regLevel.next().text();
 
-    if (regLevel.includes("Friday") || regLevel.includes("Saturday") || regLevel.includes("Sunday")) {
-        return regLevel.toUpperCase();
-    }
-    return regLevel;
+  if (regLevel.includes('Friday') || regLevel.includes('Saturday') || regLevel.includes('Sunday')) {
+    return regLevel.toUpperCase();
+  }
+  return regLevel;
 }
 
 function getMinorStatus() {
-    var ms_cell1 = $("th:contains('Age as of January 12, 2017')");
-    var ms_cell2 = $("th:contains('Age')");
+  const minorCell1 = $('th:contains(\'Age as of January 12, 2017\')');
+  const minorCell2 = $('th:contains(\'Age\')');
 
-    var minor_Status = (ms_cell1.length) ? ms_cell1.next().text() : ms_cell2.next().text();
-    var age = minor_Status.split("-")[0];
+  const minorStatus = (minorCell1.length) ? minorCell1.next().text() : minorCell2.next().text();
+  const age = minorStatus.split('-')[0];
 
-    console.log(ms_cell1)
-    console.log(ms_cell2)
+  console.log(minorCell1);
+  console.log(minorCell2);
 
-    var return_string = "&nbsp;"
+  let minorString = '&nbsp;';
 
-    if (age < 18) {
-        return_string = "Minor";
-    }
+  if (age < 18) {
+    minorString = 'Minor';
+  }
 
-    return return_string;
+  return minorString;
 }
 
 function getRegId() {
-    var regNumber = document.location.href.split("/").pop();
-    console.log(regNumber);
-    return regNumber;
+  const regNumber = document.location.href.split('/').pop();
+  console.log(regNumber);
+  return regNumber;
 }
 
-var firstLine = getBadgeLine1();
-var secondLine = getBadgeLine2();
-var regNumber = getRegId();
-var regLevel = getRegLevel();
-var minorStatus = getMinorStatus();
+const firstLine = getBadgeLine1();
+const secondLine = getBadgeLine2();
+const regNumber = getRegId();
+const regLevel = getRegLevel();
+const minorStatus = getMinorStatus();
 
-var iFrameHtml = `
+const iFrameHtml = `
 <html>
 <style>
 
@@ -133,14 +132,14 @@ text-align: right;
 </html>
 `;
 
-var iFrame = document.createElement('iFrame');
-//iFrame.style.display = 'none';
-iFrame.onload = function () {
-    console.log('iFrame loaded');
+const iFrame = document.createElement('iFrame');
+// iFrame.style.display = 'none';
+iFrame.onload = function() {
+  console.log('iFrame loaded');
 };
 document.body.appendChild(iFrame);
 
-var ifdoc = iFrame.contentWindow.document;
+const ifdoc = iFrame.contentWindow.document;
 ifdoc.open();
 ifdoc.write(iFrameHtml);
 ifdoc.close();
