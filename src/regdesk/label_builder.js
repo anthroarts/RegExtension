@@ -115,27 +115,32 @@ export class BadgeLabelBuilder {
   }
 
   /**
-   * Add this builder's details to a label.
-   * @param {LabelEpl} label - The label to add the print details to.
+   * Render the label image sized to a label's dimensions. Note the return widthOffset
+   * should be set on the label for proper alignment.
+   * @param {number} width - The label width to render the canvas data within.
+   * @param {number} height - The label height to render the canvas data within.
    * @param {number} heightPadding - Dots to add to the top of the label as padding.
    * @param {number} widthPadding - Dots to divide btween either side of the label as padding.
+   * @returns {*} Tuple with a width offset and the canvas data to render.
    */
-  addToLabel(label, heightPadding = 10, widthPadding = 20) {
+  renderToImageSizedToLabel(width, height, widthPadding = 20, heightPadding = 10) {
     // Safety buffer around the edges of the printable area.
     // Make sure the width ends up on an byte boundary!
-    let widthRemainder = (label.labelWidthDots - widthPadding) % 8;
-    let widthOffset = widthPadding + widthRemainder;
-    let canvasData = this.renderToImageData(
-      label.labelWidthDots - widthOffset,
-      label.labelHeightDots - heightPadding);
+    const widthRemainder = (label.labelWidthDots - widthPadding) % 8;
+    const widthOffset = widthPadding + widthRemainder;
+    const canvasData = this.renderToImageData(
+      width - widthOffset,
+      height - heightPadding);
 
-    label.setOffset(widthOffset / 2).addImage(canvasData);
+    return { canvasData, widthOffset: widthOffset / 2 };
   }
 
   /**
    * Render this label's text onto a canvas, returning the ImageData.
    * @param {number} width - The width of the label.
    * @param {number} height - The height of the label.
+   * @param {CanvasRenderingContext2D} canvas - The optional canvas context to re-use.
+   * If not supplied an OffscreenCanvas will be used instead.
    * @returns {ImageData} - The ImageData of the canvas with the label's text rendered.
    */
   renderToImageData(width, height, canvas) {

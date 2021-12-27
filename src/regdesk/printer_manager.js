@@ -191,13 +191,10 @@ export class PrinterManager {
    */
   async printLabelBuilder(builder) {
     var label;
-    switch (builder.isMinor) {
-      case true:
-        label = this.getMinorLabel();
-        break;
-      case false:
-        label = this.getAdultLabel();
-        break;
+    if (builder.isMinor) {
+      label = this.getMinorLabel();
+    } else {
+      label = this.getAdultLabel();
     }
 
     if (!label) {
@@ -205,12 +202,12 @@ export class PrinterManager {
       return;
     }
 
-    builder.addToLabel(label);
+    const labelImage = builder.renderToImageSizedToLabel(label.labelWidthDots, label.labelHeightDots);
+    label.setOffset(labelImage.widthOffset).addImage(labelImage.canvasData);
 
-    switch (builder.isMinor) {
-      case true:
+    if (builder.isMinor) {
         return this.printMinorLabel(label);
-      case false:
+      } else {
         return this.printAdultLabel(label);
     }
   }
