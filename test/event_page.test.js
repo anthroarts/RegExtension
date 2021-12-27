@@ -25,9 +25,9 @@ describe('event_page', () => {
     beforeEach(() => chrome.tabs.sendMessage.flush());
 
     const sendMessage = async (message) => {
-      // We can't use the regular `chrome.runtime.onMessage.dispatch` because 
+      // We can't use the regular `chrome.runtime.onMessage.dispatch` because
       // our listener is async and sinon-chrome doesn't support that.
-      return Promise.all(chrome.runtime.onMessage._listeners.map(async listener => listener(message)))
+      return Promise.all(chrome.runtime.onMessage._listeners.map(async (listener) => listener(message)));
     };
 
     it('calls executeScript when printLegacy message is received', async () => {

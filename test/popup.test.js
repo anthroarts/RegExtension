@@ -12,8 +12,8 @@ import { fireEvent } from '@testing-library/dom';
 import { init } from '../src/popup.js';
 
 describe('popup', () => {
-  beforeEach(async () => JSDOM.fromFile('./public/popup.html').then(dom => {
-    global.document = dom.window.document
+  beforeEach(async () => JSDOM.fromFile('./public/popup.html').then((dom) => {
+    global.document = dom.window.document;
     global.window = dom.window;
   }));
   beforeEach(() => chrome.runtime.sendMessage.flush());
@@ -21,7 +21,7 @@ describe('popup', () => {
 
   it('calls send message on initial load', async () => {
     init();
-    expect(chrome.runtime.sendMessage).to.have.been.calledWith({ type: 'load-plz', payload: 'popup' })
+    expect(chrome.runtime.sendMessage).to.have.been.calledWith({ type: 'load-plz', payload: 'popup' });
   });
 
   it('changes the toggle when recieving a change-logout-plz message', async () => {

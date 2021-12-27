@@ -1,7 +1,7 @@
 import { graphql, rest } from 'msw';
 import { REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl } from '../../src/regfox/regfox_api.js';
 
-const regfox = graphql.link(REGFOX_GRAPHQL_URL)
+const regfox = graphql.link(REGFOX_GRAPHQL_URL);
 
 const getRegistrantsSearchHandler = (getResponse) => {
   return [
@@ -11,17 +11,17 @@ const getRegistrantsSearchHandler = (getResponse) => {
       );
     }),
   ];
-}
+};
 
 const exchangeBearerTokenHandler = (getResponse) => {
   return [
     rest.put(REGFOX_EXCHANGE_TOKEN_URL, (req, res, ctx) => {
       return res(
-        ctx.json(getResponse(req))
+        ctx.json(getResponse(req)),
       );
     }),
   ];
-}
+};
 
 const loginHandler = (getResponse) => {
   return [
@@ -31,16 +31,16 @@ const loginHandler = (getResponse) => {
       );
     }),
   ];
-}
+};
 
 const getRegistrationInfoHandler = (id, getResponse) => {
   return [
     rest.get(getRegistrationInfoUrl(id), (req, res, ctx) => {
       return res(
-        ctx.json(getResponse(req))
+        ctx.json(getResponse(req)),
       );
     }),
   ];
-}
+};
 
 export { getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler, getRegistrationInfoHandler };

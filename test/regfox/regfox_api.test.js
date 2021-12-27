@@ -5,10 +5,10 @@ use(chaiAsPromised);
 should();
 const { expect } = chai;
 
-import { stub } from "sinon";
+import { stub } from 'sinon';
 
 import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler } from '../mocks/mws_handler.js';
-import { setupServer } from 'msw/node/lib/index.js'
+import { setupServer } from 'msw/node/lib/index.js';
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
@@ -30,8 +30,8 @@ describe('regfox_api', () => {
         registrants: [{
           name: 'Bob',
           id: 123455,
-          registrationId: "593409403",
-        }]
+          registrationId: '593409403',
+        }],
       });
       const result = await searchRegistrations('anything', 'none');
 
@@ -43,7 +43,7 @@ describe('regfox_api', () => {
         errors: ['heky!'],
         registrants: [{
           name: 'Fred',
-        }]
+        }],
       });
       return searchRegistrations('anything', 'none').should.eventually.be.rejected;
     });
@@ -53,7 +53,7 @@ describe('regfox_api', () => {
         success: false,
         registrants: [{
           name: 'Bob',
-        }]
+        }],
       });
       return searchRegistrations('anything', 'none').should.eventually.be.rejected;
     });
@@ -63,14 +63,14 @@ describe('regfox_api', () => {
         success: false,
         registrants: [{
           name: 'Bob',
-        }]
+        }],
       });
       try {
         await searchRegistrations('anything', 'none');
-        expect.fail("searchRegistrations should have thrown an exception");
+        expect.fail('searchRegistrations should have thrown an exception');
       } catch (error) {
-        expect(error.message).to.include("\"success\":false");
-        expect(error.message).to.include("registrants");
+        expect(error.message).to.include('"success":false');
+        expect(error.message).to.include('registrants');
       }
     });
   });
@@ -124,16 +124,16 @@ describe('regfox_api', () => {
 
     it('logs in Bob', async () => {
       getResponse.returns({
-        "success": true,
-        "errors": null,
-        "token": {
-          "tokenType": "REDIRECT",
-          "token": "user-wbcx-61dfe34a-2416-44ea-8e25-136d68448222",
-          "accountId": 1311,
-          "prompt2FA": null,
-          "__typename": "Token"
+        'success': true,
+        'errors': null,
+        'token': {
+          'tokenType': 'REDIRECT',
+          'token': 'user-wbcx-61dfe34a-2416-44ea-8e25-136d68448222',
+          'accountId': 1311,
+          'prompt2FA': null,
+          '__typename': 'Token',
         },
-        "__typename": "AuthLoginResponse"
+        '__typename': 'AuthLoginResponse',
       });
       const result = await login('anything', 'none');
 
@@ -165,14 +165,14 @@ describe('regfox_api', () => {
 
     it('returns data as requested', async () => {
       getResponse.returns({
-        "code": 200,
-        "error": null,
-        "data": {
-          "id": 123455,
-          "accountId": 1311,
-          "registrationId": "593409403",
-          "transactionCount": 1
-        }
+        'code': 200,
+        'error': null,
+        'data': {
+          'id': 123455,
+          'accountId': 1311,
+          'registrationId': '593409403',
+          'transactionCount': 1,
+        },
       });
       const result = await getRegistrationInfo(123455);
 
