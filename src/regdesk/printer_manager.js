@@ -1,4 +1,5 @@
 import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844'
+import { BadgeLabelBuilder } from './label_builder.js';
 import { PrinterDropdown } from './printer_dropdown.js';
 
 export class PrinterManager {
@@ -182,6 +183,36 @@ export class PrinterManager {
     }
 
     await this.#minorDropdown.printer.printLabel(label);
+  }
+
+  /**
+   * Print a label buider to the printer determined by the label builder.
+   * @param {BadgeLabelBuilder} builder
+   */
+  async printLabelBuilder(builder) {
+    var label;
+    switch (builder.isMinor) {
+      case true:
+        label = this.getMinorLabel();
+        break;
+      case false:
+        label = this.getAdultLabel();
+        break;
+    }
+
+    if (!label) {
+      // Means the printer wasn't available.
+      return;
+    }
+
+    builder.addToLabel(label);
+
+    switch (builder.isMinor) {
+      case true:
+        return this.printMinorLabel(label);
+      case false:
+        return this.printAdultLabel(label);
+    }
   }
 
   /**
