@@ -60,8 +60,6 @@ document.addEventListener('readystatechange', async () => {
     //   isMinor: false,
     // });
 
-    //let plabel = printerMgr.getAdultLabel();
-    //await label.addToLabel(plabel);
-    //await printerMgr.printAdultLabel(plabel);
+    // await printerMgr.printLabelBuilder(label);
   }
 });
