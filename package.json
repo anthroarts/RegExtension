@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "lint": "eslint **/*.js",
     "test": "mocha ./test",
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
     "build": "webpack --mode=production --config config/webpack.config.js"
@@ -24,6 +25,8 @@
     "chrome-extension-cli": "^0.2.3",
     "copy-webpack-plugin": "^10.1.0",
     "css-loader": "^6.5.1",
+    "eslint": "^8.5.0",
+    "eslint-config-google": "^0.14.0",
     "file-loader": "^6.2.0",
     "global-jsdom": "^8.4.0",
     "mini-css-extract-plugin": "^2.4.5",

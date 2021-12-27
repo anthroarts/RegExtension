@@ -19,6 +19,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci --ignore-scripts
+      - uses: sibiraj-s/action-eslint@v2
+        with:
+          eslint-args: '--ignore-path=.gitignore --quiet'
+          extensions: 'js,jsx,ts,tsx'
+          annotations: true
       - run: npm run test -- --reporter json --reporter-options output=test-results.json
       - name: Test Reporter
         if: success() || failure()
