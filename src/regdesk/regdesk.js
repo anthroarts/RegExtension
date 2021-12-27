@@ -1,5 +1,6 @@
 import { PrinterManager } from './printer_manager.js';
 import { PrinterDropdown } from './printer_dropdown.js';
+import { BadgeLabelBuilder } from './label_builder.js';
 
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,10 +26,40 @@ function configureManager({
 }
 
 var printerMgr;
+var fontLoader = BadgeLabelBuilder.loadCustomFonts(document);
 
 document.addEventListener('readystatechange', async () => {
   if (document.readyState === "complete") {
     printerMgr = configureManager();
     await printerMgr.refreshPrinters();
+    await fontLoader;
+
+    ///////////////////
+    // Demonstration code! This will work on -your- machine!
+
+    let canvas = document.getElementById("canvas");
+    let label = new BadgeLabelBuilder({
+      line1: "A Furry 🍑",
+      line2: "Just some furry name",
+      badgeId: "12345678",
+      level: "Super Sponsor",
+      isMinor: false,
+    });
+
+    // You wouldn't normally call this directly, and instead use addToLabel like below
+    // Present here for demo purposes.
+    label.renderToImageData(canvas.width, canvas.height, canvas);
+
+    // Demo of the more average use, commented out so I stop accidentally printing labels.
+
+    // let label = new BadgeLabelBuilder({
+    //   line1: "A Furry 🍑",
+    //   line2: "Just some furry name",
+    //   badgeId: "12345678",
+    //   level: "Super Sponsor",
+    //   isMinor: false,
+    // });
+
+    // await printerMgr.printLabelBuilder(label);
   }
 });

@@ -44,3 +44,5 @@ Executes the files that contain unit tests.
 * Kobaj
 * Cellivar Kangaroorat
 * Binaryfox
+
+The font used for emoji is [twemoji](https://github.com/eosrei/twemoji-color-font/) converted from a TTF to a WOFF2 file, and otherwise unmodified content wise. Thanks for these awesome line emoji!

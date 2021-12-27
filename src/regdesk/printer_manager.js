@@ -1,4 +1,5 @@
 import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844'
+import { BadgeLabelBuilder } from './label_builder.js';
 import { PrinterDropdown } from './printer_dropdown.js';
 
 export class PrinterManager {
@@ -136,6 +137,16 @@ export class PrinterManager {
     }
   }
 
+  getAdultLabel(){
+    if (!this.#adultDropdown.printer) {
+      // TODO: Make this more clear
+      console.error("Adult printer not present to print to!");
+      return;
+    }
+
+    return this.#adultDropdown.printer.getLabel();
+  }
+
   /**
    * Print a badge label to the adult printer.
    * @param {LabelEpl} label
@@ -144,9 +155,20 @@ export class PrinterManager {
     if (!this.#adultDropdown.printer) {
       // TODO: Make this more clear
       console.error("Adult printer not present to print to!");
+      return;
     }
 
     await this.#adultDropdown.printer.printLabel(label);
+  }
+
+  getMinorLabel(){
+    if (!this.#minorDropdown.printer) {
+      // TODO: Make this more clear
+      console.error("Minor printer not present to print to!");
+      return;
+    }
+
+    return this.#minorDropdown.printer.getLabel();
   }
 
   /**
@@ -157,9 +179,37 @@ export class PrinterManager {
     if (!this.#minorDropdown.printer) {
       // TODO: Make this more clear
       console.error("Minor printer not present to print to!");
+      return;
     }
 
     await this.#minorDropdown.printer.printLabel(label);
+  }
+
+  /**
+   * Print a label buider to the printer determined by the label builder.
+   * @param {BadgeLabelBuilder} builder
+   */
+  async printLabelBuilder(builder) {
+    var label;
+    if (builder.isMinor) {
+      label = this.getMinorLabel();
+    } else {
+      label = this.getAdultLabel();
+    }
+
+    if (!label) {
+      // Means the printer wasn't available.
+      return;
+    }
+
+    const labelImage = builder.renderToImageSizedToLabel(label.labelWidthDots, label.labelHeightDots);
+    label.setOffset(labelImage.widthOffset).addImage(labelImage.canvasData);
+
+    if (builder.isMinor) {
+        return this.printMinorLabel(label);
+      } else {
+        return this.printAdultLabel(label);
+    }
   }
 
   /**
