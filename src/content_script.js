@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import $  from 'jquery';
+import $ from 'jquery';
 
 function getBadgeLine1() {
   const badgeLine1 = $('th:contains(\'Badge Line 1 Text\')');
