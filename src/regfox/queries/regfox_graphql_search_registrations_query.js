@@ -56,6 +56,7 @@ query RegistrantsSearch($query: ElasticQueryInput) {
  * Returns a json object ready to be passed to Regfox that will search registrations for term.
  *
  * @param {*} term name, email, etc
+ * @return {*} - The GraphQL object
  */
 const buildSearchRegistrationsBody = (term) => {
   return {
@@ -63,7 +64,7 @@ const buildSearchRegistrationsBody = (term) => {
     'variables': {
       'query': {
         'productNames': [
-          'regfox'
+          'regfox',
         ],
         'offset': 0,
         'length': 25,
@@ -75,39 +76,39 @@ const buildSearchRegistrationsBody = (term) => {
             'registrationEmail',
             // Add whatever fields you want from to search on.
           ],
-          'value': term
+          'value': term,
         },
         'sort': [
           {
             'field': 'dateCreated',
             'order': 'desc',
-            'sortOrderForNulls': '_last'
-          }
+            'sortOrderForNulls': '_last',
+          },
         ],
         'filters': [
           {
             'field': 'formId',
             'value': [
-              372652 // Magic value that means Further Confusion 2022 Registration.
+              372652, // Magic value that means Further Confusion 2022 Registration.
               // You can find this by filtering registrations on 'Page'.
             ],
-            'type': 'match'
+            'type': 'match',
           },
           {
             'field': 'status',
             'value': [
-              '3' // Magic value that means 'Completed' registration.
+              '3', // Magic value that means 'Completed' registration.
               // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
               // You can find this by filtering registrations on 'Status'.
             ],
-            'type': 'match'
+            'type': 'match',
           },
-        ]
-      }
+        ],
+      },
     },
-    'query': GRAPHQL_SEARCH_REGISTRATIONS_QUERY
+    'query': GRAPHQL_SEARCH_REGISTRATIONS_QUERY,
   };
-}
+};
 
 export { buildSearchRegistrationsBody };
 

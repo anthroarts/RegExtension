@@ -7,7 +7,7 @@ use(sinonChai);
 import chrome from 'sinon-chrome';
 global.chrome = chrome;
 
-global.KeyboardEvent = class KeyboardEvent { }
+global.KeyboardEvent = class KeyboardEvent { };
 
 import { init } from '../src/disable_auto_logout.js';
 
@@ -20,7 +20,7 @@ describe('disable_auto_logout', () => {
   after(() => clock.uninstall());
 
   it('calls send message on initial load', () => {
-    expect(chrome.runtime.sendMessage).to.have.been.calledWith({ type: 'load-plz', payload: 'disable-auto-logout' })
+    expect(chrome.runtime.sendMessage).to.have.been.calledWith({ type: 'load-plz', payload: 'disable-auto-logout' });
   });
 
   it('timer does nothing on initial load', () => {

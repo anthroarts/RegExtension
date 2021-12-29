@@ -1,9 +1,12 @@
-import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844'
-import { BadgeLabelBuilder } from './label_builder.js';
+// This is used in doc comments..
+// eslint-disable-next-line no-unused-vars
+import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844';
 import { PrinterDropdown } from './printer_dropdown.js';
 
+/**
+ * Manages printer connection and lifetime.
+ */
 export class PrinterManager {
-
   #adultDropdown;
   #minorDropdown;
   #dropdowns;
@@ -33,7 +36,9 @@ export class PrinterManager {
 
     this.#nav.usb.addEventListener('connect', async (e) => {
       const printer = await this.handleConnectPrinter(e);
-      if (printer) { await this.assignPrinter(printer); }
+      if (printer) {
+        await this.assignPrinter(printer);
+      }
     });
     this.#nav.usb.addEventListener('disconnect', async (e) => this.handleDisconnectPrinter(e));
   }
@@ -47,11 +52,11 @@ export class PrinterManager {
     // Find the first dropdown in order, hope it's the right one!
     // TODO: Make this smarter and pull from a page-refresh-durable cache or
     // something for assignment instead of just first past the post.
-    dropdown = dropdown || this.#dropdowns.find(d => !d.printer);
+    dropdown = dropdown || this.#dropdowns.find((d) => !d.printer);
     if (dropdown) {
       dropdown.setPrinter(printer);
     } else {
-      console.warn("Connected to a printer that we couldn't assign anywhere!");
+      console.warn('Connected to a printer that we couldn\'t assign anywhere!');
       await printer.dispose();
     }
   }
@@ -71,25 +76,25 @@ export class PrinterManager {
   }
 
   /**
-   *
+   * Handle a request to connect a printer
    * @param {Object} o - Event Object.
    * @param {USBDevice} o.device - The USB device to connect to as a printer.
-   * @returns The printer connected to, or {undefined} if no printer was connected.
+   * @return {LP2844} The printer connected to, or {undefined} if no printer was connected.
    */
   async handleConnectPrinter({ device }) {
     // If we already have a tracked printer we shouldn't try to add it.
     if (this.#dropdowns.some((d) => d.printer?.device === device)) {
       // TODO: Display something more useful.
-      console.warn("Reconnected to a printer already managed by a dropdown.");
+      console.warn('Reconnected to a printer already managed by a dropdown.');
       return undefined;
     }
 
-    let printer = new this.#printerType(device);
+    const printer = new this.#printerType(device);
     try {
       await printer.connect();
     } catch (e) {
       // TODO: Display something more useful.
-      console.error("Failed to connect to printer, ", e);
+      console.error('Failed to connect to printer, ', e);
     }
 
     return printer;
@@ -101,7 +106,7 @@ export class PrinterManager {
    * @param {USBDevice} o.device - The device to disconnect.
    */
   async handleDisconnectPrinter({ device }) {
-    let dropdown = this.#dropdowns.find(d => d.printer?.device === device);
+    const dropdown = this.#dropdowns.find((d) => d.printer?.device === device);
     if (!dropdown) {
       return;
     }
@@ -112,35 +117,39 @@ export class PrinterManager {
   /**
    * Add a new printer to the page and connect to it.
    * @param {PrinterDropdown} dropdown - The dropdown to add the printer to.
-   * @returns {LP2844} connected printer, or {undefined} if the printer couldn't connect..
+   * @return {LP2844} connected printer, or {undefined} if the printer couldn't connect..
    */
   async pairPrinter(dropdown) {
-    var device;
+    let device;
     try {
       device = await this.#nav.usb.requestDevice({
         filters: [
-          { vendorId: this.#printerType.usbVendorId }
-        ]
+          { vendorId: this.#printerType.usbVendorId },
+        ],
       });
     } catch (e) {
-      if (e.name === "NotFoundError") {
+      if (e.name === 'NotFoundError') {
         // User clicked cancel, this is okay to ignore.
       } else {
-        console.error("Couldn't add new printer.", e);
+        console.error('Couldn\'t add new printer.', e);
       }
       return undefined; // Nothing to return, can't proceed here.
     }
 
-    let printer = await this.handleConnectPrinter({ device: device });
+    const printer = await this.handleConnectPrinter({ device: device });
     if (printer) {
       await this.assignPrinter(printer, dropdown);
     }
   }
 
-  getAdultLabel(){
+  /**
+   * Get a label for the adult printer.
+   * @return {LabelEpl} - The label, or {undefined} if the printer isn't connected.
+   */
+  getAdultLabel() {
     if (!this.#adultDropdown.printer) {
       // TODO: Make this more clear
-      console.error("Adult printer not present to print to!");
+      console.error('Adult printer not present to print to!');
       return;
     }
 
@@ -154,17 +163,21 @@ export class PrinterManager {
   async printAdultLabel(label) {
     if (!this.#adultDropdown.printer) {
       // TODO: Make this more clear
-      console.error("Adult printer not present to print to!");
+      console.error('Adult printer not present to print to!');
       return;
     }
 
     await this.#adultDropdown.printer.printLabel(label);
   }
 
-  getMinorLabel(){
+  /**
+   * Get a lael for the minor printer.
+   * @return {LabelEpl} - The label, or {undefined} if the printer isn't connected.
+   */
+  getMinorLabel() {
     if (!this.#minorDropdown.printer) {
       // TODO: Make this more clear
-      console.error("Minor printer not present to print to!");
+      console.error('Minor printer not present to print to!');
       return;
     }
 
@@ -178,7 +191,7 @@ export class PrinterManager {
   async printMinorLabel(label) {
     if (!this.#minorDropdown.printer) {
       // TODO: Make this more clear
-      console.error("Minor printer not present to print to!");
+      console.error('Minor printer not present to print to!');
       return;
     }
 
@@ -190,7 +203,7 @@ export class PrinterManager {
    * @param {BadgeLabelBuilder} builder
    */
   async printLabelBuilder(builder) {
-    var label;
+    let label;
     if (builder.isMinor) {
       label = this.getMinorLabel();
     } else {
@@ -206,9 +219,9 @@ export class PrinterManager {
     label.setOffset(labelImage.widthOffset).addImage(labelImage.canvasData);
 
     if (builder.isMinor) {
-        return this.printMinorLabel(label);
-      } else {
-        return this.printAdultLabel(label);
+      return this.printMinorLabel(label);
+    } else {
+      return this.printAdultLabel(label);
     }
   }
 
@@ -217,7 +230,7 @@ export class PrinterManager {
    */
   async refreshPrinters() {
     // On initial page load these won't be connected anyway, but just to be safe..
-    await Promise.all(this.#dropdowns.map(async d => await d.removePrinter()));
+    await Promise.all(this.#dropdowns.map(async (d) => await d.removePrinter()));
 
     return this.#nav.usb.getDevices().then(async (devices) => {
       if (devices.length > 1) {
@@ -225,12 +238,12 @@ export class PrinterManager {
         // TODO: Remove this if we have a page-refresh-durable cache we can
         // positively identify printers in for reassignment? Probably will still
         // need a fallback to tell the user to manually select them.
-        console.warn("Can't assign printers");
+        console.warn('Can\'t assign printers');
         return;
       }
 
       // Connect to the printers and hand them off for assignment to dropdowns.
-      return Promise.all(devices.map(async device => {
+      return Promise.all(devices.map(async (device) => {
         const printer = await this.handleConnectPrinter({ device });
         await this.assignPrinter(printer);
       }));

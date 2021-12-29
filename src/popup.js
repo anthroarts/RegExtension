@@ -7,8 +7,8 @@ const init = () => {
   const setupRegDeskButton = () => {
     document.getElementById('regDesk').addEventListener('click', () => {
       chrome.tabs.create({ 'url': chrome.runtime.getURL('regdesk.html') });
-    })
-  }
+    });
+  };
 
   const setupPrintLegacyButton = () => {
     document.getElementById('printLegacy').addEventListener('click', () => {

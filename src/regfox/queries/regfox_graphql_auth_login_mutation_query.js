@@ -42,10 +42,10 @@ const buildAuthLoginMutationBody = (email, password) => {
       'organizationSlug': '',
       'realm': 'user',
       'email': email,
-      'password': password
+      'password': password,
     },
-    'query': GRAPHQL_AUTH_LOGIN_MUTATION_QUERY
+    'query': GRAPHQL_AUTH_LOGIN_MUTATION_QUERY,
   };
-}
+};
 
 export { buildAuthLoginMutationBody };

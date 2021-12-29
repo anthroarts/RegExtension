@@ -10,7 +10,7 @@ const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
 const buildHeaders = (bearerToken) => ({
   'Accept': 'application/json',
   'Content-Type': 'application/json',
-  'authorization': `Bearer ${bearerToken}`
+  'authorization': `Bearer ${bearerToken}`,
 });
 
 /**
@@ -24,9 +24,9 @@ const searchRegistrations = async (term, bearerToken) => {
   return fetch(REGFOX_GRAPHQL_URL, {
     method: 'POST',
     headers: buildHeaders(bearerToken),
-    body: JSON.stringify(buildSearchRegistrationsBody(term))
-  }).then(response => response.json())
-    .then(response => {
+    body: JSON.stringify(buildSearchRegistrationsBody(term)),
+  }).then((response) => response.json())
+    .then((response) => {
       if (get(response, 'data.response.errors')) {
         throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
@@ -42,16 +42,16 @@ const searchRegistrations = async (term, bearerToken) => {
 /**
  * Returns an object that contains a new bearer token for the user/account of the token passed in.
  * Returns a promise Error if the network is down or the exchange failed.
- * 
+ *
  * @param {*} bearerToken the bearer token of the logged in user
  */
 const exchangeBearerToken = async (bearerToken) => {
   return fetch(REGFOX_EXCHANGE_TOKEN_URL, {
     method: 'PUT',
     headers: buildHeaders(bearerToken),
-    body: JSON.stringify({ tokenType: 'SESSION' })
-  }).then(response => response.json())
-    .then(response => {
+    body: JSON.stringify({ tokenType: 'SESSION' }),
+  }).then((response) => response.json())
+    .then((response) => {
       if (get(response, 'errors')) {
         throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
@@ -62,24 +62,24 @@ const exchangeBearerToken = async (bearerToken) => {
 
       return response;
     });
-}
+};
 
 /**
  * Returns an object that contains a bearer token of the email/password passed in.
  * Returns a promise Error if the network is down or login failed.
- * 
+ *
  * Doesn't support 2fa!
- * 
- * @param {*} email 
- * @param {*} password 
+ *
+ * @param {*} email
+ * @param {*} password
  */
 const login = async (email, password) => {
   return fetch(REGFOX_GRAPHQL_URL, {
     method: 'POST',
     headers: buildHeaders(undefined),
-    body: JSON.stringify(buildAuthLoginMutationBody(email, password))
-  }).then(response => response.json())
-    .then(response => {
+    body: JSON.stringify(buildAuthLoginMutationBody(email, password)),
+  }).then((response) => response.json())
+    .then((response) => {
       if (get(response, 'data.mutationResponse.errors')) {
         throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
@@ -90,21 +90,21 @@ const login = async (email, password) => {
 
       return response.data.mutationResponse;
     });
-}
+};
 
 /**
  * Returns a nicely parsed object containing registration info given an id.
  * Returns a promise Error if the network is down or parsing failed.
- * 
+ *
  * @param {string} id of a registration, note this is **not** the RegistrationId, its just the id
  */
 const getRegistrationInfo = async (id) => {
   const fullUrl = getRegistrationInfoUrl(id);
   return fetch(fullUrl, {
     method: 'GET',
-    headers: buildHeaders(undefined)
-  }).then(response => response.json())
-    .then(response => {
+    headers: buildHeaders(undefined),
+  }).then((response) => response.json())
+    .then((response) => {
       if (get(response, 'error')) {
         throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
       }
@@ -115,11 +115,11 @@ const getRegistrationInfo = async (id) => {
 
       return parseRegfoxGetRegistrationResponse(response.data);
     });
-}
+};
 
 // Only exported for testing, DONT CALL THIS METHOD!
 const getRegistrationInfoUrl = (id) => {
   return REGFOX_GET_REGISTRATION_URL.replace('${id}', id);
-}
+};
 
 export { getRegistrationInfo, searchRegistrations, exchangeBearerToken, login, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl };

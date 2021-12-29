@@ -12,9 +12,9 @@ const getCurrentTab = async () => {
 };
 
 const getAllRegfoxTabs = async () => {
-  const queryOptions = { url: "https://manage.webconnex.com/*" };
+  const queryOptions = { url: 'https://manage.webconnex.com/*' };
   return chrome.tabs.query(queryOptions);
-}
+};
 
 const init = () => {
   chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -27,21 +27,21 @@ const init = () => {
       });
     }
 
-    if (request.type === MESSAGE_TYPE.finishLoad
-      && (request.payload === 'disable-auto-logout' || request.payload === 'popup')) {
+    if (request.type === MESSAGE_TYPE.finishLoad &&
+      (request.payload === 'disable-auto-logout' || request.payload === 'popup')) {
       const tabs = await getAllRegfoxTabs();
       const isEnabled = get(await chrome.storage.local.get([STORAGE_KEY_DISABLE_AUTO_LOGOUT]), [STORAGE_KEY_DISABLE_AUTO_LOGOUT], false);
-      tabs.forEach(tab => sendTabAMessage(tab, MESSAGE_TYPE.changeLogout, isEnabled));
+      tabs.forEach((tab) => sendTabAMessage(tab, MESSAGE_TYPE.changeLogout, isEnabled));
       sendPopupAMessage(MESSAGE_TYPE.changeLogout, isEnabled);
     }
 
     if (request.type === MESSAGE_TYPE.changeLogout) {
       const tabs = await getAllRegfoxTabs();
       await chrome.storage.local.set({ [STORAGE_KEY_DISABLE_AUTO_LOGOUT]: request.payload });
-      tabs.forEach(tab => sendTabAMessage(tab, MESSAGE_TYPE.changeLogout, request.payload));
+      tabs.forEach((tab) => sendTabAMessage(tab, MESSAGE_TYPE.changeLogout, request.payload));
     }
   });
-}
+};
 
 if (isScript()) {
   // When running as a script (on a webpage) auto execute.
