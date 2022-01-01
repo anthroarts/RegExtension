@@ -1,4 +1,5 @@
 import { LoadingSearchResultState } from './loading_state.js';
+import { MultipleResultState } from './multiple_result_state.js';
 import { NewSearchState } from './new_search_state.js';
 import { SingleResultState } from './single_result_state.js';
 
@@ -40,6 +41,7 @@ export class RegMachineManager {
         events: {
           [LoadingSearchResultState.events.CANCEL]: NewSearchState.name,
           [LoadingSearchResultState.events.SINGLE_RESULT_READY]: SingleResultState.name,
+          [LoadingSearchResultState.events.MULTIPLE_RESULTS_READY]: MultipleResultState.name,
         },
       },
       {
@@ -53,6 +55,14 @@ export class RegMachineManager {
         type: SingleResultState,
         events: {
           [SingleResultState.events.CANCEL]: NewSearchState.name,
+          [SingleResultState.events.CANCEL_FROM_MULTIPLE]: MultipleResultState.name,
+        },
+      },
+      {
+        type: MultipleResultState,
+        events: {
+          [MultipleResultState.events.CANCEL]: NewSearchState.name,
+          [MultipleResultState.events.SELECTED_SINGLE_RESULT]: SingleResultState.name,
         },
       },
     ];
