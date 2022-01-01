@@ -42,7 +42,7 @@ export class NewSearchState extends RegState {
    * Enter this state.
    */
   enterState() {
-    this.show(this.screenRow)
+    this.show(this.screenRow);
     this.cancelButton.invisible();
     this.printButton.invisible();
     this.searchInput.focus();

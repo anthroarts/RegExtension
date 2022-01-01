@@ -78,6 +78,7 @@ export class RegMachineManager {
    * Apply the transition of an event to the current state.
    * @param {CustomEvent} event - The event triggered on the current state.
    * @param {RegState} state - The current state.
+   * @return {string} - The resulting state.
    */
   transition(event, state = this.#currentState) {
     console.log('TRANSITION!', event);

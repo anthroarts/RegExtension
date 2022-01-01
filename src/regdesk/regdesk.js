@@ -41,7 +41,7 @@ document.addEventListener('readystatechange', async () => {
     const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, null);
 
     regStateMachine = new RegMachineManager(stateArgs);
-    await regStateMachine.transition(new CustomEvent('RESET'));
+    regStateMachine.transition(new CustomEvent('RESET'));
 
     // // ///////////////// Note!
     // // Demonstration code! This will work on -your- machine!

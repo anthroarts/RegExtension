@@ -35,7 +35,7 @@ export class RegState extends EventTarget {
     return this.#regMachineArgs.commManager;
   }
 
-  #screenRow
+  #screenRow;
   /**
    * Get the HTML div this reg state manages.
    */
@@ -65,7 +65,7 @@ export class RegState extends EventTarget {
     // Assumed convention: The CSS ID of the HTML element under management is the
     // class name, but with the first character lowercased
     const className = this.constructor.name;
-    const cssId = "#" + className.charAt(0).toLowerCase() + className.slice(1);
+    const cssId = '#' + className.charAt(0).toLowerCase() + className.slice(1);
     this.#screenRow = regMachineArgs.centerField.querySelector(cssId);
   }
 
