@@ -13,7 +13,7 @@
 </head>
 
 <body>
-  <div class="container-fluid container-no-gutter">
+  <div class="container-fluid container-no-gutter container-fullheight-with-navbar">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid container-no-gutter d-flex">
         <span class="navbar-brand me-auto" href="#">
@@ -53,23 +53,39 @@
         </div>
       </div>
     </nav>
-    <div class="row row-no-margin container-no-gutter">
-      <div id="buttonGutterLeft" class="col-2 d-grid gap-2 container-no-gutter">
-        <button id="cancelButton" class="btn btn-danger btn-fullheight">CANCEL</button>
+    <div class="row row-no-margin container-no-gutter h-100">
+      <div class="col-2 d-grid gap-2 h-100 container-no-gutter-left">
+        <button id="cancelBtn" class="btn btn-danger btn-fullheight btn-huge">CANCEL</button>
       </div>
-      <div class="col-8 pt-3">
-        <div class="row">
-          <div class="col-4 offset-4 d-grid gap-2 mb-3">
-            <button class="btn btn-primary" id="newSearch">🔎 New Search</button>
+      <div class="col-8 pt-3" id="centerField">
+        <div id="newSearchState" class="row d-none">
+          <form class="row g-3" id="newSearchForm">
+            <div class="col-md-9">
+              <label for="newSearchText" class="form-label">Legal Name or Scan Barcode</label>
+              <input class="form-control form-control-lg" id="newSearchText" type="text" />
+            </div>
+            <div class="col-md-3 d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" id="newSearchBtn">Search🔎</button>
+            </div>
+          </form>
+        </div>
+        <div id="loadingSearchResultState" class="row d-none">
+          <div class="col-md-8 offset-md-2"><h2>Searching for "<span id="loadingSearchText"></span>".</h2></div>
+          <div class="col-md-1">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </div>
-        <div id="searchResults" class="row">
-          <!-- Demonstration canvas, actual layout will be different. -->
-          <canvas id="canvas" width="589" height="193" style="background-color: white; width: 589px; height: 193px; padding: 0;"></canvas>
+        <div id="singleResultState" class="row d-none">
+          <div id="searchResults" class="row">
+            <!-- Demonstration canvas, actual layout will be different. -->
+            <canvas id="canvas" width="589" height="193" style="background-color: white; width: 589px; height: 193px; padding: 0;"></canvas>
+          </div>
         </div>
       </div>
-      <div id="buttonGutterRight" class="col-2 d-grid gap-2 container-no-gutter">
-        <button id="printButton" class="btn btn-success btn-fullheight">PRINT</button>
+      <div class="col-2 d-grid gap-2 h-100 container-no-gutter-right">
+        <button id="printBtn" class="btn btn-success btn-fullheight btn-huge">PRINT</button>
       </div>
     </div>
   </div>

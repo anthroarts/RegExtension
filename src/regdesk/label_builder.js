@@ -147,7 +147,7 @@ export class BadgeLabelBuilder {
    * Render this label's text onto a canvas, returning the ImageData.
    * @param {number} width - The width of the label.
    * @param {number} height - The height of the label.
-   * @param {CanvasRenderingContext2D} canvas - The optional canvas context to re-use.
+   * @param {HTMLCanvasElement} canvas - The optional canvas element to re-use.
    * If not supplied an OffscreenCanvas will be used instead.
    * @return {ImageData} - The ImageData of the canvas with the label's text rendered.
    */

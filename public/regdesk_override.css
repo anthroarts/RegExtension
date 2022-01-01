@@ -1,10 +1,33 @@
 
-.container-no-gutter {
+body {
+  height: 100vh;
+}
+
+.container-fullheight-with-navbar {
+  /* Height of bootstrap navbar is 56px */
+  height: calc(100% - 56px);
+}
+
+.container-no-gutter-left {
   padding-left: 0rem;
+}
+
+.container-no-gutter-right {
   padding-right: 0rem;
 }
 
 .row-no-margin {
   margin-left: 0rem;
   margin-right: 0rem;
+}
+
+.btn-huge {
+  font-size: 38pt;
+}
+
+.badge-canvas {
+  background-color: white;
+  width: 589px;
+  height: 193px;
+  padding: 0;
 }
