@@ -28,7 +28,7 @@ export class WorkflowButton {
    * Hide this button.
    * @return {WorkflowButton} - This button.
    */
-  hide() {
+  invisible() {
     this.#element.classList.remove('visible');
     this.#element.classList.add('invisible');
     return this;
@@ -38,7 +38,7 @@ export class WorkflowButton {
    * Show this button
    * @return {WorkflowButton} - This button.
    */
-  show() {
+  visible() {
     this.#element.classList.remove('invisible');
     this.#element.classList.add('visible');
     return this;

@@ -54,13 +54,38 @@
       </div>
     </nav>
     <div class="row row-no-margin container-no-gutter h-100">
-      <div id="buttonGutterLeft" class="col-2 d-grid gap-2 h-100 container-no-gutter-left">
-        <button id="leftButton" class="btn btn-danger btn-fullheight btn-huge">CANCEL</button>
+      <div class="col-2 d-grid gap-2 h-100 container-no-gutter-left">
+        <button id="cancelBtn" class="btn btn-danger btn-fullheight btn-huge">CANCEL</button>
       </div>
       <div class="col-8 pt-3" id="centerField">
+        <div id="newSearchState" class="row d-none">
+          <form class="row g-3" id="newSearchForm">
+            <div class="col-md-9">
+              <label for="newSearchText" class="form-label">Legal Name or Scan Barcode</label>
+              <input class="form-control form-control-lg" id="newSearchText" type="text" />
+            </div>
+            <div class="col-md-3 d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" id="newSearchBtn">Search🔎</button>
+            </div>
+          </form>
+        </div>
+        <div id="loadingSearchResultState" class="row d-none">
+          <div class="col-md-8 offset-md-2"><h2>Searching for "<span id="loadingSearchText"></span>".</h2></div>
+          <div class="col-md-1">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+        <div id="singleResultState" class="row d-none">
+          <div id="searchResults" class="row">
+            <!-- Demonstration canvas, actual layout will be different. -->
+            <canvas id="canvas" width="589" height="193" style="background-color: white; width: 589px; height: 193px; padding: 0;"></canvas>
+          </div>
+        </div>
       </div>
-      <div id="buttonGutterRight" class="col-2 d-grid gap-2 h-100 container-no-gutter-right">
-        <button id="rightButton" class="btn btn-success btn-fullheight btn-huge">PRINT</button>
+      <div class="col-2 d-grid gap-2 h-100 container-no-gutter-right">
+        <button id="printBtn" class="btn btn-success btn-fullheight btn-huge">PRINT</button>
       </div>
     </div>
   </div>

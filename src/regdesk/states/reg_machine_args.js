@@ -6,21 +6,21 @@ import { WorkflowButton } from '../workflow_button.js';
 export class RegMachineArgs {
   /**
    * Initializes a new instance of the RegMachineArgs class.
-   * @param {WorkflowButton} leftButton - The left side gutter button.
-   * @param {WorkflowButton} rightButton - The right side gutter button.
+   * @param {WorkflowButton} cancelBtn - The left side gutter button.
+   * @param {WorkflowButton} printBtn - The right side gutter button.
    * @param {Element} centerField - The center container for page content.
    * @param {PrinterManager} printerManager - The printer manager that manages printers.
    * @param {CommunicationManager} commManager - The communication manager for making API calls.
    */
   constructor(
-    leftButton,
-    rightButton,
+    cancelBtn,
+    printBtn,
     centerField,
     printerManager,
     commManager,
   ) {
-    this.leftButton = leftButton;
-    this.rightButton = rightButton;
+    this.cancelButton = cancelBtn;
+    this.printButton = printBtn;
     this.centerField = centerField;
     this.printerManager = printerManager;
     this.commManager = commManager;
@@ -39,8 +39,8 @@ export class RegMachineArgs {
    */
   static getFromDocument(document, printerManager, commManager) {
     return new RegMachineArgs(
-      new WorkflowButton(document.getElementById('leftButton')),
-      new WorkflowButton(document.getElementById('rightButton')),
+      new WorkflowButton(document.getElementById('cancelBtn')),
+      new WorkflowButton(document.getElementById('printBtn')),
       document.getElementById('centerField'),
       printerManager,
       commManager,
