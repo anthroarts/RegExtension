@@ -8,38 +8,39 @@ export class RegState extends EventTarget {
   #regMachineArgs;
 
   /**
-   * Get the left gutter button
+   * Get the cancel gutter button.
    */
-  get leftButton() {
-    return this.#regMachineArgs.leftButton;
+  get cancelButton() {
+    return this.#regMachineArgs.cancelButton;
   }
 
   /**
-   * Get the right gutter button.
+   * Get the print gutter button.
    */
-  get rightButton() {
-    return this.#regMachineArgs.rightButton;
+  get printButton() {
+    return this.#regMachineArgs.printButton;
   }
 
   /**
-   * Get the center field of the page display.
-   */
-  get centerField() {
-    return this.#regMachineArgs.centerField;
-  }
-
-  /**
-   * Get the PrinterManager
+   * Get the PrinterManager.
    */
   get printerManager() {
     return this.#regMachineArgs.printerManager;
   }
 
   /**
-   * Get the CommunicationManager
+   * Get the CommunicationManager.
    */
   get commManager() {
     return this.#regMachineArgs.commManager;
+  }
+
+  #screenRow
+  /**
+   * Get the HTML div this reg state manages.
+   */
+  get screenRow() {
+    return this.#screenRow;
   }
 
   #eventMap;
@@ -60,6 +61,12 @@ export class RegState extends EventTarget {
     // TODO: Make this a Map()?
     this.#eventMap = eventMap;
     this.#regMachineArgs = regMachineArgs;
+
+    // Assumed convention: The CSS ID of the HTML element under management is the
+    // class name, but with the first character lowercased
+    const className = this.constructor.name;
+    const cssId = "#" + className.charAt(0).toLowerCase() + className.slice(1);
+    this.#screenRow = regMachineArgs.centerField.querySelector(cssId);
   }
 
   /**
@@ -81,4 +88,24 @@ export class RegState extends EventTarget {
    * No-op when exiting the state.
    */
   exitState() {}
+
+  /**
+   * Show any elements hidden with hide.
+   * @param  {...Element} elements - The elements to show.
+   */
+  show(...elements) {
+    elements.forEach((e) => {
+      e.classList.remove('d-none');
+    });
+  }
+
+  /**
+   * Display-none elements.
+   * @param  {...Element} elements - The elements to hide.
+   */
+  hide(...elements) {
+    elements.forEach((e) => {
+      e.classList.add('d-none');
+    });
+  }
 }

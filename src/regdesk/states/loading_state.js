@@ -3,7 +3,7 @@ import { RegState } from './reg_state.js';
 /**
  * Loading state
  */
-export class LoadingState extends RegState {
+export class LoadingSearchResultState extends RegState {
   /**
    * Get the transition events this state can process.
    */
@@ -22,7 +22,9 @@ export class LoadingState extends RegState {
    * @param {*} eventMap - Mapping of this object's transition events to new states.
    */
   constructor(regMachineArgs, eventMap) {
-    super(regMachineArgs, eventMap);
+    super(regMachineArgs, eventMap, 'loadingSearchResultState');
+
+    this.searchValueSpan = this.screenRow.querySelector('#loadingSearchText');
   }
 
   /**
@@ -30,15 +32,16 @@ export class LoadingState extends RegState {
    * @param {CustomEvent} e - The event details object.
    */
   enterState(e) {
-    this.leftButton.show().setTransitionCallback(this, LoadingState.events.CANCEL);
-    this.rightButton.hide();
+    this.show(this.screenRow);
+    this.cancelButton.visible().setTransitionCallback(this, LoadingSearchResultState.events.CANCEL);
+    this.printButton.invisible();
+
+    this.searchValueSpan.innerText = e.detail.searchText;
 
     // Demo code!
-    this.centerField.innerText = `Searching for ${e.detail.searchText}`;
-
     // Actually wait for results from commMgr instead of this lol.
     setTimeout(() => {
-      this.dispatchTransition(LoadingState.events.SINGLE_RESULT_READY);
+      this.dispatchTransition(LoadingSearchResultState.events.SINGLE_RESULT_READY, { badgeLine1: e.detail.searchText });
     }, 1000);
   }
 
@@ -46,6 +49,9 @@ export class LoadingState extends RegState {
    * Exit this state.
    */
   exitState() {
-    this.leftButton.clearTransitionCallback();
+    this.hide(this.screenRow);
+    this.cancelButton.clearTransitionCallback();
+
+    // TODO: cancel any in-progress searches!
   }
 }

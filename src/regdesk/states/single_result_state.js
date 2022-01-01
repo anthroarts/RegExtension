@@ -22,44 +22,38 @@ export class SingleResultState extends RegState {
    */
   constructor(regMachineArgs, eventMap) {
     super(regMachineArgs, eventMap);
+
+    this.canvas = this.screenRow.querySelector('#canvas');
   }
 
   /**
    * Enter this state.
+   * @param {CustomEvent} e - The event details object.
    */
-  enterState() {
-    this.leftButton.show().setTransitionCallback(this, SingleResultState.events.CANCEL);
-    this.rightButton.show();
+  enterState(e) {
+    this.show(this.screenRow);
+    this.cancelButton.visible().setTransitionCallback(this, SingleResultState.events.CANCEL);
+    this.printButton.visible();
 
     // More demo code! This would be pulled from commMgr or the event details.
-    this.centerField.innerHTML = this.#getCenterTemplate();
-    const canvas = this.centerField.querySelector('canvas');
+    const ctx = this.canvas.getContext('2d');
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     const label = new BadgeLabelBuilder({
-      line1: 'EXAMPLE',
+      line1: e.detail.badgeLine1,
       line2: 'Just an example',
       badgeId: '12345678',
       level: 'Super Sponsor',
       isMinor: false,
     });
-    label.renderToImageData(canvas.width, canvas.height, canvas);
+    label.renderToImageData(this.canvas.width, this.canvas.height, this.canvas);
   }
 
   /**
    * Exit this state.
    */
   exitState() {
-    this.leftButton.clearTransitionCallback();
-  }
-
-  /**
-   * Get the center field template.
-   * @return {string} - innerHTML for the centerField.
-   */
-  #getCenterTemplate() {
-    return `
-<div id="searchResults" class="row">
-  <!-- Demonstration canvas, actual layout will be different. -->
-  <canvas id="canvas" width="589" height="193" style="background-color: white; width: 589px; height: 193px; padding: 0;"></canvas>
-</div>`;
+    this.hide(this.screenRow);
+    this.cancelButton.clearTransitionCallback();
   }
 }

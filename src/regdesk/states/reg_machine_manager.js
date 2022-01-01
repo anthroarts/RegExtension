@@ -1,4 +1,4 @@
-import { LoadingState } from './loading_state.js';
+import { LoadingSearchResultState } from './loading_state.js';
 import { NewSearchState } from './new_search_state.js';
 import { SingleResultState } from './single_result_state.js';
 
@@ -36,16 +36,16 @@ export class RegMachineManager {
     // TODO: Is there a better way to store this?
     const eventMap = [
       {
-        type: LoadingState,
+        type: LoadingSearchResultState,
         events: {
-          [LoadingState.events.CANCEL]: NewSearchState.name,
-          [LoadingState.events.SINGLE_RESULT_READY]: SingleResultState.name,
+          [LoadingSearchResultState.events.CANCEL]: NewSearchState.name,
+          [LoadingSearchResultState.events.SINGLE_RESULT_READY]: SingleResultState.name,
         },
       },
       {
         type: NewSearchState,
         events: {
-          [NewSearchState.events.START_SEARCH]: LoadingState.name,
+          [NewSearchState.events.START_SEARCH]: LoadingSearchResultState.name,
           [NewSearchState.events.RESET]: NewSearchState.name,
         },
       },
@@ -66,7 +66,7 @@ export class RegMachineManager {
 
       for (const [eventName] of Object.entries(state.events)) {
         machine.states[state.type.name]
-          .addEventListener(eventName, async (e) => await this.transition(e));
+          .addEventListener(eventName, (e) => this.transition(e));
       }
     });
 
@@ -79,7 +79,7 @@ export class RegMachineManager {
    * @param {CustomEvent} event - The event triggered on the current state.
    * @param {RegState} state - The current state.
    */
-  async transition(event, state = this.#currentState) {
+  transition(event, state = this.#currentState) {
     console.log('TRANSITION!', event);
     const nextStateName = this.#machine
       .states[state]

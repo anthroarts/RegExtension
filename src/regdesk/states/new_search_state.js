@@ -22,44 +22,36 @@ export class NewSearchState extends RegState {
    */
   constructor(regMachineArgs, eventMap) {
     super(regMachineArgs, eventMap);
+
+    this.searchForm = this.screenRow.querySelector('#newSearchForm');
+    this.searchInput = this.screenRow.querySelector('#newSearchText');
+
+    // TODO: Figure out how to auto-trigger a search when a barcode is scanned.
+
+    this.searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Just to demonstrate the setup, this would talk to the commMgr
+      // and actually run the search.
+      // TODO: Should the event objects be strongly typed? Correlated somehow?
+      const searchText = this.searchInput.value;
+      this.dispatchTransition(NewSearchState.events.START_SEARCH, { searchText: searchText });
+    });
   }
 
   /**
    * Enter this state.
    */
   enterState() {
-    this.leftButton.hide();
-    this.rightButton.hide();
-
-    this.centerField.innerHTML = this.#getCenterTemplate();
-    this.centerField.querySelector('#newSearchText').focus();
-
-    // Search isn't wired up right now so instead we'll just transition
-    // to the loading screen.
-    this.centerField.querySelector('#newSearchButton')
-      .addEventListener('click', (e) => {
-        // Just to demonstrate the setup, this would talk to the commMgr
-        // and actually run the search.
-        // TODO: Should the event objects be strongly typed? Correlated somehow?
-        const searchText = this.centerField.querySelector('#newSearchText').value;
-        this.dispatchTransition(NewSearchState.events.START_SEARCH, { searchText: searchText });
-      });
+    this.show(this.screenRow)
+    this.cancelButton.invisible();
+    this.printButton.invisible();
+    this.searchInput.focus();
   }
 
   /**
-   *
-   * @return {string} - The center html elements.
+   * Exit this state
    */
-  #getCenterTemplate() {
-    return `
-<form class="row g-3" id="newSearchForm">
-  <div class="col-md-9">
-    <label for="newSearchText" class="form-label">Legal Name or Scan Barcode</label>
-    <input class="form-control form-control-lg" id="newSearchText" type="text" />
-  </div>
-  <div class="col-md-3 d-grid">
-    <button type="button" class="btn btn-primary btn-lg" id="newSearchButton">Search🔎</button>
-  </div>
-</form>`;
+  exitState() {
+    this.hide(this.screenRow);
   }
 }
