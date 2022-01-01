@@ -12,6 +12,7 @@ export class SingleResultState extends RegState {
   static get events() {
     return {
       CANCEL: 'CANCEL',
+      CANCEL_FROM_MULTIPLE: 'CANCEL_FROM_MULTIPLE',
     };
   }
 
@@ -32,8 +33,15 @@ export class SingleResultState extends RegState {
    */
   enterState(e) {
     this.show(this.screenRow);
-    this.cancelButton.visible().setTransitionCallback(this, SingleResultState.events.CANCEL);
     this.printButton.visible();
+
+    if (e.detail?.fromMultiple) {
+      this.cancelButton.visible()
+        .setTransitionCallback(this, SingleResultState.events.CANCEL_FROM_MULTIPLE);
+    } else {
+      this.cancelButton.visible()
+        .setTransitionCallback(this, SingleResultState.events.CANCEL);
+    }
 
     // More demo code! This would be pulled from commMgr or the event details.
     const ctx = this.canvas.getContext('2d');

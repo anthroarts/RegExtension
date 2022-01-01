@@ -41,7 +41,7 @@ export class LoadingSearchResultState extends RegState {
     // Demo code!
     // Actually wait for results from commMgr instead of this lol.
     setTimeout(() => {
-      this.dispatchTransition(LoadingSearchResultState.events.SINGLE_RESULT_READY, { badgeLine1: e.detail.searchText });
+      this.dispatchTransition(LoadingSearchResultState.events.MULTIPLE_RESULTS_READY, { badgeLine1: e.detail.searchText });
     }, 1000);
   }
 
