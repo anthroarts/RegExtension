@@ -56,6 +56,8 @@ export class RegMachineManager {
         events: {
           [SingleResultState.events.CANCEL]: NewSearchState.name,
           [SingleResultState.events.CANCEL_FROM_MULTIPLE]: MultipleResultState.name,
+          [SingleResultState.events.STATE_REFRESHED]: SingleResultState.name,
+          [SingleResultState.events.BADGE_PRINTED]: NewSearchState.name,
         },
       },
       {

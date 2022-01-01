@@ -13,6 +13,8 @@ export class SingleResultState extends RegState {
     return {
       CANCEL: 'CANCEL',
       CANCEL_FROM_MULTIPLE: 'CANCEL_FROM_MULTIPLE',
+      STATE_REFRESHED: 'STATE_REFRESHED',
+      BADGE_PRINTED: 'BADGE_PRINTED',
     };
   }
 

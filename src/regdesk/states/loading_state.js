@@ -12,7 +12,6 @@ export class LoadingSearchResultState extends RegState {
       CANCEL: 'CANCEL',
       SINGLE_RESULT_READY: 'SINGLE_RESULT_READY',
       MULTIPLE_RESULTS_READY: 'MULTIPLE_RESULTS_READY',
-      NO_RESULT_READY: 'NO_RESULT_READY',
     };
   }
 
@@ -40,6 +39,7 @@ export class LoadingSearchResultState extends RegState {
 
     // Demo code!
     // Actually wait for results from commMgr instead of this lol.
+    // And if there aren't any results, display an error about it.
     setTimeout(() => {
       this.dispatchTransition(LoadingSearchResultState.events.MULTIPLE_RESULTS_READY, { badgeLine1: e.detail.searchText });
     }, 1000);
