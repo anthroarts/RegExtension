@@ -42,7 +42,7 @@ export class MultipleResultState extends RegState {
   enterState() {
     this.show(this.screenRow);
     this.cancelButton.visible().setTransitionCallback(this, MultipleResultState.events.CANCEL);
-    this.printButton.visible();
+    this.printButton.invisible();
   }
 
   /**
