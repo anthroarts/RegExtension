@@ -84,13 +84,14 @@ export class CommunicationManager {
 
     // In the meantime, mock it out
     const arr = [];
-    const len = Math.floor(Math.random() * (4) + 1);
+    const len = Math.floor(Math.random() * (4));
     for (let i = 0; i < len; i++) {
       arr.push(this.#tempGetRandomReg());
     }
 
-    this.handleSearchResults(arr);
-    this.#searchPromise = new Promise((resolve) => setTimeout(resolve, 500)).then(() => this.#regResults);
+    this.#searchPromise = new Promise((resolve) => setTimeout(resolve, 500))
+      .then(() => arr) // The mock one!
+      .then(this.handleSearchResults.bind(this)); // The real one!
   }
 
   /**
@@ -110,16 +111,12 @@ export class CommunicationManager {
   handleSearchResults(results) {
     // TODO: Assumes an array, who knows what we get back from the API though.
     // TODO: Whatever massaging necessary from the real API.
-    const len = results.length;
-    if (len === 0) {
-      // No results is a valid result, return an empty array.
-      return [];
-    }
-
     this.#regResults = results;
 
-    if (len === 1) {
+    if (results.length === 1) {
       this.setSelectedSearchResult(0);
+    } else {
+      this.#selectedReg = undefined;
     }
 
     return this.#regResults;
