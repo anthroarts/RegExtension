@@ -17,16 +17,26 @@ const loginForTest = async () => {
   return login(email, password);
 };
 
-// https://github.com/mochajs/mocha/issues/1480
 /* eslint-disable no-invalid-this */
-it.allowFail = (title, callback) => {
-  it(title, function () {
+// eslint-disable-next-line valid-jsdoc
+// https://github.com/mochajs/mocha/issues/1480
+const skippableFailure = (callback) => {
+  return function () {
     return Promise.resolve().then((...args) => {
       return callback.apply(this, args);
-    }).catch(() => {
+    }).catch((error) => {
+      console.error(error);
       this.skip();
     });
-  });
+  };
+};
+
+it.allowFail = (title, callback) => {
+  it(title, skippableFailure(callback));
+};
+
+before.allowFail = (callback) => {
+  before(skippableFailure(callback));
 };
 /* eslint-enable no-invalid-this */
 
@@ -39,7 +49,7 @@ describe('regfox_api (integration testing)', () => {
 
   describe('workflows', () => {
     let bearerToken = undefined;
-    before(async () => {
+    before.allowFail(async () => {
       bearerToken = (await loginForTest()).token.token;
     });
 
