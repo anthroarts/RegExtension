@@ -1,4 +1,4 @@
-import { LoadingSearchResultState } from './loading_state.js';
+import { LoadingSearchResultState } from './loading_search_result_state.js';
 import { MultipleResultState } from './multiple_result_state.js';
 import { NewSearchState } from './new_search_state.js';
 import { SingleResultState } from './single_result_state.js';
