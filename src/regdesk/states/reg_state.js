@@ -72,10 +72,9 @@ export class RegState extends EventTarget {
   /**
    * Dispatch a transition event off of this state.
    * @param {string} eventName - The transition event being dispatched
-   * @param {*} details - The details object to attach to the event
    */
-  dispatchTransition(eventName, details) {
-    const event = new CustomEvent(eventName, { detail: details });
+  dispatchTransition(eventName) {
+    const event = new CustomEvent(eventName);
     this.dispatchEvent(event);
   }
 

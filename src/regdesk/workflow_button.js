@@ -12,7 +12,6 @@ export class WorkflowButton {
    */
   #transitionEventTarget;
   #transitionEvent;
-  #transitionEventDetails;
 
   #buttonClickEvent = 'click';
 
@@ -52,7 +51,6 @@ export class WorkflowButton {
   clearTransitionCallback() {
     this.#transitionEventTarget = undefined;
     this.#transitionEvent = undefined;
-    this.#transitionEventDetails = undefined;
     return this;
   }
 
@@ -61,13 +59,11 @@ export class WorkflowButton {
    * Overwrites any existing transitions.
    * @param {RegState} transitionEventSender - The object to send the event through
    * @param {string} event - The event name to send
-   * @param {*} details - Optional details object to add to the event.
    * @return {WorkflowButton} - This button.
    */
-  setTransitionCallback(transitionEventSender, event, details) {
+  setTransitionCallback(transitionEventSender, event) {
     this.#transitionEventTarget = transitionEventSender;
     this.#transitionEvent = event;
-    this.#transitionEventDetails = details;
     return this;
   }
 
@@ -79,7 +75,6 @@ export class WorkflowButton {
       // Only should be attempted if we acutally have a target.
       this.#transitionEventTarget.dispatchTransition(
         this.#transitionEvent,
-        this.#transitionEventDetails,
       );
     }
   }
