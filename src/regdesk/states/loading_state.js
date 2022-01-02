@@ -95,7 +95,9 @@ export class LoadingSearchResultState extends RegState {
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
+      '"': '&quot;',
+      '\'': '&#x27;',
     };
-    return str.replace(/[&<>]/g, (c) => escMap[c]);
+    return str.replace(/[&<>"'/]/ig, (c) => escMap[c]);
   }
 }
