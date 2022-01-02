@@ -81,6 +81,8 @@ describe('regfox_api (integration testing)', () => {
       const registrantInfo = await getRegistrationInfo(registrant.id, bearerToken);
       expect(registrantInfo.notes).to.not.be.empty;
       expect(registrantInfo.outstandingAmountString).to.be.equal('0');
+      expect(registrantInfo.name).to.be.equal(TEST_NAME);
+      expect(`${registrantInfo.customerId}`).to.be.equal(TEST_CUSTOMER_ID);
     });
   });
 });
