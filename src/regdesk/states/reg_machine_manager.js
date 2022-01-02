@@ -2,6 +2,9 @@ import { LoadingSearchResultState } from './loading_state.js';
 import { MultipleResultState } from './multiple_result_state.js';
 import { NewSearchState } from './new_search_state.js';
 import { SingleResultState } from './single_result_state.js';
+import { UnpaidResultState } from './unpaid_result_state.js';
+// eslint-disable-next-line no-unused-vars
+import { RegMachineArgs } from './reg_machine_args.js';
 
 /**
  * State mchine manager for the reg lookup interface.
@@ -24,11 +27,15 @@ export class RegMachineManager {
    */
   #currentState;
 
+  #regMachineArgs;
+
   /**
    * Initializes a new instance of the RegMachineManager class.
    * @param {RegMachineArgs} regMachineArgs - The standard record for each state class.
    */
   constructor(regMachineArgs) {
+    this.#regMachineArgs = regMachineArgs;
+
     const machine = {
       initial: NewSearchState.name,
       states: {},
@@ -39,32 +46,37 @@ export class RegMachineManager {
       {
         type: LoadingSearchResultState,
         events: {
-          [LoadingSearchResultState.events.CANCEL]: NewSearchState.name,
-          [LoadingSearchResultState.events.SINGLE_RESULT_READY]: SingleResultState.name,
-          [LoadingSearchResultState.events.MULTIPLE_RESULTS_READY]: MultipleResultState.name,
+          [LoadingSearchResultState.events.CANCEL]: () => NewSearchState.name,
+          [LoadingSearchResultState.events.SINGLE_RESULT_READY]: this.#maybeSingleResultToUnpaid.bind(this),
+          [LoadingSearchResultState.events.MULTIPLE_RESULTS_READY]: () => MultipleResultState.name,
         },
       },
       {
         type: NewSearchState,
         events: {
-          [NewSearchState.events.START_SEARCH]: LoadingSearchResultState.name,
-          [NewSearchState.events.RESET]: NewSearchState.name,
+          [NewSearchState.events.START_SEARCH]: () => LoadingSearchResultState.name,
+          [NewSearchState.events.RESET]: () => NewSearchState.name,
         },
       },
       {
         type: SingleResultState,
         events: {
-          [SingleResultState.events.CANCEL]: NewSearchState.name,
-          [SingleResultState.events.CANCEL_FROM_MULTIPLE]: MultipleResultState.name,
-          [SingleResultState.events.STATE_REFRESHED]: SingleResultState.name,
-          [SingleResultState.events.BADGE_PRINTED]: NewSearchState.name,
+          [SingleResultState.events.BADGE_PRINTED]: () => NewSearchState.name,
+          [SingleResultState.events.CANCEL]: this.#maybeCancelSingleResultToMultipleResult.bind(this),
+        },
+      },
+      {
+        type: UnpaidResultState,
+        events: {
+          [UnpaidResultState.events.CANCEL]: this.#maybeCancelSingleResultToMultipleResult.bind(this),
+          [UnpaidResultState.events.PAID]: () => SingleResultState.name,
         },
       },
       {
         type: MultipleResultState,
         events: {
-          [MultipleResultState.events.CANCEL]: NewSearchState.name,
-          [MultipleResultState.events.SELECTED_SINGLE_RESULT]: SingleResultState.name,
+          [MultipleResultState.events.CANCEL]: () => NewSearchState.name,
+          [MultipleResultState.events.SELECTED_SINGLE_RESULT]: this.#maybeSingleResultToUnpaid.bind(this),
         },
       },
     ];
@@ -93,10 +105,11 @@ export class RegMachineManager {
    * @return {string} - The resulting state.
    */
   transition(event, state = this.#currentState) {
-    console.log('TRANSITION!', event);
+    // TODO: If an invalid event is fired this is currently throwing an error.
+    // Investigate why it isn't properly coalescing.
     const nextStateName = this.#machine
       .states[state]
-      .eventMap?.[event.type] ??
+      .eventMap?.[event.type]?.() ??
       state;
 
     try {
@@ -115,5 +128,29 @@ export class RegMachineManager {
 
     this.#currentState = nextStateName;
     return this.#currentState;
+  }
+
+  /**
+   * Determine if a cancel should go back to a multiple result page or the new search page.
+   * @return {string} - The next state to switch to.
+   */
+  #maybeCancelSingleResultToMultipleResult() {
+    if (this.#regMachineArgs.commManager.hasMultipleResults) {
+      return MultipleResultState.name;
+    } else {
+      return NewSearchState.name;
+    }
+  }
+
+  /**
+   * Determine if a single result is unpaid and should get an unpaid screen.
+   * @return {string} - The next state to switch to.
+   */
+  #maybeSingleResultToUnpaid() {
+    if (this.#regMachineArgs.commManager.selectedSearchResult?.amountDue === 0) {
+      return SingleResultState.name;
+    } else {
+      return UnpaidResultState.name;
+    }
   }
 }
