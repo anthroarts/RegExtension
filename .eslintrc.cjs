@@ -21,5 +21,10 @@ module.exports = {
         'body': 1,
       },
     }],
+    'space-before-function-paren': ['error', {
+      'anonymous': 'always',
+      'named': 'never',
+      'asyncArrow': 'always',
+    }],
   },
 };
