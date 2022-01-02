@@ -13,7 +13,7 @@
 </head>
 
 <body>
-  <div class="container-fluid container-no-gutter container-fullheight-with-navbar">
+  <div class="container-fluid container-no-gutter-left container-no-gutter-right container-fullheight-with-navbar">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid container-no-gutter d-flex">
         <span class="navbar-brand me-auto" href="#">
@@ -55,9 +55,15 @@
     </nav>
     <div class="row row-no-margin container-no-gutter h-100">
       <div class="col-2 d-grid gap-2 h-100 container-no-gutter-left">
-        <button id="cancelBtn" class="btn btn-danger btn-fullheight btn-huge">CANCEL</button>
+        <button id="cancelBtn" class="btn btn-danger btn-fullheight btn-huge invisible">CANCEL</button>
       </div>
-      <div class="col-8 pt-3" id="centerField">
+      <div class="col-8 pt-3 h-100 overflow-auto" id="centerField">
+        <div id="hideAfterPageLoad" class="row">
+          <div class="alert alert-warning" role="alert">
+            <h2>Search bar not loading? Try refreshing the page.</h2>
+            <h4>If that doesn't help turn the printers off and back on, then refresh the page.</h4>
+          </div>
+        </div>
         <div id="newSearchState" class="row d-none">
           <form class="row g-3" id="newSearchForm">
             <div class="col-md-9">
@@ -70,30 +76,122 @@
           </form>
         </div>
         <div id="loadingSearchResultState" class="row d-none">
-          <div class="col-md-8 offset-md-2"><h2>Searching for "<span id="loadingSearchText"></span>".</h2></div>
-          <div class="col-md-1">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
+          <div id="loadingSearchResultSpinners">
+            <div class="col-1 offset-1">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <div class="col-10">
+              <h3>Searching for "<span id="loadingSearchText"></span>"</h3>
+            </div>
+          </div>
+          <div id="loadingSearchResultEmpty">
+            <div class="alert alert-warning" role="alert">
+              No results found for "<span id="loadingSearchTextEmpty"></span>". Try searching again for their legal name, or direct attendee to the help line.
             </div>
           </div>
         </div>
         <div id="singleResultState" class="row d-none">
           <div id="searchResults" class="row">
-            <!-- Demonstration canvas, actual layout will be different. -->
-            <canvas id="canvas" width="589" height="193" style="background-color: white; width: 589px; height: 193px; padding: 0;"></canvas>
+            <form class="row">
+              <div class="col-md-4">
+                <label for="regPreferredName" class="form-label">Preferred Name</label>
+                <input id="regPreferredName" type="text" class="form-control form-control-lg" disabled />
+              </div>
+              <div class="col-md-8">
+                <label for="regLegalName" class="form-label">Legal Name</label>
+                <input id="regLegalName" type="text" class="form-control form-control-lg" disabled />
+              </div>
+              <div class="col-md-4">
+                <label for="regBirthdate" class="form-label">Date of Birth</label>
+                <div class="input-group">
+                  <input id="regBirthdate" type="text" class="form-control form-control-lg" disabled />
+                  <span class="input-group-text">Age-<span id="regAge"></span></span>
+                </div>
+              </div>
+              <div class="col-md-9 offset-md-2">
+                <label class="form-label">Badge Preview</label>
+                <canvas id="regBadgePreview" class="form-control badge-canvas" id="canvas" width="589" height="193"></canvas>
+              </div>
+            </form>
           </div>
         </div>
+        <div id="unpaidResultState" class="row d-none">
+          <form class="row">
+            <div class="col-md-12 alert alert-warning">
+              <h4>Payment required</h4>
+              <p id="regUnpaidNotAccepting" class="d-none">This register is not accepting payments. Direct the attendee to one of the payment lines or the help line.</p>
+            </div>
+            <div class="col-md-4">
+              <label for="regPreferredNameUnpaid" class="form-label">Preferred Name</label>
+              <input id="regPreferredNameUnpaid" type="text" class="form-control form-control-lg" disabled />
+            </div>
+            <div class="col-md-8">
+              <label for="regLegalNameUnpaid" class="form-label">Legal Name</label>
+              <input id="regLegalNameUnpaid" type="text" class="form-control form-control-lg" disabled />
+            </div>
+            <div class="col-md-4">
+              <label for="regBirthdateUnpaid" class="form-label">Date of Birth</label>
+              <div class="input-group">
+                <input id="regBirthdateUnpaid" type="text" class="form-control form-control-lg" disabled />
+                <span class="input-group-text">Age-<span id="regAgeUnpaid"></span></span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="regPaymentUnpaid" class="form-label">Payment Due</label>
+              <input id="regPaymentUnpaid" type="text" class="form-control form-control-lg" disabled />
+            </div>
+            <div class="col-md-4 d-grid">
+              <label for="regMarkPaidBtn" class="form-label">Must pay before printing</label>
+              <button id="regMarkPaidBtn" type="button" class="btn btn-lg btn-success">
+                <span id="regMarkPaidBtnSpinner" class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span id="regMarkPaidBtnTextSpinner" class="d-none">Marking paid...</span>
+                <span id="regMarkPaidBtnText">Mark as paid</span>
+              </button>
+            </div>
+            <div class="col-md-9 offset-md-2">
+              <label class="form-label">Badge Preview</label>
+              <canvas id="regBadgePreviewUnpaid" class="form-control badge-canvas" id="canvas" width="589" height="193"></canvas>
+            </div>
+          </form>
+        </div>
         <div id="multipleResultState" class="row d-none">
-          <div class="col-md-4">
-            Click for ASDF: <button id="multipleResultExampleOne">ASDF</button>
+          <div class="alert alert-success">
+            Select the correct registration
           </div>
-          <div class="col-md-4">
-            Click for FDSA: <button id="multipleResultExampleTwo">FDSA</button>
-          </div>
+          <ol class="list-group list-group-numbered">
+          </ol>
+          <template id="multipleResultTemplate">
+            <li class="list-group-item">
+              <form class="row">
+                <div class="col-md-4">
+                  <label class="form-label">Preferred Name</label>
+                  <input type="text" name="preferredName" class="form-control form-control-lg" disabled />
+                </div>
+                <div class="col-md-8">
+                  <label for="regLegalNameUnpaid" class="form-label">Legal Name</label>
+                  <input type="text" name="legalName" class="form-control form-control-lg" disabled />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Date of Birth</label>
+                  <div class="input-group">
+                    <input type="text" name="dob" class="form-control form-control-lg" disabled />
+                    <span class="input-group-text">Age-<span name="age"></span></span>
+                  </div>
+                </div>
+                <div class="col-md-4 offset-md-4 d-grid">
+                  <label class="form-label"></label>
+                  <button type="submit" class="btn btn-lg btn-success">Select this registration</button>
+                </div>
+                <input type="text" class="d-none" name="resultId" disabled />
+              </form>
+            </li>
+          </template>
         </div>
       </div>
       <div class="col-2 d-grid gap-2 h-100 container-no-gutter-right">
-        <button id="printBtn" class="btn btn-success btn-fullheight btn-huge">PRINT</button>
+        <button id="printBtn" class="btn btn-success btn-fullheight btn-huge invisible">PRINT</button>
       </div>
     </div>
   </div>

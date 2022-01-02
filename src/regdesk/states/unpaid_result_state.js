@@ -1,18 +1,17 @@
-import { RegState } from './reg_state.js';
-
 import { BadgeLabelBuilder } from '../label_builder.js';
+import { RegState } from './reg_state.js';
 
 /**
  * Loading state
  */
-export class SingleResultState extends RegState {
+export class UnpaidResultState extends RegState {
   /**
    * Get the transition events this state can process.
    */
   static get events() {
     return {
       CANCEL: 'CANCEL',
-      BADGE_PRINTED: 'BADGE_PRINTED',
+      PAID: 'PAID',
     };
   }
 
@@ -27,11 +26,22 @@ export class SingleResultState extends RegState {
   constructor(regMachineArgs, eventMap) {
     super(regMachineArgs, eventMap);
 
-    this.regPreferredName = this.screenRow.querySelector('#regPreferredName');
-    this.regLegalName = this.screenRow.querySelector('#regLegalName');
-    this.regBirthdate = this.screenRow.querySelector('#regBirthdate');
-    this.regAge = this.screenRow.querySelector('#regAge');
-    this.badgeCanvas = this.screenRow.querySelector('#regBadgePreview');
+    this.regUnpaidNotAccepting = this.screenRow.querySelector('#regUnpaidNotAccepting');
+
+    this.regPreferredName = this.screenRow.querySelector('#regPreferredNameUnpaid');
+    this.regLegalName = this.screenRow.querySelector('#regLegalNameUnpaid');
+    this.regBirthdate = this.screenRow.querySelector('#regBirthdateUnpaid');
+    this.regAge = this.screenRow.querySelector('#regAgeUnpaid');
+    this.regPayment = this.screenRow.querySelector('#regPaymentUnpaid');
+
+    this.badgeCanvas = this.screenRow.querySelector('#regBadgePreviewUnpaid');
+
+    this.regPaidBtn = this.screenRow.querySelector('#regMarkPaidBtn');
+    this.regPaidBtn.addEventListener('click', this.markRegistrantAsPaid.bind(this));
+
+    this.regPaidBtnText = this.regPaidBtn.querySelector('#regMarkPaidBtnText');
+    this.regPaidBtnSpinner = this.regPaidBtn.querySelector('#regMarkPaidBtnSpinner');
+    this.regPaidBtnTextSpinner = this.regPaidBtn.querySelector('#regMarkPaidBtnTextSpinner');
   }
 
   /**
@@ -39,10 +49,11 @@ export class SingleResultState extends RegState {
    */
   enterState() {
     this.show(this.screenRow);
-    this.printButton.visible();
+    this.printButton.invisible();
     this.cancelButton.visible()
-      .setTransitionCallback(this, SingleResultState.events.CANCEL);
+      .setTransitionCallback(this, this.constructor.events.CANCEL);
 
+    const acceptingPayments = this.commManager.acceptingPayments;
     const reg = this.commManager.selectedSearchResult;
 
     this.regPreferredName.value = reg.preferredName;
@@ -50,7 +61,9 @@ export class SingleResultState extends RegState {
     this.regBirthdate.value = reg.birthdate;
     const age = this.#getAge(reg.birthdate);
     this.regAge.textContent = age;
+    this.regPayment.value = reg.amountDue;
 
+    // TODO: Move this to some Registrant class?
     this.#labelBuilder = new BadgeLabelBuilder({
       line1: reg.badgeLine1,
       line2: reg.badgeLine2,
@@ -59,6 +72,17 @@ export class SingleResultState extends RegState {
       isMinor: (age < 18),
     });
     this.#labelBuilder.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
+
+    this.show(this.regPaidBtnText);
+    this.hide(this.regPaidBtnSpinner, this.regPaidBtnTextSpinner);
+
+    if (acceptingPayments) {
+      this.regPaidBtn.disabled = false;
+      this.hide(this.regUnpaidNotAccepting);
+    } else {
+      this.regPaidBtn.disabled = true;
+      this.show(this.regUnpaidNotAccepting);
+    }
   }
 
   /**
@@ -69,6 +93,18 @@ export class SingleResultState extends RegState {
     this.cancelButton.clearTransitionCallback();
     const ctx = this.badgeCanvas.getContext('2d');
     ctx.clearRect(0, 0, this.badgeCanvas.width, this.badgeCanvas.height);
+  }
+
+  /**
+   * Mark a registrant as paid.
+   */
+  async markRegistrantAsPaid() {
+    this.regPaidBtn.disabled = true;
+    this.hide(this.regPaidBtnText);
+    this.show(this.regPaidBtnSpinner, this.regPaidBtnTextSpinner);
+    await this.commManager.markRegistrantAsPaid(this.commManager.selectedSearchResult);
+
+    this.dispatchTransition(this.constructor.events.PAID);
   }
 
   /**

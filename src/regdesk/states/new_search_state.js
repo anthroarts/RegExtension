@@ -30,11 +30,10 @@ export class NewSearchState extends RegState {
 
     this.searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      // Just to demonstrate the setup, this would talk to the commMgr
-      // and actually run the search.
-      // TODO: Should the event objects be strongly typed? Correlated somehow?
-      const searchText = this.searchInput.value;
-      this.dispatchTransition(NewSearchState.events.START_SEARCH, { searchText: searchText });
+
+      // Only start the search process, the loading screen waits for it.
+      this.commManager.startSearchForRegByName(this.searchInput.value);
+      this.dispatchTransition(NewSearchState.events.START_SEARCH);
     });
   }
 

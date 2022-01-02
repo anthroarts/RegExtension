@@ -15,6 +15,8 @@ export class LoadingSearchResultState extends RegState {
     };
   }
 
+  #acceptResults = false;
+
   /**
    * Initializes a new instance of the LoadingState class.
    * @param {RegMachineArgs} regMachineArgs - Standard argument set for states.
@@ -23,26 +25,30 @@ export class LoadingSearchResultState extends RegState {
   constructor(regMachineArgs, eventMap) {
     super(regMachineArgs, eventMap, 'loadingSearchResultState');
 
+    this.loadingSpinners = this.screenRow.querySelector('#loadingSearchResultSpinners');
     this.searchValueSpan = this.screenRow.querySelector('#loadingSearchText');
+
+    this.searchEmptyAlert = this.screenRow.querySelector('#loadingSearchResultEmpty');
+    this.searchEmptyAlertText = this.searchEmptyAlert.querySelector('#loadingSearchTextEmpty');
   }
 
   /**
    * Actions to perform when entering the state.
-   * @param {CustomEvent} e - The event details object.
    */
-  enterState(e) {
+  enterState() {
     this.show(this.screenRow);
     this.cancelButton.visible().setTransitionCallback(this, LoadingSearchResultState.events.CANCEL);
     this.printButton.invisible();
 
-    this.searchValueSpan.innerText = e.detail.searchText;
+    this.hide(this.searchEmptyAlert);
+    this.show(this.loadingSpinners);
 
-    // Demo code!
-    // Actually wait for results from commMgr instead of this lol.
-    // And if there aren't any results, display an error about it.
-    setTimeout(() => {
-      this.dispatchTransition(LoadingSearchResultState.events.MULTIPLE_RESULTS_READY, { badgeLine1: e.detail.searchText });
-    }, 1000);
+    const search = this.#santizeStringForHtml(this.commManager.searchString ?? '');
+    this.searchValueSpan.textContent = search;
+    this.searchEmptyAlertText.textContent = search;
+
+    this.#acceptResults = true;
+    this.commManager.searchPromise.then(this.handleResultsReady.bind(this));
   }
 
   /**
@@ -52,6 +58,44 @@ export class LoadingSearchResultState extends RegState {
     this.hide(this.screenRow);
     this.cancelButton.clearTransitionCallback();
 
-    // TODO: cancel any in-progress searches!
+    // No way to cancel a promise, so let it proceed in the background and just
+    // ignore it.
+    this.#acceptResults = false;
+  }
+
+  /**
+   * Handle the search results once they're available.
+   * @param {*} results - The results of the search.
+   */
+  handleResultsReady(results) {
+    if (!this.#acceptResults) {
+      return;
+    }
+
+    if (results?.length <= 0) {
+      this.hide(this.loadingSpinners);
+      this.show(this.searchEmptyAlert);
+      return;
+    }
+
+    const event = results?.length > 1 ?
+      LoadingSearchResultState.events.MULTIPLE_RESULTS_READY :
+      LoadingSearchResultState.events.SINGLE_RESULT_READY;
+
+    this.dispatchTransition(event);
+  }
+
+  /**
+   * Sanitize a string for HTML display, such as inside a <span>.
+   * @param {string} str - The string to sanitize
+   * @return {string} The sanitized string
+   */
+  #santizeStringForHtml(str) {
+    const escMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+    };
+    return str.replace(/[&<>]/g, (c) => escMap[c]);
   }
 }

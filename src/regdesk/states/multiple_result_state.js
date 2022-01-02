@@ -22,18 +22,8 @@ export class MultipleResultState extends RegState {
   constructor(regMachineArgs, eventMap) {
     super(regMachineArgs, eventMap);
 
-    this.button1 = this.screenRow.querySelector('#multipleResultExampleOne');
-    this.button1.addEventListener('click', () => {
-      this.dispatchTransition(
-        MultipleResultState.events.SELECTED_SINGLE_RESULT,
-        { badgeLine1: 'ASDF', fromMultiple: true });
-    });
-    this.button2 = this.screenRow.querySelector('#multipleResultExampleTwo');
-    this.button2.addEventListener('click', () => {
-      this.dispatchTransition(
-        MultipleResultState.events.SELECTED_SINGLE_RESULT,
-        { badgeLine1: 'FDSA', fromMultiple: true });
-    });
+    this.template = this.screenRow.querySelector('#multipleResultTemplate');
+    this.listContainer = this.screenRow.querySelector('ol');
   }
 
   /**
@@ -43,6 +33,22 @@ export class MultipleResultState extends RegState {
     this.show(this.screenRow);
     this.cancelButton.visible().setTransitionCallback(this, MultipleResultState.events.CANCEL);
     this.printButton.invisible();
+
+    this.listContainer.innerHTML = '';
+
+    this.commManager.regSearchResults.forEach((reg, index) => {
+      const clone = this.template.content.firstElementChild.cloneNode(true);
+      clone.querySelector('input[name=preferredName]').value = reg.preferredName;
+      clone.querySelector('input[name=legalName]').value = reg.legalName;
+      clone.querySelector('input[name=dob]').value = reg.birthdate;
+      const age = this.#getAge(reg.birthdate);
+      clone.querySelector('span[name=age]').textContent = age;
+      clone.querySelector('input[name=resultId]').value = index;
+      clone.querySelector('form')
+        .addEventListener('submit', this.handleRegSelection.bind(this));
+
+      this.listContainer.appendChild(clone);
+    });
   }
 
   /**
@@ -51,5 +57,30 @@ export class MultipleResultState extends RegState {
   exitState() {
     this.hide(this.screenRow);
     this.cancelButton.clearTransitionCallback();
+  }
+
+  /**
+   * Handle the registration selection
+   * @param {Event} e - The submit event object
+   */
+  handleRegSelection(e) {
+    e.preventDefault();
+
+    const regId = e.target.querySelector('input[name=resultId').value;
+    this.commManager.setSelectedSearchResult(regId);
+
+    this.dispatchTransition(MultipleResultState.events.SELECTED_SINGLE_RESULT);
+  }
+
+  /**
+   * Get an age in years between the birthdate and today.
+   * @param {string} birthdate - The raw birthdate string, in YYYY-mm-dd format.
+   * @param {Date} today - The 'today' value to use. Defaults to new Date().
+   * @return {number} - Age in years between the birthdate and today.
+   */
+  #getAge(birthdate, today = new Date()) {
+    // TODO: This method should move to a dedicated Registrant class.
+    const yearInMs = 3.15576e+10;
+    return Math.floor((today - new Date(birthdate).getTime()) / yearInMs);
   }
 }
