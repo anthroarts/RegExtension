@@ -43,6 +43,7 @@ before.allowFail = (callback) => {
 describe('regfox_api (integration testing)', () => {
   it.allowFail('logs in', async () => {
     const result = await loginForTest();
+
     expect(result).to.include.keys('token');
     expect(result.token.token).to.not.be.undefined;
   });
@@ -60,6 +61,7 @@ describe('regfox_api (integration testing)', () => {
       assert.exists(bearerToken);
 
       const results = await searchRegistrations('GUARANTEED_TO_BE_UNIQUE_UNLESS_SOMEONE_HAS_A_REALLY_WEIRD_NAME', bearerToken);
+
       expect(results.registrants).to.be.empty;
     });
 
@@ -67,8 +69,8 @@ describe('regfox_api (integration testing)', () => {
       assert.exists(bearerToken);
 
       const results = await searchRegistrations(TEST_NAME, bearerToken);
-      expect(results.registrants).to.have.lengthOf.at.least(1);
       const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
+
       expect(registrant).to.exist;
       expect(registrant.id).to.be.equal('26564608');
     });
@@ -79,6 +81,7 @@ describe('regfox_api (integration testing)', () => {
       const results = await searchRegistrations(TEST_NAME, bearerToken);
       const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
       const registrantInfo = await getRegistrationInfo(registrant.id, bearerToken);
+
       expect(registrantInfo.notes).to.not.be.empty;
       expect(registrantInfo.outstandingAmountString).to.be.equal('0');
       expect(registrantInfo.name).to.be.equal(TEST_NAME);
