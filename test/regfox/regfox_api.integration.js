@@ -48,33 +48,36 @@ describe('regfox_api (integration testing)', () => {
   });
 
   describe('workflows', () => {
+    const COMPLETED_STATUS = 3; // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
+    const TEST_NAME = 'First Last';
+    const TEST_CUSTOMER_ID = '1662788';
     let bearerToken = undefined;
     before.allowFail(async () => {
       bearerToken = (await loginForTest()).token.token;
     });
 
-    it.allowFail('searches and does not find anything', async () => {
+    it.allowFail('searches for a registrant and does not find anything', async () => {
       assert.exists(bearerToken);
 
       const results = await searchRegistrations('GUARANTEED_TO_BE_UNIQUE_UNLESS_SOMEONE_HAS_A_REALLY_WEIRD_NAME', bearerToken);
       expect(results.registrants).to.be.empty;
     });
 
-    it.allowFail('searches for a user', async () => {
+    it.allowFail('searches for a registrant', async () => {
       assert.exists(bearerToken);
 
-      const results = await searchRegistrations('First Last', bearerToken);
+      const results = await searchRegistrations(TEST_NAME, bearerToken);
       expect(results.registrants).to.have.lengthOf.at.least(1);
-      const registrant = results.registrants.find((reg) => reg.status === 3 && reg.customerId === '1662788');
+      const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
       expect(registrant).to.exist;
       expect(registrant.id).to.be.equal('26564608');
     });
 
-    it.allowFail('searches for a user and then gets their info', async () => {
+    it.allowFail('searches for a registrant and then gets their info', async () => {
       assert.exists(bearerToken);
 
-      const results = await searchRegistrations('First Last', bearerToken);
-      const registrant = results.registrants.find((reg) => reg.status === 3 && reg.customerId === '1662788');
+      const results = await searchRegistrations(TEST_NAME, bearerToken);
+      const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
       const registrantInfo = await getRegistrationInfo(registrant.id, bearerToken);
       expect(registrantInfo.notes).to.not.be.empty;
       expect(registrantInfo.outstandingAmountString).to.be.equal('0');
