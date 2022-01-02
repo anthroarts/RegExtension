@@ -14,7 +14,7 @@ const buildHeaders = (bearerToken) => ({
 });
 
 /**
- * Returns an object that contains a list of completed (fully paid and accepted) registrants.
+ * Returns an object that contains a list of registrants.
  * Returns a Promise Error if the network is down or some other technical issue.
  *
  * @param {*} term name or email (check regfox_graphql_search_registrations_query for other search fields)
