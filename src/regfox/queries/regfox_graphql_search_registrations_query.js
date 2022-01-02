@@ -94,15 +94,6 @@ const buildSearchRegistrationsBody = (term) => {
             ],
             'type': 'match',
           },
-          {
-            'field': 'status',
-            'value': [
-              '3', // Magic value that means 'Completed' registration.
-              // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
-              // You can find this by filtering registrations on 'Status'.
-            ],
-            'type': 'match',
-          },
         ],
       },
     },
