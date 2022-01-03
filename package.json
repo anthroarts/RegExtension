@@ -25,6 +25,7 @@
     "chrome-extension-cli": "^0.2.3",
     "copy-webpack-plugin": "^10.1.0",
     "css-loader": "^6.5.1",
+    "dotenv": "^10.0.0",
     "eslint": "^8.5.0",
     "eslint-config-google": "^0.14.0",
     "file-loader": "^6.2.0",

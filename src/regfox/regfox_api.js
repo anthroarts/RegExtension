@@ -17,8 +17,8 @@ const buildHeaders = (bearerToken) => ({
  * Returns an object that contains a list of registrants.
  * Returns a Promise Error if the network is down or some other technical issue.
  *
- * @param {*} term name or email (check regfox_graphql_search_registrations_query for other search fields)
- * @param {*} bearerToken the bearer token of the logged in user
+ * @param {string} term name or email (check regfox_graphql_search_registrations_query for other search fields)
+ * @param {string} bearerToken the bearer token of the logged in user
  */
 const searchRegistrations = async (term, bearerToken) => {
   return fetch(REGFOX_GRAPHQL_URL, {
@@ -43,7 +43,7 @@ const searchRegistrations = async (term, bearerToken) => {
  * Returns an object that contains a new bearer token for the user/account of the token passed in.
  * Returns a promise Error if the network is down or the exchange failed.
  *
- * @param {*} bearerToken the bearer token of the logged in user
+ * @param {string} bearerToken the bearer token of the logged in user
  */
 const exchangeBearerToken = async (bearerToken) => {
   return fetch(REGFOX_EXCHANGE_TOKEN_URL, {
@@ -70,8 +70,8 @@ const exchangeBearerToken = async (bearerToken) => {
  *
  * Doesn't support 2fa!
  *
- * @param {*} email
- * @param {*} password
+ * @param {string} email
+ * @param {string} password
  */
 const login = async (email, password) => {
   return fetch(REGFOX_GRAPHQL_URL, {
@@ -97,12 +97,13 @@ const login = async (email, password) => {
  * Returns a promise Error if the network is down or parsing failed.
  *
  * @param {string} id of a registration, note this is **not** the RegistrationId, its just the id
+ * @param {string} bearerToken the bearer token of the logged in user
  */
-const getRegistrationInfo = async (id) => {
+const getRegistrationInfo = async (id, bearerToken) => {
   const fullUrl = getRegistrationInfoUrl(id);
   return fetch(fullUrl, {
     method: 'GET',
-    headers: buildHeaders(undefined),
+    headers: buildHeaders(bearerToken),
   }).then((response) => response.json())
     .then((response) => {
       if (get(response, 'error')) {

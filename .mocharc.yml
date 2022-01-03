@@ -3,3 +3,4 @@ recursive: true
 require: 
   - 'mock-local-storage'
   - 'global-jsdom/register'
+  - 'dotenv/config'

@@ -134,7 +134,7 @@ text-align: right;
 
 const iFrame = document.createElement('iFrame');
 // iFrame.style.display = 'none';
-iFrame.onload = function() {
+iFrame.onload = function () {
   console.log('iFrame loaded');
 };
 document.body.appendChild(iFrame);
