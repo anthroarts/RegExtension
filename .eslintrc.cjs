@@ -27,7 +27,7 @@ module.exports = {
       'asyncArrow': 'always',
     }],
     'max-params': ['error', {
-      max: 5,
+      max: 6,
     }],
   },
 };
