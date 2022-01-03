@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-dark-5/dist/css/bootstrap-dark-plugin.min.css';
 import { RegMachineArgs } from './states/reg_machine_args.js';
 import { RegMachineManager } from './states/reg_machine_manager.js';
+import { CommunicationManager } from './communication_manager.js';
 
 /**
  * Configure the printer manager for this page
@@ -29,6 +30,7 @@ function configureManager({
 }
 
 let printerMgr;
+// eslint-disable-next-line no-unused-vars
 let regStateMachine;
 const fontLoader = BadgeLabelBuilder.loadCustomFonts(document);
 
@@ -38,37 +40,14 @@ document.addEventListener('readystatechange', async () => {
     await printerMgr.refreshPrinters();
     await fontLoader;
 
-    const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, null);
+    const commMgr = new CommunicationManager();
+
+    const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
 
     regStateMachine = new RegMachineManager(stateArgs);
-    regStateMachine.transition(new CustomEvent('RESET'));
 
-    // // ///////////////// Note!
-    // // Demonstration code! This will work on -your- machine!
-
-    // const canvas = document.getElementById('canvas');
-    // const label = new BadgeLabelBuilder({
-    //   line1: 'A Furry 🍑',
-    //   line2: 'Just some furry name',
-    //   badgeId: '12345678',
-    //   level: 'Super Sponsor',
-    //   isMinor: false,
-    // });
-
-    // // You wouldn't normally call this directly, and instead use addToLabel like below
-    // // Present here for demo purposes.
-    // label.renderToImageData(canvas.width, canvas.height, canvas);
-
-    // Demo of the more average use, commented out so I stop accidentally printing labels.
-
-    // let label = new BadgeLabelBuilder({
-    //   line1: "A Furry 🍑",
-    //   line2: "Just some furry name",
-    //   badgeId: "12345678",
-    //   level: "Super Sponsor",
-    //   isMinor: false,
-    // });
-
-    // await printerMgr.printLabelBuilder(label);
+    // At this point we can assume other things successfully loaded and can hide
+    // the help text
+    document.getElementById('hideAfterPageLoad').classList.add('d-none');
   }
 });

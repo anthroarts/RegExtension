@@ -12,7 +12,6 @@ export class WorkflowButton {
    */
   #transitionEventTarget;
   #transitionEvent;
-  #transitionEventDetails;
 
   #buttonClickEvent = 'click';
 
@@ -22,6 +21,7 @@ export class WorkflowButton {
    */
   constructor(buttonElement) {
     this.#element = buttonElement;
+    this.#element.addEventListener(this.#buttonClickEvent, this.handleClickEvent.bind(this));
   }
 
   /**
@@ -51,8 +51,6 @@ export class WorkflowButton {
   clearTransitionCallback() {
     this.#transitionEventTarget = undefined;
     this.#transitionEvent = undefined;
-    this.#transitionEventDetails = undefined;
-    this.#element.removeEventListener(this.#buttonClickEvent, this.handleClickEvent);
     return this;
   }
 
@@ -61,39 +59,22 @@ export class WorkflowButton {
    * Overwrites any existing transitions.
    * @param {RegState} transitionEventSender - The object to send the event through
    * @param {string} event - The event name to send
-   * @param {*} details - Optional details object to add to the event.
    * @return {WorkflowButton} - This button.
    */
-  setTransitionCallback(transitionEventSender, event, details) {
-    this.clearTransitionCallback();
+  setTransitionCallback(transitionEventSender, event) {
     this.#transitionEventTarget = transitionEventSender;
     this.#transitionEvent = event;
-    this.#transitionEventDetails = details;
-    this.#element.addEventListener(this.#buttonClickEvent, this.handleClickEvent.bind(this));
     return this;
   }
 
   /**
    * Dispatch a click event, if relevant to do so.
-   *
-   * @description Okay but why though? So we can remove this event listener.
-   * Event listeners are identified by the _combination_ of their event, such as
-   * 'click', _and_ the _specific_ handler function passed in. See the docs:
-   * https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener#matching_event_listeners_for_removal
-   * Anonymous functions, the ususal way of writing handler methods are abnonymous.
-   * Once you send them off to handle the event you can't find them again. Therefore
-   * you can't _remove_ that event handler if you need to for any reason.
-   * The two options boil down to either "replace the element with a clone which
-   * strips the event handlers" or "keep track of your event handlers". This class
-   * is how we implemented the latter.
-   * Sidenote this is what a "remarks" field is for and I miss it.
    */
   handleClickEvent() {
     if (this.#transitionEventTarget) {
       // Only should be attempted if we acutally have a target.
       this.#transitionEventTarget.dispatchTransition(
         this.#transitionEvent,
-        this.#transitionEventDetails,
       );
     }
   }
