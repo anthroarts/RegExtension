@@ -52,6 +52,7 @@ describe('regfox_api (integration testing)', () => {
     const COMPLETED_STATUS = 3; // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
     const TEST_NAME = 'First Last';
     const TEST_CUSTOMER_ID = '1662788';
+    const TEST_ID = '26564608';
     let bearerToken = undefined;
     before.allowFail(async () => {
       bearerToken = (await loginForTest()).token.token;
@@ -72,7 +73,7 @@ describe('regfox_api (integration testing)', () => {
       const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
 
       expect(registrant).to.exist;
-      expect(registrant.id).to.be.equal('26564608');
+      expect(registrant.id).to.be.equal(TEST_ID);
     });
 
     it.allowFail('searches for a registrant and then gets their info', async () => {
@@ -90,7 +91,7 @@ describe('regfox_api (integration testing)', () => {
 
     it.allowFail('marks a registrant as complete', async () => {
       assert.exists(bearerToken);
-      const registrationInfo = await getRegistrationInfo('26564608', bearerToken);
+      const registrationInfo = await getRegistrationInfo(TEST_ID, bearerToken);
 
       const result = await markRegistrationComplete(registrationInfo.formId, registrationInfo.registrationId, registrationInfo.transactionId, registrationInfo.id, bearerToken);
 

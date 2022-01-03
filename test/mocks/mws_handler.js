@@ -1,7 +1,7 @@
 import { graphql, rest } from 'msw';
-import { REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl, getMarkRegistrationCompleteUrl } from '../../src/regfox/regfox_api.js';
+import { TEST_REGFOX_GRAPHQL_URL, TEST_REGFOX_EXCHANGE_TOKEN_URL, testGetRegistrationInfoUrl, testGetMarkRegistrationCompleteUrl } from '../../src/regfox/regfox_api.js';
 
-const regfox = graphql.link(REGFOX_GRAPHQL_URL);
+const regfox = graphql.link(TEST_REGFOX_GRAPHQL_URL);
 
 const getRegistrantsSearchHandler = (getResponse) => {
   return [
@@ -15,7 +15,7 @@ const getRegistrantsSearchHandler = (getResponse) => {
 
 const exchangeBearerTokenHandler = (getResponse) => {
   return [
-    rest.put(REGFOX_EXCHANGE_TOKEN_URL, (req, res, ctx) => {
+    rest.put(TEST_REGFOX_EXCHANGE_TOKEN_URL, (req, res, ctx) => {
       return res(
         ctx.json(getResponse(req)),
       );
@@ -35,7 +35,7 @@ const loginHandler = (getResponse) => {
 
 const getRegistrationInfoHandler = (id, getResponse) => {
   return [
-    rest.get(getRegistrationInfoUrl(id), (req, res, ctx) => {
+    rest.get(testGetRegistrationInfoUrl(id), (req, res, ctx) => {
       return res(
         ctx.json(getResponse(req)),
       );
@@ -45,7 +45,7 @@ const getRegistrationInfoHandler = (id, getResponse) => {
 
 const markRegistrationCompleteHandler = (formId, registrationId, getResponse) => {
   return [
-    rest.put(getMarkRegistrationCompleteUrl(formId, registrationId), (req, res, ctx) => {
+    rest.put(testGetMarkRegistrationCompleteUrl(formId, registrationId), (req, res, ctx) => {
       return res(
         ctx.json(getResponse(req)),
       );
