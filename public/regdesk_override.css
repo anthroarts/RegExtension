@@ -31,3 +31,8 @@ body {
   height: 193px;
   padding: 0;
 }
+
+.hover-success:hover {
+  background-color: var(--bs-green);
+  cursor: pointer;
+}

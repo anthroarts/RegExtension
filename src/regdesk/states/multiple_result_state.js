@@ -44,8 +44,10 @@ export class MultipleResultState extends RegState {
       const age = this.#getAge(reg.birthdate);
       clone.querySelector('span[name=age]').textContent = age;
       clone.querySelector('input[name=resultId]').value = index;
-      clone.querySelector('form')
-        .addEventListener('submit', this.handleRegSelection.bind(this));
+
+      const form = clone.querySelector('form');
+      // Click handler goes on the <li> to ensure the entire list item is clickable.
+      form.parentElement.addEventListener('click', this.handleRegSelection.bind(this));
 
       this.listContainer.appendChild(clone);
     });
@@ -66,7 +68,9 @@ export class MultipleResultState extends RegState {
   handleRegSelection(e) {
     e.preventDefault();
 
-    const regId = e.target.querySelector('input[name=resultId').value;
+    // The <li> item is the enclosing element for the entire reg, select that and
+    // then query within it in case some direct element was clicked on.
+    const regId = e.target.closest('li').querySelector('input[name=resultId').value;
     this.commManager.setSelectedSearchResult(regId);
 
     this.dispatchTransition(MultipleResultState.events.SELECTED_SINGLE_RESULT);
