@@ -1,5 +1,5 @@
 import { graphql, rest } from 'msw';
-import { REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl } from '../../src/regfox/regfox_api.js';
+import { REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl, getMarkRegistrationCompleteUrl } from '../../src/regfox/regfox_api.js';
 
 const regfox = graphql.link(REGFOX_GRAPHQL_URL);
 
@@ -43,4 +43,14 @@ const getRegistrationInfoHandler = (id, getResponse) => {
   ];
 };
 
-export { getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler, getRegistrationInfoHandler };
+const markRegistrationCompleteHandler = (formId, registrationId, getResponse) => {
+  return [
+    rest.put(getMarkRegistrationCompleteUrl(formId, registrationId), (req, res, ctx) => {
+      return res(
+        ctx.json(getResponse(req)),
+      );
+    }),
+  ];
+};
+
+export { getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler };

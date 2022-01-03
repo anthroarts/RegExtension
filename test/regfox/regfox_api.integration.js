@@ -5,7 +5,7 @@ use(chaiAsPromised);
 should();
 const { expect } = chai;
 
-import { searchRegistrations, login, getRegistrationInfo } from '../../src/regfox/regfox_api.js';
+import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete } from '../../src/regfox/regfox_api.js';
 
 const loginForTest = async () => {
   const email = process.env.EMAIL;
@@ -86,6 +86,15 @@ describe('regfox_api (integration testing)', () => {
       expect(registrantInfo.outstandingAmountString).to.be.equal('0');
       expect(registrantInfo.name).to.be.equal(TEST_NAME);
       expect(`${registrantInfo.customerId}`).to.be.equal(TEST_CUSTOMER_ID);
+    });
+
+    it.allowFail('marks a registrant as complete', async () => {
+      assert.exists(bearerToken);
+      console.log(bearerToken);
+      const registrationInfo = await getRegistrationInfo('26564608', bearerToken);
+
+      const result = await markRegistrationComplete(registrationInfo.formId, registrationInfo.registrationId, registrationInfo.transactionId, registrationInfo.id, bearerToken);
+      expect(result).to.be.empty; // TODO I don't have authorization, so it just returns {}, no errors or anything.
     });
   });
 });

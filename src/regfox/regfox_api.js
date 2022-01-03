@@ -2,7 +2,9 @@ import { get } from 'lodash-es';
 import { buildSearchRegistrationsBody } from './queries/regfox_graphql_search_registrations_query.js';
 import { buildAuthLoginMutationBody } from './queries/regfox_graphql_auth_login_mutation_query.js';
 import { parseRegfoxGetRegistrationResponse } from './responses/regfox_api_get_registration_info_parser.js';
+import { buildMarkRegistrationCompleteBody } from './payloads/regfox_api_mark_registration_complete_body.js';
 
+const REGFOX_MARK_REGISTRATION_COMPLETE_URL = 'https://api.webconnex.com/v1/cp/forms/${formId}/registrations/${registrationId}';
 const REGFOX_GET_REGISTRATION_URL = 'https://api.webconnex.com/v1/cp/report/regfox.com/registrant/${id}';
 const REGFOX_EXCHANGE_TOKEN_URL = 'https://api.webconnex.com/auth/exchange-token';
 const REGFOX_GRAPHQL_URL = 'https://api.webconnex.com/apollo/graphql';
@@ -123,4 +125,41 @@ const getRegistrationInfoUrl = (id) => {
   return REGFOX_GET_REGISTRATION_URL.replace('${id}', id);
 };
 
-export { getRegistrationInfo, searchRegistrations, exchangeBearerToken, login, REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl };
+/**
+ * Marks a registrant (technically a transaction of an order of a registered user) as completed (which means fully paid).
+ * See https://gist.github.com/raytingtw/8d0a083dc130c40818d71606e41b884e.
+ * Returns a promise Error if the network is down.
+ *
+ * All of these parameters can be pulled straight from the registrationInfo.
+ *
+ * @param {int} formId is the form (webpage) the user signed up with, could be hardcoded to 372652
+ * @param {int} registrationId of the registrant (**not** the Id), I think sometimes this is called the OrderId
+ * @param {int} transactionId of the registrant
+ * @param {string} id of registration (**not** the RegistrationId)
+ * @param {string} bearerToken the bearer token of the logged in user
+ */
+const markRegistrationComplete = async (formId, registrationId, transactionId, id, bearerToken) => {
+  const fullUrl = getMarkRegistrationCompleteUrl(formId, registrationId);
+  return fetch(fullUrl, {
+    method: 'PUT',
+    headers: buildHeaders(bearerToken),
+    body: JSON.stringify(buildMarkRegistrationCompleteBody(transactionId, id)),
+  }).then((response) => response.json())
+    .then((response) => {
+      if (get(response, 'code') === 1000) {
+        throw new Error(`Illegal bearerToken passed in to markRegistrationComplete: ${JSON.stringify(response)}`);
+      }
+
+      return response;
+    });
+};
+
+// Only exported for testing, DONT CALL THIS METHOD!
+const getMarkRegistrationCompleteUrl = (formId, registrationId) => {
+  return REGFOX_MARK_REGISTRATION_COMPLETE_URL.replace('${formId}', formId).replace('${registrationId}', registrationId);
+};
+
+export {
+  getRegistrationInfo, searchRegistrations, exchangeBearerToken, login, markRegistrationComplete,
+  REGFOX_GRAPHQL_URL, REGFOX_EXCHANGE_TOKEN_URL, getRegistrationInfoUrl, getMarkRegistrationCompleteUrl,
+};

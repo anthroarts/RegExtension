@@ -7,13 +7,13 @@ const { expect } = chai;
 
 import { stub } from 'sinon';
 
-import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler } from '../mocks/mws_handler.js';
+import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler } from '../mocks/mws_handler.js';
 import { setupServer } from 'msw/node/lib/index.js';
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo } from '../../src/regfox/regfox_api.js';
+import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo, markRegistrationComplete } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
@@ -184,6 +184,35 @@ describe('regfox_api', () => {
         error: ['heky!'],
       });
       return getRegistrationInfo(123455).should.eventually.be.rejected;
+    });
+  });
+
+  describe('markRegistrationComplete', () => {
+    const FORM_ID = 12345;
+    const REGISTRATION_ID = 532432;
+    const TRANSACTION_ID = 9090;
+    const ID = 3232;
+
+    const getResponse = stub();
+    const server = setupServer(...markRegistrationCompleteHandler(FORM_ID, REGISTRATION_ID, getResponse));
+    before(() => server.listen());
+    afterEach(() => getResponse.reset());
+    afterEach(() => server.resetHandlers());
+    after(() => server.close());
+
+    // TODO figure out what a successful response looks like!
+    it('returns data as requested');
+
+    // TODO figure out what an unsuccessful response looks like!
+    it('handles a failure in marking a user as complete');
+
+    it('handles an illegal bearerToken', async () => {
+      getResponse.returns({
+        code: 1000,
+        message: 'unauthorized request',
+      });
+
+      return markRegistrationComplete(FORM_ID, REGISTRATION_ID, TRANSACTION_ID, ID, 'fake fake fake').should.eventually.be.rejected;
     });
   });
 });
