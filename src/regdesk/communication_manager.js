@@ -3,45 +3,6 @@
  * Manager for handling communication to the extension and APIs.
  */
 export class CommunicationManager {
-  #selectedReg;
-  /**
-   * Get the single selected registration
-   */
-  get selectedSearchResult() {
-    return this.#selectedReg;
-  }
-
-  #regResults;
-  /**
-   * Get the list of registrations from the most recent search.
-   */
-  get regSearchResults() {
-    return this.#regResults;
-  }
-
-  /**
-   * Get a value indicating whether there's more than one result loaded.
-   */
-  get hasMultipleResults() {
-    return this.#regResults?.length > 1;
-  }
-
-  #searchPromise;
-  /**
-   * Get the promise for a search operation
-   */
-  get searchPromise() {
-    return this.#searchPromise;
-  }
-
-  #searchString;
-  /**
-   * Get the string that was last searched for
-   */
-  get searchString() {
-    return this.#searchString;
-  }
-
   /**
    * Iniitalizes a new instance of the CommunicationManager class.
    */
@@ -51,28 +12,11 @@ export class CommunicationManager {
   }
 
   /**
-   * Select a single registration from the list of reg results.
-   * @param {number} id - The ID from the list of reg search results to choose.
-   * @return {*} - The selected registration.
-   */
-  setSelectedSearchResult(id) {
-    if ((id < 0) || id > this.#regResults.length) {
-      // TODO: Something more interesting?
-      console.error(`Attempted to select out-of-bounds registration result ${id}.`);
-      return;
-    }
-
-    this.#selectedReg = this.#regResults[id];
-    return this.#selectedReg;
-  }
-
-  /**
    * Search for a registrant by name, populating the result if available.
    * @param {string} searchString - The string to search for.
+   * @return {Promise<*[]>} The promise that will return the search results.
    */
   startSearchForRegByName(searchString) {
-    this.#searchString = searchString;
-
     // Start the search process, internally storing the promise and handling
     // the return value. Something like:
     // this.#searhPromise = this
@@ -89,7 +33,7 @@ export class CommunicationManager {
       arr.push(this.#tempGetRandomReg());
     }
 
-    this.#searchPromise = new Promise((resolve) => setTimeout(resolve, 500))
+    return new Promise((resolve) => setTimeout(resolve, 500))
       .then(() => arr) // The mock one!
       .then(this.handleSearchResults.bind(this)); // The real one!
   }
@@ -111,15 +55,7 @@ export class CommunicationManager {
   handleSearchResults(results) {
     // TODO: Assumes an array, who knows what we get back from the API though.
     // TODO: Whatever massaging necessary from the real API.
-    this.#regResults = results;
-
-    if (results.length === 1) {
-      this.setSelectedSearchResult(0);
-    } else {
-      this.#selectedReg = undefined;
-    }
-
-    return this.#regResults;
+    return results;
   }
 
   /**

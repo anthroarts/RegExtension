@@ -14,6 +14,15 @@ export class MultipleResultState extends RegState {
     };
   }
 
+  #latestResults = [];
+
+  /**
+   * Determine if the latest loaded results has multiple results.
+   */
+  get hasMultipleResults() {
+    return this.#latestResults?.length > 1;
+  }
+
   /**
    * Initializes a new instance of the MultipleResultState class.
    * @param {RegMachineArgs} regMachineArgs - Standard argument set for states.
@@ -28,15 +37,20 @@ export class MultipleResultState extends RegState {
 
   /**
    * Enter this state.
+   * @param {CustomEvent} e - Event that resulted in this state.
    */
-  enterState() {
+  enterState(e) {
     this.show(this.screenRow);
     this.cancelButton.visible().setTransitionCallback(this, MultipleResultState.events.CANCEL);
     this.printButton.invisible();
 
     this.listContainer.innerHTML = '';
 
-    this.commManager.regSearchResults.forEach((reg, index) => {
+    // Re-use existing results if new results weren't supplied.
+    const { searchResults } = e.detail || { searchResults: this.#latestResults };
+    this.#latestResults = searchResults;
+
+    this.#latestResults.forEach((reg, index) => {
       const clone = this.template.content.firstElementChild.cloneNode(true);
       clone.querySelector('input[name=preferredName]').value = reg.preferredName;
       clone.querySelector('input[name=legalName]').value = reg.legalName;
@@ -71,9 +85,9 @@ export class MultipleResultState extends RegState {
     // The <li> item is the enclosing element for the entire reg, select that and
     // then query within it in case some direct element was clicked on.
     const regId = e.target.closest('li').querySelector('input[name=resultId').value;
-    this.commManager.setSelectedSearchResult(regId);
-
-    this.dispatchTransition(MultipleResultState.events.SELECTED_SINGLE_RESULT);
+    this.dispatchTransition(
+      MultipleResultState.events.SELECTED_SINGLE_RESULT,
+      { searchResult: this.#latestResults[regId] });
   }
 
   /**

@@ -16,8 +16,7 @@ export class SingleResultState extends RegState {
     };
   }
 
-  /** @type {BadgeLabelBuilder} */
-  #labelBuilder;
+  #currentResult;
 
   /**
    * Initializes a new instance of the SingleResultState class.
@@ -36,29 +35,32 @@ export class SingleResultState extends RegState {
 
   /**
    * Enter this state.
+   * @param {CustomEvent} e - Event that resulted in this state.
    */
-  enterState() {
+  enterState(e) {
     this.show(this.screenRow);
     this.printButton.visible();
     this.cancelButton.visible()
       .setTransitionCallback(this, SingleResultState.events.CANCEL);
 
-    const reg = this.commManager.selectedSearchResult;
+    // TODO: Better handling if we get an invalid object
+    const { searchResult } = e.detail || {};
+    this.#currentResult = searchResult;
 
-    this.regPreferredName.value = reg.preferredName;
-    this.regLegalName.value = reg.legalName;
-    this.regBirthdate.value = reg.birthdate;
-    const age = this.#getAge(reg.birthdate);
+    this.regPreferredName.value = searchResult.preferredName;
+    this.regLegalName.value = searchResult.legalName;
+    this.regBirthdate.value = searchResult.birthdate;
+    const age = this.#getAge(searchResult.birthdate);
     this.regAge.textContent = age;
 
-    this.#labelBuilder = new BadgeLabelBuilder({
-      line1: reg.badgeLine1,
-      line2: reg.badgeLine2,
-      badgeId: reg.regNumber,
-      level: reg.sponsorLevel,
+    const label = new BadgeLabelBuilder({
+      line1: searchResult.badgeLine1,
+      line2: searchResult.badgeLine2,
+      badgeId: searchResult.regNumber,
+      level: searchResult.sponsorLevel,
       isMinor: (age < 18),
     });
-    this.#labelBuilder.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
+    label.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
   }
 
   /**

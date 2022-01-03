@@ -32,8 +32,15 @@ export class NewSearchState extends RegState {
       e.preventDefault();
 
       // Only start the search process, the loading screen waits for it.
-      this.commManager.startSearchForRegByName(this.searchInput.value);
-      this.dispatchTransition(NewSearchState.events.START_SEARCH);
+      const searchText = this.searchInput.value;
+      const searchPromise = this.commManager.startSearchForRegByName(searchText);
+      this.dispatchTransition(
+        NewSearchState.events.START_SEARCH,
+        {
+          // TODO: Strongly type?
+          searchText: searchText,
+          searchPromise: searchPromise,
+        });
     });
   }
 

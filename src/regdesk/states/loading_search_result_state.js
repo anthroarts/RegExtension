@@ -34,8 +34,9 @@ export class LoadingSearchResultState extends RegState {
 
   /**
    * Actions to perform when entering the state.
+   * @param {CustomEvent} e - Event that resulted in this state.
    */
-  enterState() {
+  enterState(e) {
     this.show(this.screenRow);
     this.cancelButton.visible().setTransitionCallback(this, LoadingSearchResultState.events.CANCEL);
     this.printButton.invisible();
@@ -43,12 +44,16 @@ export class LoadingSearchResultState extends RegState {
     this.hide(this.searchEmptyAlert);
     this.show(this.loadingSpinners);
 
-    const search = this.#santizeStringForHtml(this.commManager.searchString ?? '');
+    this.#acceptResults = true;
+
+    const { searchText, searchPromise } = e.detail || {};
+
+    const search = this.#santizeStringForHtml(searchText ?? '');
     this.searchValueSpan.textContent = search;
     this.searchEmptyAlertText.textContent = search;
 
-    this.#acceptResults = true;
-    this.commManager.searchPromise.then(this.handleResultsReady.bind(this));
+    const promise = searchPromise ?? Promise.resolve([]);
+    promise.then(this.handleResultsReady.bind(this));
   }
 
   /**
@@ -78,11 +83,17 @@ export class LoadingSearchResultState extends RegState {
       return;
     }
 
-    const event = results?.length > 1 ?
-      LoadingSearchResultState.events.MULTIPLE_RESULTS_READY :
-      LoadingSearchResultState.events.SINGLE_RESULT_READY;
-
-    this.dispatchTransition(event);
+    if (results?.length > 1) {
+      this.dispatchTransition(
+        LoadingSearchResultState.events.MULTIPLE_RESULTS_READY,
+        { searchResults: results },
+      );
+    } else {
+      this.dispatchTransition(
+        LoadingSearchResultState.events.SINGLE_RESULT_READY,
+        { searchResult: results[0] },
+      );
+    }
   }
 
   /**

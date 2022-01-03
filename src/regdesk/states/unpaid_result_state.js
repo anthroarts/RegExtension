@@ -15,8 +15,7 @@ export class UnpaidResultState extends RegState {
     };
   }
 
-  /** @type {BadgeLabelBuilder} */
-  #labelBuilder;
+  #latestResult;
 
   /**
    * Initializes a new instance of the SingleResultState class.
@@ -46,32 +45,36 @@ export class UnpaidResultState extends RegState {
 
   /**
    * Enter this state.
+   * @param {CustomEvent} e - Event that resulted in this state.
    */
-  enterState() {
+  enterState(e) {
     this.show(this.screenRow);
     this.printButton.invisible();
     this.cancelButton.visible()
       .setTransitionCallback(this, this.constructor.events.CANCEL);
 
     const acceptingPayments = this.commManager.acceptingPayments;
-    const reg = this.commManager.selectedSearchResult;
+    const { searchResult } = e.detail || {};
 
-    this.regPreferredName.value = reg.preferredName;
-    this.regLegalName.value = reg.legalName;
-    this.regBirthdate.value = reg.birthdate;
-    const age = this.#getAge(reg.birthdate);
+    // TODO: Better handling if we get an invalid object
+    this.#latestResult = searchResult;
+
+    this.regPreferredName.value = searchResult.preferredName;
+    this.regLegalName.value = searchResult.legalName;
+    this.regBirthdate.value = searchResult.birthdate;
+    const age = this.#getAge(searchResult.birthdate);
     this.regAge.textContent = age;
-    this.regPayment.value = reg.amountDue;
+    this.regPayment.value = searchResult.amountDue;
 
     // TODO: Move this to some Registrant class?
-    this.#labelBuilder = new BadgeLabelBuilder({
-      line1: reg.badgeLine1,
-      line2: reg.badgeLine2,
-      badgeId: reg.regNumber,
-      level: reg.sponsorLevel,
+    const label = new BadgeLabelBuilder({
+      line1: searchResult.badgeLine1,
+      line2: searchResult.badgeLine2,
+      badgeId: searchResult.regNumber,
+      level: searchResult.sponsorLevel,
       isMinor: (age < 18),
     });
-    this.#labelBuilder.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
+    label.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
 
     this.show(this.regPaidBtnText);
     this.hide(this.regPaidBtnSpinner, this.regPaidBtnTextSpinner);
@@ -102,9 +105,12 @@ export class UnpaidResultState extends RegState {
     this.regPaidBtn.disabled = true;
     this.hide(this.regPaidBtnText);
     this.show(this.regPaidBtnSpinner, this.regPaidBtnTextSpinner);
-    await this.commManager.markRegistrantAsPaid(this.commManager.selectedSearchResult);
+    await this.commManager.markRegistrantAsPaid(this.#latestResult);
 
-    this.dispatchTransition(this.constructor.events.PAID);
+    this.dispatchTransition(
+      this.constructor.events.PAID,
+      { searchResult: this.#latestResult },
+    );
   }
 
   /**

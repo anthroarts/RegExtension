@@ -134,7 +134,7 @@ export class RegMachineManager {
    * @return {string} - The next state to switch to.
    */
   #maybeCancelSingleResultToMultipleResult() {
-    if (this.#regMachineArgs.commManager.hasMultipleResults) {
+    if (this.#machine.states[MultipleResultState.name].hasMultipleResults) {
       return MultipleResultState.name;
     } else {
       return NewSearchState.name;
