@@ -90,10 +90,10 @@ describe('regfox_api (integration testing)', () => {
 
     it.allowFail('marks a registrant as complete', async () => {
       assert.exists(bearerToken);
-      console.log(bearerToken);
       const registrationInfo = await getRegistrationInfo('26564608', bearerToken);
 
       const result = await markRegistrationComplete(registrationInfo.formId, registrationInfo.registrationId, registrationInfo.transactionId, registrationInfo.id, bearerToken);
+
       expect(result).to.be.empty; // TODO I don't have authorization, so it just returns {}, no errors or anything.
     });
   });
