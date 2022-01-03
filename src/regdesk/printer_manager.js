@@ -1,6 +1,7 @@
 // This is used in doc comments..
 // eslint-disable-next-line no-unused-vars
 import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844';
+import { BadgeLabelBuilder } from './label_builder.js';
 import { PrinterDropdown } from './printer_dropdown.js';
 
 /**
@@ -24,10 +25,17 @@ export class PrinterManager {
    */
   constructor(nav, adultDropdown, minorDropdown) {
     this.#adultDropdown = adultDropdown;
-    this.#adultDropdown.addEventListener(PrinterDropdown.ConnectEventName, async (e) => this.handleRequestConnect(e));
+    this.#adultDropdown.addEventListener(
+      PrinterDropdown.events.CONNECT_PRINTER,
+      async (e) => this.handleRequestConnect(e));
 
     this.#minorDropdown = minorDropdown;
-    this.#minorDropdown.addEventListener(PrinterDropdown.ConnectEventName, async (e) => this.handleRequestConnect(e));
+    this.#minorDropdown.addEventListener(
+      PrinterDropdown.events.CONNECT_PRINTER,
+      async (e) => this.handleRequestConnect(e));
+    this.#minorDropdown.addEventListener(
+      PrinterDropdown.events.PRINT_KIT_BADGE,
+      () => this.printKitBadge());
 
     // Convenience array
     this.#dropdowns = [this.#adultDropdown, this.#minorDropdown];
@@ -167,11 +175,11 @@ export class PrinterManager {
       return;
     }
 
-    await this.#adultDropdown.printer.printLabel(label);
+    await this.#adultDropdown.printLabel(label);
   }
 
   /**
-   * Get a lael for the minor printer.
+   * Get a label for the minor printer.
    * @return {LabelEpl} - The label, or {undefined} if the printer isn't connected.
    */
   getMinorLabel() {
@@ -195,7 +203,7 @@ export class PrinterManager {
       return;
     }
 
-    await this.#minorDropdown.printer.printLabel(label);
+    await this.#minorDropdown.printLabel(label);
   }
 
   /**
@@ -223,6 +231,22 @@ export class PrinterManager {
     } else {
       return this.printAdultLabel(label);
     }
+  }
+
+  /**
+   * Print a KIT badge
+   * @return {Promise} - The promise to complete when done printing.
+   */
+  async printKitBadge() {
+    const labelBuilder = new BadgeLabelBuilder({
+      line1: 'KID IN TOW',
+      line2: 'KIT',
+      badgeId: '',
+      level: '',
+      isMinor: true,
+    });
+
+    return this.printLabelBuilder(labelBuilder);
   }
 
   /**

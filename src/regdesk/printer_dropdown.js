@@ -1,8 +1,21 @@
+// eslint-disable-next-line no-unused-vars
+import { LabelEpl } from 'webzlp/src/LabelEpl';
+// eslint-disable-next-line no-unused-vars
+import { LP2844 } from 'webzlp/src/LP2844';
 
 /**
  * Class for managing a printer dropdown
  */
 export class PrinterDropdown extends EventTarget {
+  /**
+   * Get the events this dropdown can generate.
+   */
+  static get events() {
+    return {
+      CONNECT_PRINTER: 'CONNECT_PRINTER',
+      PRINT_KIT_BADGE: 'PRINT_KIT_BADGE',
+    };
+  }
   /**
    * The printer displayed by this class.
    * @type {LP2844}
@@ -37,6 +50,8 @@ export class PrinterDropdown extends EventTarget {
   #feedPrintElement;
   // Button for showing the config dialog
   #configElement;
+  // Button for printing a KIT badge
+  #kitBadgeElement;
 
   /**
    * Initializes a new instance of the PrinterDropdown class.
@@ -50,6 +65,7 @@ export class PrinterDropdown extends EventTarget {
    * @param {Element} o.testElement - The print test page button.
    * @param {Element} o.feedElement - The feed label button.
    * @param {Element} o.configElement - The configure dialog button.
+   * @param {Element} o.kitBadgeElement - The print KIT badge element.
    */
   constructor({
     dropdownName,
@@ -60,6 +76,7 @@ export class PrinterDropdown extends EventTarget {
     testElement,
     feedElement,
     configElement,
+    kitBadgeElement,
   }) {
     super();
 
@@ -83,6 +100,9 @@ export class PrinterDropdown extends EventTarget {
     this.#configElement = configElement;
     this.#connectElement.addEventListener('click', () => this.showConfig());
 
+    this.#kitBadgeElement = kitBadgeElement;
+    this.#kitBadgeElement?.addEventListener('click', () => this.#printKitBadge());
+
     // Safe to call this without an await because there won't be a printer yet.
     // TODO: kinda makes me itchy though.
     this.removePrinter();
@@ -92,9 +112,15 @@ export class PrinterDropdown extends EventTarget {
    * Request a connection for htis printer.
    */
   #connectPrinter() {
-    const event = new CustomEvent(
-      this.constructor.ConnectEventName,
-      { target: this });
+    const event = new CustomEvent(this.constructor.events.CONNECT_PRINTER);
+    this.dispatchEvent(event);
+  }
+
+  /**
+   * Request to print a kid-in-tow badge.
+   */
+  #printKitBadge() {
+    const event = new CustomEvent(this.constructor.events.PRINT_KIT_BADGE);
     this.dispatchEvent(event);
   }
 
@@ -119,6 +145,7 @@ export class PrinterDropdown extends EventTarget {
     this.#printerNameElement.textContent = '(No Printer)';
     this.#show(this.#connectElement);
     this.#hide(
+      this.#kitBadgeElement,
       this.#disconnectElement,
       this.#testPrintElement,
       this.#feedPrintElement,
@@ -137,11 +164,24 @@ export class PrinterDropdown extends EventTarget {
     this.#printerNameElement.textContent = `(${this.#printer.serial})`;
     this.#hide(this.#connectElement);
     this.#show(
+      this.#kitBadgeElement,
       this.#disconnectElement,
       this.#testPrintElement,
       this.#feedPrintElement,
       this.#configElement,
     );
+  }
+
+  /**
+   * Print a label to this managed printer
+   * @param {LabelEpl} label - The label to print
+   */
+  async printLabel(label) {
+    if (!this.#printer) {
+      console.error('No printer selected, can\'t print test page.');
+    }
+
+    return this.#printer.printLabel(label);
   }
 
   /**
@@ -183,12 +223,12 @@ export class PrinterDropdown extends EventTarget {
 
   /**
    * Hide all elements shown by #show.
-   * @param  {...any} elements - The elements to hide.
+   * @param  {...Element} elements - The elements to hide.
    */
   #hide(...elements) {
     elements.forEach((e) => {
-      e.classList.remove('visible');
-      e.classList.add('invisible');
+      e?.classList.remove('visible');
+      e?.classList.add('invisible');
     });
   }
 
@@ -198,16 +238,9 @@ export class PrinterDropdown extends EventTarget {
    */
   #show(...elements) {
     elements.forEach((e) => {
-      e.classList.remove('invisible');
-      e.classList.add('visible');
+      e?.classList.remove('invisible');
+      e?.classList.add('visible');
     });
-  }
-
-  /**
-   * Gets the connect event name
-   */
-  static get ConnectEventName() {
-    return 'connect';
   }
 
   /**
@@ -226,6 +259,7 @@ export class PrinterDropdown extends EventTarget {
       testElement: doc.getElementById(`${prefix}PrintTest`),
       feedElement: doc.getElementById(`${prefix}PrintFeed`),
       configElement: doc.getElementById(`${prefix}PrintConfig`),
+      kitBadgeElement: doc.getElementById(`${prefix}PrintKit`),
     };
   }
 }

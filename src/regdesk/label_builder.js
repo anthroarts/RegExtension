@@ -134,7 +134,7 @@ export class BadgeLabelBuilder {
   renderToImageSizedToLabel(width, height, widthPadding = 20, heightPadding = 10) {
     // Safety buffer around the edges of the printable area.
     // Make sure the width ends up on an byte boundary!
-    const widthRemainder = (label.labelWidthDots - widthPadding) % 8;
+    const widthRemainder = (width - widthPadding) % 8;
     const widthOffset = widthPadding + widthRemainder;
     const canvasData = this.renderToImageData(
       width - widthOffset,
