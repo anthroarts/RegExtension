@@ -30,6 +30,7 @@ function configureManager({
 }
 
 let printerMgr;
+// eslint-disable-next-line no-unused-vars
 let regStateMachine;
 const fontLoader = BadgeLabelBuilder.loadCustomFonts(document);
 
@@ -44,7 +45,6 @@ document.addEventListener('readystatechange', async () => {
     const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
 
     regStateMachine = new RegMachineManager(stateArgs);
-    regStateMachine.transition(new CustomEvent('RESET'));
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text

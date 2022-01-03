@@ -37,7 +37,6 @@ export class RegMachineManager {
     this.#regMachineArgs = regMachineArgs;
 
     const machine = {
-      initial: NewSearchState.name,
       states: {},
     };
 
@@ -95,7 +94,7 @@ export class RegMachineManager {
     });
 
     this.#machine = machine;
-    this.#currentState = machine.initial;
+    this.transition(new CustomEvent(NewSearchState.events.RESET), NewSearchState.name);
   }
 
   /**
