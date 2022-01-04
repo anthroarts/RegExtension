@@ -10,6 +10,7 @@ import { RegMachineManager } from './states/reg_machine_manager.js';
 import { CommunicationManager } from './communication_manager.js';
 import { PrinterConfigModal } from './printer_config_modal.js';
 import { ManualPrintModal } from './manual_print_modal.js';
+import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 /**
  * Configure the printer manager for this page
@@ -49,7 +50,8 @@ document.addEventListener('readystatechange', async () => {
       printerMgr.printLabelBuilder(e.detail);
     });
 
-    const commMgr = new CommunicationManager();
+    const togglePaymentsBtn = new TogglePaymentsBtn(document.getElementById('togglePaymentsBtn'));
+    const commMgr = new CommunicationManager(togglePaymentsBtn);
 
     const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
 
