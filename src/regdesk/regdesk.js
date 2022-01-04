@@ -8,6 +8,7 @@ import 'bootstrap-dark-5/dist/css/bootstrap-dark-plugin.min.css';
 import { RegMachineArgs } from './states/reg_machine_args.js';
 import { RegMachineManager } from './states/reg_machine_manager.js';
 import { CommunicationManager } from './communication_manager.js';
+import { PrinterConfigModal } from './printer_config_modal.js';
 import { ManualPrintModal } from './manual_print_modal.js';
 
 /**
@@ -18,6 +19,7 @@ import { ManualPrintModal } from './manual_print_modal.js';
  * @param {PrinterDropdown} o.adultDropdown - The dropdown object managing the Clear printer.
  * @param {PrinterDropdown} o.minorDropdown - The dropdown object managing the Minor printer.
  * @param {Navigator} o.nav - The browser Navigator.
+ * @param {PrinterConfigModal} o.configModal - The printer configuration modal.
  * @return {PrinterManager} - The resulting printer manager.
  */
 function configureManager({
@@ -25,8 +27,9 @@ function configureManager({
   adultDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage('adult', document)),
   minorDropdown = new PrinterDropdown(PrinterDropdown.getElementsOnPage('minor', document)),
   nav = navigator,
+  configModal = new PrinterConfigModal(document.getElementById('printerOptionModal')),
 } = {}) {
-  mgr = mgr || new PrinterManager(nav, adultDropdown, minorDropdown);
+  mgr = mgr || new PrinterManager(nav, adultDropdown, minorDropdown, configModal);
   return mgr;
 }
 

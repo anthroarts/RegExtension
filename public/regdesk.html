@@ -29,7 +29,9 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <li id="minorPrintKit"><a class="dropdown-item" href="#">Print KIT badge</a></li>
-                <li><hr class="dropdown-divider"/></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
                 <li id="minorPrintConnect"><a class="dropdown-item" href="#">Connect</a></li>
                 <li id="minorPrintDisconnect"><a class="dropdown-item" href="#">Disconnect</a></li>
                 <li id="minorPrintTest"><a class="dropdown-item" href="#">Print Test Page</a></li>
@@ -44,8 +46,11 @@
                 <span id="adultPrintIcon">❌</span> Adult <span id="adultPrintName">(No Printer)</span>
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li id="adultPrintManual"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#manualPrintModal">Make Manual Label</a></li>
-                <li><hr class="dropdown-divider"/></li>
+                <li id="adultPrintManual"><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                    data-bs-target="#manualPrintModal">Make Manual Label</a></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
                 <li id="adultPrintConnect"><a class="dropdown-item" href="#">Connect</a></li>
                 <li id="adultPrintDisconnect"><a class="dropdown-item" href="#">Disconnect</a></li>
                 <li id="adultPrintTest"><a class="dropdown-item" href="#">Print Test Page</a></li>
@@ -92,7 +97,8 @@
           </div>
           <div id="loadingSearchResultEmpty">
             <div class="alert alert-warning" role="alert">
-              No results found for "<span id="loadingSearchTextEmpty"></span>". Try searching again for their legal name, or direct attendee to the help line.
+              No results found for "<span id="loadingSearchTextEmpty"></span>". Try searching again for their legal
+              name, or direct attendee to the help line.
             </div>
           </div>
         </div>
@@ -116,7 +122,8 @@
               </div>
               <div class="col-md-9 offset-md-2">
                 <label class="form-label">Badge Preview</label>
-                <canvas id="regBadgePreview" class="form-control badge-canvas" id="canvas" width="589" height="193"></canvas>
+                <canvas id="regBadgePreview" class="form-control badge-canvas" id="canvas" width="589"
+                  height="193"></canvas>
               </div>
             </form>
           </div>
@@ -125,7 +132,8 @@
           <form class="row">
             <div class="col-md-12 alert alert-warning">
               <h4>Payment required</h4>
-              <p id="regUnpaidNotAccepting" class="d-none">This register is not accepting payments. Direct the attendee to one of the payment lines or the help line.</p>
+              <p id="regUnpaidNotAccepting" class="d-none">This register is not accepting payments. Direct the attendee
+                to one of the payment lines or the help line.</p>
             </div>
             <div class="col-md-4">
               <label for="regPreferredNameUnpaid" class="form-label">Preferred Name</label>
@@ -149,14 +157,16 @@
             <div class="col-md-4 d-grid">
               <label for="regMarkPaidBtn" class="form-label">Must pay before printing</label>
               <button id="regMarkPaidBtn" type="button" class="btn btn-lg btn-success">
-                <span id="regMarkPaidBtnSpinner" class="d-none spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span id="regMarkPaidBtnSpinner" class="d-none spinner-border spinner-border-sm" role="status"
+                  aria-hidden="true"></span>
                 <span id="regMarkPaidBtnTextSpinner" class="d-none">Marking paid...</span>
                 <span id="regMarkPaidBtnText">Mark as paid</span>
               </button>
             </div>
             <div class="col-md-9 offset-md-2">
               <label class="form-label">Badge Preview</label>
-              <canvas id="regBadgePreviewUnpaid" class="form-control badge-canvas" id="canvas" width="589" height="193"></canvas>
+              <canvas id="regBadgePreviewUnpaid" class="form-control badge-canvas" id="canvas" width="589"
+                height="193"></canvas>
             </div>
           </form>
         </div>
@@ -199,7 +209,77 @@
       </div>
     </div>
   </div>
-  <div id="manualPrintModal" class="modal fade" tabindex="-1" aria-labelledby="manualPrintModalTitle" aria-hidden="true">
+  <div id="printerOptionModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="printerSettingsForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Printer Settings For: <span id="printerSettingsSerial"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 alert alert-danger">
+                Do not change the configuration when the label dispenser is engaged. It will dispense many labels and
+                not stop. Ensure dispenser is disengaged before saving.
+              </div>
+              <div class="col-md-6">
+                <label for="printerSettingsLabelWidth" class="form-label">Label Width</label>
+                <div class="input-group mb-3">
+                  <input id="printerSettingsLabelWidth" type="text" class="form-control" placeholder="2.25"
+                    aria-label="Width" required pattern="\d+\.*\d*">
+                  <span class="input-group-text">in</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="printerSettingsLabelHeight" class="form-label">Label Height</label>
+                <div class="input-group mb-3">
+                  <input id="printerSettingsLabelHeight" type="text" class="form-control" placeholder="1.25"
+                    aria-label="Height" required pattern="\d+\.*\d*">
+                  <span class="input-group-text">in</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="printerSettingsDarkness" class="form-label">Print Darkness</label>
+                <select id="printerSettingsDarkness" class="form-select" aria-label="Darkness">
+                  <option value="1">1 - Lightest</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                  <option>13</option>
+                  <option>14</option>
+                  <option value="15">15 -Darkest</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="printerSettingsSpeed" class="form-label">Print Speed</label>
+                <select id="printerSettingsSpeed" class="form-select" aria-label="Speed">
+                  <option value="1">1.5ips</option>
+                  <option value="2">2.0ips</option>
+                  <option value="3">2.5ips</option>
+                  <option value="4">3.5ips</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-primary" value="Save">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="manualPrintModal" class="modal fade" tabindex="-1" aria-labelledby="manualPrintModalTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -232,7 +312,8 @@
             </div>
             <div class="mb-3 col-md-12">
               <label class="form-label">Badge Preview</label>
-              <canvas id="manualPrintBadgePreview" class="form-control badge-canvas" id="canvas" width="589" height="193"></canvas>
+              <canvas id="manualPrintBadgePreview" class="form-control badge-canvas" id="canvas" width="589"
+                height="193"></canvas>
             </div>
           </form>
         </div>
