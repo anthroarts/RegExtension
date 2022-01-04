@@ -8,6 +8,7 @@ import 'bootstrap-dark-5/dist/css/bootstrap-dark-plugin.min.css';
 import { RegMachineArgs } from './states/reg_machine_args.js';
 import { RegMachineManager } from './states/reg_machine_manager.js';
 import { CommunicationManager } from './communication_manager.js';
+import { ManualPrintModal } from './manual_print_modal.js';
 
 /**
  * Configure the printer manager for this page
@@ -39,6 +40,11 @@ document.addEventListener('readystatechange', async () => {
     printerMgr = configureManager();
     await printerMgr.refreshPrinters();
     await fontLoader;
+
+    const printModal = ManualPrintModal.getFromDocument(document);
+    printModal.addEventListener(ManualPrintModal.events.PRINT_LABEL, (e) => {
+      printerMgr.printLabelBuilder(e.detail);
+    });
 
     const commMgr = new CommunicationManager();
 
