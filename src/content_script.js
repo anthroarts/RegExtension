@@ -1,34 +1,33 @@
 /* eslint-disable require-jsdoc */
-import $ from 'jquery';
 
-function getBadgeLine1() {
-  const badgeLine1 = $('th:contains(\'Badge Line 1 Text\')');
+function getDetail(fieldName) {
+  const th = [...document.querySelectorAll('th')]
+    .filter((el) => el.textContent.indexOf(fieldName) > -1);
 
-  console.log('Badge line 1: ');
-  console.log(badgeLine1.length);
-
-  if (badgeLine1) {
-    console.log(badgeLine1.next().text());
-    return badgeLine1.next().text();
+  if (th.length > 0) {
+    return th[0].nextElementSibling.textContent;
   }
   return '&nbsp;';
+}
+
+function getBadgeLine1() {
+  const badgeLine1 = getDetail('Badge Line 1 Text');
+
+  console.log('Badge line 1: ');
+  console.log(badgeLine1);
+  return badgeLine1;
 }
 
 function getBadgeLine2() {
-  const badgeLine2 = $('th:contains(\'Badge Line 2 Text\')');
+  const badgeLine2 = getDetail('Badge Line 2 Text');
 
-  if (badgeLine2.length != 0) {
-    console.log(badgeLine2.next().text());
-    return badgeLine2.next().text();
-  }
-
-  return '&nbsp;';
+  console.log('Badge line 2: ');
+  console.log(badgeLine2);
+  return badgeLine2;
 }
 
 function getRegLevel() {
-  let regLevel = $('th:contains(\'Membership Levels\')');
-
-  regLevel = regLevel.next().text();
+  const regLevel = getDetail('Membership Levels');
 
   if (regLevel.includes('Friday') || regLevel.includes('Saturday') || regLevel.includes('Sunday')) {
     return regLevel.toUpperCase();
@@ -37,22 +36,18 @@ function getRegLevel() {
 }
 
 function getMinorStatus() {
-  const minorCell1 = $('th:contains(\'Age as of January 12, 2017\')');
-  const minorCell2 = $('th:contains(\'Age\')');
+  const birthDateString = getDetail('Date of Birth');
+  console.log('Date of birth:');
+  console.log(birthDateString);
 
-  const minorStatus = (minorCell1.length) ? minorCell1.next().text() : minorCell2.next().text();
-  const age = minorStatus.split('-')[0];
+  const birthDate = new Date(birthDateString);
+  const eighteenAsOfDate = new Date('2004-01-13');
 
-  console.log(minorCell1);
-  console.log(minorCell2);
-
-  let minorString = '&nbsp;';
-
-  if (age < 18) {
-    minorString = 'Minor';
+  if (birthDate > eighteenAsOfDate) {
+    return 'Minor';
   }
 
-  return minorString;
+  return '&nbsp;';
 }
 
 function getRegId() {
@@ -143,4 +138,8 @@ const ifdoc = iFrame.contentWindow.document;
 ifdoc.open();
 ifdoc.write(iFrameHtml);
 ifdoc.close();
+
+iFrame.contentWindow.onafterprint = () => {
+  iFrame.remove();
+};
 iFrame.contentWindow.print();
