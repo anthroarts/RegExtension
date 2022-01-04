@@ -1,6 +1,6 @@
 // This is used in doc comments..
 // eslint-disable-next-line no-unused-vars
-import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844';
+import { LabelEpl, LP2844 } from 'webzlp/src/LP2844';
 import { BadgeLabelBuilder } from './label_builder.js';
 import { PrinterDropdown } from './printer_dropdown.js';
 
