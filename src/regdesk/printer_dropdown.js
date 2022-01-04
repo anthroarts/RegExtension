@@ -14,6 +14,7 @@ export class PrinterDropdown extends EventTarget {
     return {
       CONNECT_PRINTER: 'CONNECT_PRINTER',
       PRINT_KIT_BADGE: 'PRINT_KIT_BADGE',
+      CONFIGURE_PRINTER: 'CONFIGURE_PRINTER',
     };
   }
   /**
@@ -98,7 +99,7 @@ export class PrinterDropdown extends EventTarget {
     this.#feedPrintElement.addEventListener('click', () => this.feedLabel());
 
     this.#configElement = configElement;
-    this.#connectElement.addEventListener('click', () => this.showConfig());
+    this.#configElement.addEventListener('click', this.#showConfig.bind(this));
 
     this.#kitBadgeElement = kitBadgeElement;
     this.#kitBadgeElement?.addEventListener('click', () => this.#printKitBadge());
@@ -121,6 +122,21 @@ export class PrinterDropdown extends EventTarget {
    */
   #printKitBadge() {
     const event = new CustomEvent(this.constructor.events.PRINT_KIT_BADGE);
+    this.dispatchEvent(event);
+  }
+
+  /**
+   * Show the configuration for this printer.
+   */
+  #showConfig() {
+    if (!this.#printer) {
+      console.error('No printer selected, can\'t configure.');
+      return;
+    }
+
+    const event = new CustomEvent(
+      this.constructor.events.CONFIGURE_PRINTER,
+      { detail: this.#printer });
     this.dispatchEvent(event);
   }
 
@@ -179,6 +195,7 @@ export class PrinterDropdown extends EventTarget {
   async printLabel(label) {
     if (!this.#printer) {
       console.error('No printer selected, can\'t print test page.');
+      return Promise.resolve();
     }
 
     return this.#printer.printLabel(label);
@@ -190,6 +207,7 @@ export class PrinterDropdown extends EventTarget {
   async printTest() {
     if (!this.#printer) {
       console.error('No printer selected, can\'t print test page.');
+      return Promise.resolve();
     }
 
     try {
@@ -205,6 +223,7 @@ export class PrinterDropdown extends EventTarget {
   async feedLabel() {
     if (!this.#printer) {
       console.error('No printer selected, can\'t feed a label.');
+      return Promise.resolve();
     }
 
     try {
@@ -212,13 +231,6 @@ export class PrinterDropdown extends EventTarget {
     } catch (error) {
       console.error('Failed to feed label.', error);
     }
-  }
-
-  /**
-   * Show the configuration for this printer.
-   */
-  showConfig() {
-    // idk figure out how to show the modal with the printer config.
   }
 
   /**

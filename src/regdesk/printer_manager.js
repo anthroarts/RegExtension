@@ -2,6 +2,8 @@
 // eslint-disable-next-line no-unused-vars
 import { LabelEpl, LP2844 } from 'WebZLP/src/LP2844';
 import { BadgeLabelBuilder } from './label_builder.js';
+// eslint-disable-next-line no-unused-vars
+import { PrinterConfigModal } from './printer_config_modal.js';
 import { PrinterDropdown } from './printer_dropdown.js';
 
 /**
@@ -11,6 +13,8 @@ export class PrinterManager {
   #adultDropdown;
   #minorDropdown;
   #dropdowns;
+
+  #printerConfigModal;
 
   #printerType = LP2844;
 
@@ -22,20 +26,31 @@ export class PrinterManager {
    * @param {Navigator} nav - Browser Navigator to hook up events to.
    * @param {PrinterDropdown} adultDropdown - The dropdown object managing the adult printer.
    * @param {PrinterDropdown} minorDropdown - The dropdown object managing the Minor printer.
+   * @param {PrinterConfigModal} printerConfigModal - The printer configuration modal.
    */
-  constructor(nav, adultDropdown, minorDropdown) {
+  constructor(nav, adultDropdown, minorDropdown, printerConfigModal) {
+    this.#printerConfigModal = printerConfigModal;
+
     this.#adultDropdown = adultDropdown;
     this.#adultDropdown.addEventListener(
       PrinterDropdown.events.CONNECT_PRINTER,
-      async (e) => this.handleRequestConnect(e));
+      this.handleRequestConnect.bind(this));
+    this.#adultDropdown.addEventListener(
+      PrinterDropdown.events.CONFIGURE_PRINTER,
+      this.handleConfigurePrinter.bind(this),
+    );
 
     this.#minorDropdown = minorDropdown;
     this.#minorDropdown.addEventListener(
       PrinterDropdown.events.CONNECT_PRINTER,
-      async (e) => this.handleRequestConnect(e));
+      this.handleRequestConnect.bind(this));
+    this.#minorDropdown.addEventListener(
+      PrinterDropdown.events.CONFIGURE_PRINTER,
+      this.handleConfigurePrinter.bind(this),
+    );
     this.#minorDropdown.addEventListener(
       PrinterDropdown.events.PRINT_KIT_BADGE,
-      () => this.printKitBadge());
+      this.printKitBadge.bind(this));
 
     // Convenience array
     this.#dropdowns = [this.#adultDropdown, this.#minorDropdown];
@@ -106,6 +121,14 @@ export class PrinterManager {
     }
 
     return printer;
+  }
+
+  /**
+   * Handle a request to configure a printer
+   * @param {CustomEvent} e - The event object
+   */
+  handleConfigurePrinter(e) {
+    this.#printerConfigModal.open(e.detail);
   }
 
   /**

@@ -197,6 +197,74 @@
       </div>
     </div>
   </div>
+  <div id="printerOptionModal" class="modal" tabindex="-1">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <form id="printerSettingsForm">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Printer Settings For: <span id="printerSettingsSerial"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-md-12 alert alert-danger">
+                        Do not change the configuration when the label dispenser is engaged. It will dispense many labels and not stop. Ensure dispenser is disengaged before saving.
+                      </div>
+                      <div class="col-md-6">
+                        <label for="printerSettingsLabelWidth" class="form-label">Label Width</label>
+                        <div class="input-group mb-3">
+                            <input id="printerSettingsLabelWidth" type="text" class="form-control" placeholder="2.25"
+                                aria-label="Width" required pattern="\d+\.*\d*">
+                            <span class="input-group-text">in</span>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="printerSettingsLabelHeight" class="form-label">Label Height</label>
+                        <div class="input-group mb-3">
+                            <input id="printerSettingsLabelHeight" type="text" class="form-control" placeholder="1.25"
+                                aria-label="Height" required pattern="\d+\.*\d*">
+                            <span class="input-group-text">in</span>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="printerSettingsDarkness" class="col-sm-6 col-form-label">Darkness</label>
+                        <select id="printerSettingsDarkness" class="form-select" aria-label="Darkness">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="printerSettingsSpeed" class="col-sm-5 col-form-label">Speed</label>
+                        <select id="printerSettingsSpeed" class="form-select" aria-label="Speed">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-primary" value="Save">
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
   <script src="regdesk.js"></script>
 </body>
 
