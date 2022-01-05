@@ -1,11 +1,13 @@
 import chai, { use, should, assert } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import { some } from 'lodash-es';
+import { randomUUID } from 'crypto';
 
 use(chaiAsPromised);
 should();
 const { expect } = chai;
 
-import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete } from '../../src/regfox/regfox_api.js';
+import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote } from '../../src/regfox/regfox_api.js';
 
 const loginForTest = async () => {
   const email = process.env.EMAIL;
@@ -30,15 +32,19 @@ const skippableFailure = (callback) => {
     });
   };
 };
+/* eslint-enable no-invalid-this */
+
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 it.allowFail = (title, callback) => {
-  it(title, skippableFailure(callback));
+  return it(title, skippableFailure(callback));
 };
 
 before.allowFail = (callback) => {
-  before(skippableFailure(callback));
+  return before(skippableFailure(callback));
 };
-/* eslint-enable no-invalid-this */
 
 describe('regfox_api (integration testing)', () => {
   it.allowFail('logs in', async () => {
@@ -53,6 +59,9 @@ describe('regfox_api (integration testing)', () => {
     const TEST_NAME = 'First Last';
     const TEST_CUSTOMER_ID = '1662788';
     const TEST_ID = '26564608';
+
+    const findTestRegistrant = (results) => results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
+
     let bearerToken = undefined;
     before.allowFail(async () => {
       bearerToken = (await loginForTest()).token.token;
@@ -70,7 +79,7 @@ describe('regfox_api (integration testing)', () => {
       assert.exists(bearerToken);
 
       const results = await searchRegistrations(TEST_NAME, bearerToken);
-      const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
+      const registrant = findTestRegistrant(results);
 
       expect(registrant).to.exist;
       expect(registrant.id).to.be.equal(TEST_ID);
@@ -80,7 +89,7 @@ describe('regfox_api (integration testing)', () => {
       assert.exists(bearerToken);
 
       const results = await searchRegistrations(TEST_NAME, bearerToken);
-      const registrant = results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
+      const registrant = findTestRegistrant(results);
       const registrantInfo = await getRegistrationInfo(registrant.id, bearerToken);
 
       expect(registrantInfo.notes).to.not.be.empty;
@@ -97,5 +106,33 @@ describe('regfox_api (integration testing)', () => {
 
       expect(result).to.be.empty; // TODO I don't have authorization, so it just returns {}, no errors or anything.
     });
+
+    // TODO add this in only when necessary, its a very ugly test.
+    it.skip('adds a note to a registration', async function () {
+      // Arrange
+      assert.exists(bearerToken);
+      const results = await searchRegistrations(TEST_NAME, bearerToken);
+      const registrant = findTestRegistrant(results);
+      const registrantInfo = await getRegistrationInfo(registrant.id, bearerToken);
+
+      // Act
+      const message = randomUUID();
+      const result = await addNote(message, registrantInfo.id, bearerToken);
+
+      // Regfox is eventually consistent.
+      let registrantInfoWithNote;
+      for (let i = 0; i < 10; i++) {
+        registrantInfoWithNote = await getRegistrationInfo(registrant.id, bearerToken);
+        if (registrantInfoWithNote.notes.length > registrantInfo.notes.length) {
+          break;
+        }
+        await sleep(3000); // And I mean /eventually/, this test on average takes 14 seconds...
+      }
+
+      // Assert
+      expect(result).to.include.keys('message', 'dateCreated');
+      expect(registrantInfoWithNote.notes).to.have.lengthOf(registrantInfo.notes.length + 1);
+      expect(some(registrantInfoWithNote.notes, { message })).to.be.true;
+    }).timeout(50000);
   });
 });

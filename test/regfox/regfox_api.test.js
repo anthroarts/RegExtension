@@ -7,13 +7,13 @@ const { expect } = chai;
 
 import { stub } from 'sinon';
 
-import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler } from '../mocks/mws_handler.js';
+import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler } from '../mocks/mws_handler.js';
 import { setupServer } from 'msw/node/lib/index.js';
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo, markRegistrationComplete } from '../../src/regfox/regfox_api.js';
+import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote } from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
@@ -204,7 +204,7 @@ describe('regfox_api', () => {
     it('returns data as requested');
 
     // TODO figure out what an unsuccessful response looks like!
-    it('handles a failure in marking a user as complete');
+    it('handles a failure in marking a registration as complete');
 
     it('handles an illegal bearerToken', async () => {
       getResponse.returns({
@@ -213,6 +213,41 @@ describe('regfox_api', () => {
       });
 
       return markRegistrationComplete(FORM_ID, REGISTRATION_ID, TRANSACTION_ID, ID, 'fake fake fake').should.eventually.be.rejected;
+    });
+  });
+
+  describe('addNote', () => {
+    const getResponse = stub();
+    const server = setupServer(...addNoteHandler(getResponse));
+    before(() => server.listen());
+    afterEach(() => getResponse.reset());
+    afterEach(() => server.resetHandlers());
+    after(() => server.close());
+
+    it('returns data as requested', async () => {
+      const message = 'Hello World';
+      const id = '12345';
+      getResponse.returns({
+        'id': 274860,
+        'createdBy': 144247,
+        'typeId': id,
+        'noteType': 5,
+        'visibility': 2,
+        'message': message,
+        'dateCreated': '2022-01-05T03:57:15.743859194Z',
+      });
+
+      const result = await addNote(message, id, 1234);
+      expect(result).to.include.keys('dateCreated', 'message');
+    });
+
+    it('handles an illegal request', async () => {
+      getResponse.returns({
+        code: 1000,
+        message: 'bad request',
+      });
+
+      return addNote(undefined, 'fake fake', 1234).should.eventually.be.rejected;
     });
   });
 });

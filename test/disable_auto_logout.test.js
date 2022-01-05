@@ -12,7 +12,8 @@ global.KeyboardEvent = class KeyboardEvent { };
 import { init } from '../src/disable_auto_logout.js';
 
 describe('disable_auto_logout', () => {
-  const clock = useFakeTimers();
+  let clock;
+  before(() => clock = useFakeTimers());
   beforeEach(() => global.window = { dispatchEvent: stub() });
   beforeEach(() => chrome.runtime.sendMessage.flush());
   beforeEach(() => init());
