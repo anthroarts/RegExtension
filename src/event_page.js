@@ -16,7 +16,22 @@ const getAllRegfoxTabs = async () => {
   return chrome.tabs.query(queryOptions);
 };
 
+const injectPrintButtonScript = (tabId, change) => {
+  // Change event only includes the details that actaully changed. We only want
+  // to inject this script
+  if (!change?.url?.match(/manage\.webconnex\.com\/a\/\d+\/reports\/orders\/\d+\/details/)) {
+    return;
+  }
+
+  chrome.scripting.executeScript({
+    target: { tabId: tabId },
+    files: ['detail_print.js'],
+  });
+};
+
 const init = () => {
+  chrome.tabs.onUpdated.addListener(injectPrintButtonScript);
+
   chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (request.type === MESSAGE_TYPE.printLegacy) {
       // TODO, should probably just use content scripts?
