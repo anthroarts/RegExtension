@@ -74,7 +74,7 @@ export class BadgeLabelBuilder {
       // Manually calculated offsets to figure out a good mapping for a label
       // with a width of 589px and height of 193px.
       // These will absolutely need to be recalculated for other sizes.
-      'line1': new LineOffset('center', true, LineOffset.fullLabelWidth, 110, LineOffset.centeredOnLabel, 50),
+      'line1': new LineOffset('center', true, LineOffset.fullLabelWidth, 108, LineOffset.centeredOnLabel, 52),
       'line2': new LineOffset('center', true, LineOffset.fullLabelWidth, 53, LineOffset.centeredOnLabel, 130),
       'level': new LineOffset('center', false, 400, 40, LineOffset.centeredOnLabel, 175),
       'minor': new LineOffset('right', false, 95, 20, 585, 180),
