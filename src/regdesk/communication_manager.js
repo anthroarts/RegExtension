@@ -1,4 +1,9 @@
+// eslint-disable-next-line no-unused-vars
+import { PrinterManager } from './printer_manager.js';
 import { TogglePaymentsBtn } from './toggle_payments_btn.js';
+
+import { MESSAGE_TYPE } from '../coms/communication.js';
+import { BadgeLabelBuilder } from './label_builder.js';
 
 /**
  * Manager for handling communication to the extension and APIs.
@@ -6,6 +11,7 @@ import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 export class CommunicationManager {
   #acceptingPayments;
   #togglePaymentsBtn;
+  #printerMgr;
 
   /**
    * Indicates whether this terminal is accepting payments.
@@ -16,14 +22,19 @@ export class CommunicationManager {
 
   /**
    * Iniitalizes a new instance of the CommunicationManager class.
-   * @param {TogglePaymentsBtn} togglePaymentsBtn - Button to toggle payment acceptance
+   * @param {PrinterManager} printerMgr - The printer manager to use for print requests.
+   * @param {TogglePaymentsBtn} togglePaymentsBtn - Button to toggle payment acceptance.
    */
-  constructor(togglePaymentsBtn) {
+  constructor(printerMgr, togglePaymentsBtn) {
+    this.#printerMgr = printerMgr;
+
     this.#acceptingPayments = false;
     this.#togglePaymentsBtn = togglePaymentsBtn;
     this.#togglePaymentsBtn.addEventListener(
       TogglePaymentsBtn.events.TOGGLE_PAYMENTS,
       this.#togglePayments.bind(this));
+
+    chrome.runtime.onMessage.addListener(this.#handleExtensionMessage.bind(this));
   }
 
   /**
@@ -71,6 +82,48 @@ export class CommunicationManager {
     // TODO: Assumes an array, who knows what we get back from the API though.
     // TODO: Whatever massaging necessary from the real API.
     return results;
+  }
+
+  /**
+   * Handle a request from the extension to print a label.
+   * @param {*} labelDetails - The label details to pass to a BadgeLabelBuilder.
+   * @return {*} Result object of the print request.
+   */
+  async #handleExtensionPrintRequest(labelDetails) {
+    if (!labelDetails) {
+      return { success: false };
+    }
+
+    const label = new BadgeLabelBuilder(labelDetails);
+
+    try {
+      await this.#printerMgr.printLabelBuilder(label);
+    } catch {
+      return { success: false };
+    }
+
+    return { success: true };
+  }
+
+  /**
+   * Handle messages from other extension components.
+   * @param {*} o - The request object.
+   * @param {string} o.type - The request type.
+   * @param {*} o.payload - The request payload.
+   * @param {*} sender - The sender of the event.
+   * @param {function(*)} callback - Callback message to response to the event sender.
+   * @return {boolean} - True to indicate this will response async.
+   */
+  #handleExtensionMessage({ type, payload }, sender, callback) {
+    console.debug('Received extension message', type, payload, sender);
+
+    switch (type) {
+    case MESSAGE_TYPE.printLabel:
+      this.#handleExtensionPrintRequest(payload?.labelDetails).then(callback);
+      break;
+    }
+
+    return true;
   }
 
   /**

@@ -51,7 +51,7 @@ document.addEventListener('readystatechange', async () => {
     });
 
     const togglePaymentsBtn = new TogglePaymentsBtn(document.getElementById('togglePaymentsBtn'));
-    const commMgr = new CommunicationManager(togglePaymentsBtn);
+    const commMgr = new CommunicationManager(printerMgr, togglePaymentsBtn);
 
     const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
 
