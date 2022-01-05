@@ -34,7 +34,12 @@ mutation AuthLoginMutation(
 }
 `;
 
-
+/**
+ * @return {*} a body object (graphql) that can be used to login.
+ *
+ * @param {string} email of the user to login
+ * @param {string} password of the user to login
+ */
 const buildAuthLoginMutationBody = (email, password) => {
   return {
     'operationName': 'AuthLoginMutation',
