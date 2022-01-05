@@ -1,14 +1,29 @@
+import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 /**
  * Manager for handling communication to the extension and APIs.
  */
 export class CommunicationManager {
+  #acceptingPayments;
+  #togglePaymentsBtn;
+
+  /**
+   * Indicates whether this terminal is accepting payments.
+   */
+  get acceptingPayments() {
+    return this.#acceptingPayments;
+  }
+
   /**
    * Iniitalizes a new instance of the CommunicationManager class.
+   * @param {TogglePaymentsBtn} togglePaymentsBtn - Button to toggle payment acceptance
    */
-  constructor() {
-    // TODO: Wire this up to a UI element
-    this.acceptingPayments = true;
+  constructor(togglePaymentsBtn) {
+    this.#acceptingPayments = false;
+    this.#togglePaymentsBtn = togglePaymentsBtn;
+    this.#togglePaymentsBtn.addEventListener(
+      TogglePaymentsBtn.events.TOGGLE_PAYMENTS,
+      this.#togglePayments.bind(this));
   }
 
   /**
@@ -56,6 +71,14 @@ export class CommunicationManager {
     // TODO: Assumes an array, who knows what we get back from the API though.
     // TODO: Whatever massaging necessary from the real API.
     return results;
+  }
+
+  /**
+   * Toggle the state of accepting payments.
+   * @param {CustomEvent} e - The event object
+   */
+  #togglePayments(e) {
+    this.#acceptingPayments = e.detail.acceptingPayments;
   }
 
   /**
