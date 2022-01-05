@@ -1,6 +1,7 @@
 // This is used in doc comments..
 // eslint-disable-next-line no-unused-vars
-import { LabelEpl, LP2844 } from 'webzlp/src/LP2844';
+import { LabelEpl } from 'webzlp/src/LabelEpl';
+import { LP2844 } from 'webzlp/src/LP2844';
 import { BadgeLabelBuilder } from './label_builder.js';
 // eslint-disable-next-line no-unused-vars
 import { PrinterConfigModal } from './printer_config_modal.js';
@@ -247,7 +248,7 @@ export class PrinterManager {
     }
 
     const labelImage = builder.renderToImageSizedToLabel(label.labelWidthDots, label.labelHeightDots);
-    label.setOffset(labelImage.widthOffset).addImage(labelImage.canvasData);
+    label.setOffset(labelImage.widthOffset, 8).addImage(labelImage.canvasData);
 
     if (builder.isMinor) {
       return this.printMinorLabel(label);

@@ -59,6 +59,7 @@ export class PrinterConfigModal {
     await this.printer.configSpeed(this.printerSpeed.value);
     await this.printer.configPrintDirection();
     await this.printer.configLabelWidth();
-    await this.printer.setLabelHeightCalibration();
+    // Sets the label length with a label gap of 25 dots.
+    await this.printer.addCmd(`Q${this.printer.labelHeightDots + 5},25`).print();
   }
 }
