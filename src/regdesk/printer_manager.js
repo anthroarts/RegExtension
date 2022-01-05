@@ -119,6 +119,7 @@ export class PrinterManager {
     } catch (e) {
       // TODO: Display something more useful.
       console.error('Failed to connect to printer, ', e);
+      return undefined;
     }
 
     return printer;
@@ -293,7 +294,9 @@ export class PrinterManager {
       // Connect to the printers and hand them off for assignment to dropdowns.
       return Promise.all(devices.map(async (device) => {
         const printer = await this.handleConnectPrinter({ device });
-        await this.assignPrinter(printer);
+        if (printer) {
+          await this.assignPrinter(printer);
+        }
       }));
     });
   }
