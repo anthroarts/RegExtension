@@ -3,7 +3,7 @@ import { PrinterManager } from './printer_manager.js';
 import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 import { MESSAGE_TYPE } from '../coms/communication.js';
-import { BadgeLabelBuilder } from './label_builder.js';
+import { RegistrantDetails } from './registrant_details.js';
 
 /**
  * Manager for handling communication to the extension and APIs.
@@ -40,7 +40,7 @@ export class CommunicationManager {
   /**
    * Search for a registrant by name, populating the result if available.
    * @param {string} searchString - The string to search for.
-   * @return {Promise<*[]>} The promise that will return the search results.
+   * @return {Promise<RegistrantDetails[]>} The promise that will return the search results.
    */
   startSearchForRegByName(searchString) {
     // Start the search process, internally storing the promise and handling
@@ -56,7 +56,7 @@ export class CommunicationManager {
     const arr = [];
     const len = Math.floor(Math.random() * (4));
     for (let i = 0; i < len; i++) {
-      arr.push(this.#tempGetRandomReg());
+      arr.push(this.#testGetRandomReg());
     }
 
     return new Promise((resolve) => setTimeout(resolve, 500))
@@ -66,7 +66,7 @@ export class CommunicationManager {
 
   /**
    * Mark a registratnt as paid.
-   * @param {*} reg - The registrant to mark as paid.
+   * @param {RegistrantDetails} reg - The registrant to mark as paid.
    */
   async markRegistrantAsPaid(reg) {
     // TODO: Do it!
@@ -76,7 +76,7 @@ export class CommunicationManager {
   /**
    * Handle the results from a search.
    * @param {*} results - The results.
-   * @return {*[]} - The array of results.
+   * @return {RegistrantDetails[]} - The array of results.
    */
   handleSearchResults(results) {
     // TODO: Assumes an array, who knows what we get back from the API though.
@@ -86,15 +86,15 @@ export class CommunicationManager {
 
   /**
    * Handle a request from the extension to print a label.
-   * @param {*} labelDetails - The label details to pass to a BadgeLabelBuilder.
-   * @return {*} Result object of the print request.
+   * @param {RegistrantDetails} reg - The reg to print the label for.
+   * @return { {success: boolean } } Result object of the print request.
    */
-  async #handleExtensionPrintRequest(labelDetails) {
-    if (!labelDetails) {
+  async #handleExtensionPrintRequest(reg) {
+    if (!reg) {
       return { success: false };
     }
 
-    const label = new BadgeLabelBuilder(labelDetails);
+    const label = reg.label;
 
     try {
       await this.#printerMgr.printLabelBuilder(label);
@@ -107,22 +107,32 @@ export class CommunicationManager {
 
   /**
    * Handle messages from other extension components.
-   * @param {*} o - The request object.
+   * @param {object} o - The request object.
    * @param {string} o.type - The request type.
    * @param {*} o.payload - The request payload.
-   * @param {*} sender - The sender of the event.
+   * @param {chrome.runtime.MessageSender} sender - The sender of the event.
    * @param {function(*)} callback - Callback message to response to the event sender.
    * @return {boolean} - True to indicate this will response async.
    */
   #handleExtensionMessage({ type, payload }, sender, callback) {
     console.debug('Received extension message', type, payload, sender);
 
+    // NOTE: Any object that is passed through the message system will STRIP all
+    // public methods on all objects, recursively! This means objects can't be
+    // used directly and MUST be copied to FRESH instances. Create copy constructors
+    // where necessary to accomplish this.
+
     switch (type) {
     case MESSAGE_TYPE.printLabel:
-      this.#handleExtensionPrintRequest(payload?.labelDetails).then(callback);
+      const reg = RegistrantDetails.copy(payload?.registrantDetails);
+      this.#handleExtensionPrintRequest(reg).then(callback);
+      break;
+    default:
+      console.warning(`Received message with unknown type '${type}', dropping.`);
       break;
     }
 
+    // Indicates we will run the callback async.
     return true;
   }
 
@@ -138,17 +148,20 @@ export class CommunicationManager {
    * Temp method to generate random values.
    * @return {string} Random string
    */
-  #tempGetRandomReg() {
+  #testGetRandomReg() {
     const r = (l) => (Math.random().toString(36)+'00000000000000000').slice(2, l+2);
-    return {
+    return new RegistrantDetails({
       preferredName: r(5),
       legalName: r(10),
       birthdate: '1994-05-22',
       amountDue: 50,
       badgeLine1: r(8),
-      badgeLine2: r(20),
+      badgeLine2: r(8) + r(8),
+      badgeId: '12345678',
+      conbookCount: 1,
       sponsorLevel: 'Sponsor',
-      regNumber: '12345678',
-    };
+      checkinDate: undefined,
+      paymentStatus: 'completed',
+    });
   }
 }
