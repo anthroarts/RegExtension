@@ -3,16 +3,20 @@ const MESSAGE_TYPE = {
   changeLogout: 'change-logout-plz', // payload is a boolean
   finishLoad: 'load-plz', // payload is the name of the script that just loaded
   printLegacy: 'print-legacy-plz', // payload is undefined
+  printLabel: 'print-label-plz', // payload is a BadgeLabelBuilder.
 };
 
 /**
- * Sends a message to the background script. Technically asynchronous, and technically the popup can listen in on these.
+ * Sends a message to the background script. Technically asynchronous, and
+ * technically the popup can listen in on these.
  *
  * @param {*} type one of MESSAGE_TYPES
  * @param {*} payload whatever object you want
+ * @param {function(*?)} callback - Optional response handler for a response from
+ * the message handler.
  */
-const sendBackgroundScriptAMessage = (type, payload) => {
-  chrome.runtime.sendMessage({ type, payload });
+const sendBackgroundScriptAMessage = (type, payload, callback) => {
+  chrome.runtime.sendMessage({ type, payload }, callback);
 };
 
 /**
