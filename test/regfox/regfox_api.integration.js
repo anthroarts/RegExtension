@@ -7,7 +7,7 @@ use(chaiAsPromised);
 should();
 const { expect } = chai;
 
-import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote } from '../../src/regfox/regfox_api.js';
+import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote, checkIn } from '../../src/regfox/regfox_api.js';
 
 const loginForTest = async () => {
   const email = process.env.EMAIL;
@@ -134,5 +134,15 @@ describe('regfox_api (integration testing)', () => {
       expect(registrantInfoWithNote.notes).to.have.lengthOf(registrantInfo.notes.length + 1);
       expect(some(registrantInfoWithNote.notes, { message })).to.be.true;
     }).timeout(50000);
+
+    it.allowFail('successfully checks in a registrant', async function () {
+      assert.exists(bearerToken);
+      const results = await searchRegistrations(TEST_NAME, bearerToken);
+      const registrant = findTestRegistrant(results);
+
+      const result = await checkIn(registrant.id, bearerToken);
+
+      expect(result).to.deep.equal({ 'status': 'OK' });
+    });
   });
 });

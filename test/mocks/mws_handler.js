@@ -1,5 +1,5 @@
 import { graphql, rest } from 'msw';
-import { TEST_REGFOX_GRAPHQL_URL, TEST_REGFOX_EXCHANGE_TOKEN_URL, testGetRegistrationInfoUrl, testGetMarkRegistrationCompleteUrl, TEST_REGFOX_ADD_NOTE_URL } from '../../src/regfox/regfox_api.js';
+import { TEST_REGFOX_GRAPHQL_URL, TEST_REGFOX_EXCHANGE_TOKEN_URL, testGetRegistrationInfoUrl, testGetMarkRegistrationCompleteUrl, TEST_REGFOX_ADD_NOTE_URL, testGetCheckInUrl } from '../../src/regfox/regfox_api.js';
 
 const regfox = graphql.link(TEST_REGFOX_GRAPHQL_URL);
 
@@ -63,4 +63,18 @@ const addNoteHandler = (getResponse) => {
   ];
 };
 
-export { getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler };
+const checkInHandler = (id, getResponse) => {
+  return [
+    rest.post(testGetCheckInUrl(id), (req, res, ctx) => {
+      const response = getResponse(req);
+      const resObj = response ? ctx.json(response) : ctx.status(200);
+
+      return res(resObj);
+    }),
+  ];
+};
+
+export {
+  getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler,
+  getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler, checkInHandler
+};

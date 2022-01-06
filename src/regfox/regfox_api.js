@@ -5,6 +5,7 @@ import { parseRegfoxGetRegistrationResponse } from './responses/regfox_api_get_r
 import { buildMarkRegistrationCompleteBody } from './payloads/regfox_api_mark_registration_complete_body.js';
 import { buildAddNoteBody } from './payloads/regfox_api_add_note.js';
 
+const REGFOX_CHECK_IN_URL = 'https://api.webconnex.com/v1/cp/registrants/${id}/check-in';
 const REGFOX_ADD_NOTE_URL = 'https://api.webconnex.com/v1/cp/notes';
 const REGFOX_MARK_REGISTRATION_COMPLETE_URL = 'https://api.webconnex.com/v1/cp/forms/${formId}/registrations/${registrationId}';
 const REGFOX_GET_REGISTRATION_URL = 'https://api.webconnex.com/v1/cp/report/regfox.com/registrant/${id}';
@@ -170,6 +171,41 @@ const addNote = async (message, id, bearerToken) => {
     .then(handleBadResponseCodes);
 };
 
+/**
+ * Returns an {status: "OK"} upon success.
+ * Returns a promise Error if the network is down or the check in was unsuccessful.
+ *
+ * You can call this method over and over again, it will still return 200/OK.
+ *
+ * @param {string} id of registration (**not** the RegistrationId)
+ * @param {string} bearerToken the bearer token of the logged in user
+ */
+const checkIn = async (id, bearerToken) => {
+  return fetch(getCheckInUrl(id), {
+    method: 'POST',
+    headers: buildHeaders(bearerToken),
+  }).then(async (response) => {
+    const contentType = response.headers.get('content-type');
+
+    // This API is weird in that it will return "" (an empty string, not a json object)
+    // occasionally and we are expected to treat that as a success.
+    if (contentType && contentType === 'application/json') {
+      const json = await response.json();
+      handleBadResponseCodes(json);
+      if (get(response, 'code') === 1000 && get(response, 'message') !== 'already checked in') {
+        // Make this endpoint idempotent and RESTful.
+        throw new Error(`Could not parse or process response, see details to fix here: ${JSON.stringify(response)}`);
+      }
+    }
+
+    return { 'status': 'OK' };
+  });
+};
+
+const getCheckInUrl = (id) => {
+  return REGFOX_CHECK_IN_URL.replace('${id}', id);
+};
+
 const handleBadResponseCodes = (response) => {
   if (get(response, 'code') === 1000 && get(response, 'message') === 'unauthorized request') {
     throw new Error(`Illegal bearerToken passed in: ${JSON.stringify(response)}`);
@@ -184,7 +220,7 @@ const handleBadResponseCodes = (response) => {
 
 export {
   getRegistrationInfo, searchRegistrations, exchangeBearerToken,
-  login, markRegistrationComplete, addNote,
+  login, markRegistrationComplete, addNote, checkIn,
 
   // Only exported for testing, DONT USE THESE OTHERWISE!
   REGFOX_GRAPHQL_URL as TEST_REGFOX_GRAPHQL_URL,
@@ -192,4 +228,5 @@ export {
   REGFOX_ADD_NOTE_URL as TEST_REGFOX_ADD_NOTE_URL,
   getRegistrationInfoUrl as testGetRegistrationInfoUrl,
   getMarkRegistrationCompleteUrl as testGetMarkRegistrationCompleteUrl,
+  getCheckInUrl as testGetCheckInUrl,
 };
