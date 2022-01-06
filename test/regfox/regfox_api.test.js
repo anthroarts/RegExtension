@@ -7,13 +7,20 @@ const { expect } = chai;
 
 import { stub } from 'sinon';
 
-import { exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler, getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler } from '../mocks/mws_handler.js';
+import {
+  exchangeBearerTokenHandler, getRegistrantsSearchHandler, loginHandler,
+  getRegistrationInfoHandler, markRegistrationCompleteHandler,
+  addNoteHandler, checkInHandler,
+} from '../mocks/mws_handler.js';
 import { setupServer } from 'msw/node/lib/index.js';
 
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote } from '../../src/regfox/regfox_api.js';
+import {
+  exchangeBearerToken, searchRegistrations, login, getRegistrationInfo,
+  markRegistrationComplete, addNote, checkIn,
+} from '../../src/regfox/regfox_api.js';
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
@@ -248,6 +255,45 @@ describe('regfox_api', () => {
       });
 
       return addNote(undefined, 'fake fake', 1234).should.eventually.be.rejected;
+    });
+  });
+
+  describe('checkIn', () => {
+    const ID = 12345312;
+
+    const getResponse = stub();
+    const server = setupServer(...checkInHandler(ID, getResponse));
+    before(() => server.listen());
+    afterEach(() => getResponse.reset());
+    afterEach(() => server.resetHandlers());
+    after(() => server.close());
+
+    it('returns data as requested', async () => {
+      getResponse.returns();
+
+      const result = await checkIn(ID, 1234);
+
+      expect(result).to.deep.equal({ 'status': 'OK' });
+    });
+
+    it('handles an illegal request', async () => {
+      getResponse.returns({
+        code: 1000,
+        message: 'bad request',
+      });
+
+      return checkIn(ID, 1234).should.eventually.be.rejected;
+    });
+
+    it('handles a duplicate request', async () => {
+      getResponse.returns({
+        code: 1000,
+        message: 'already checked in',
+      });
+
+      const result = await checkIn(ID, 1234);
+
+      expect(result).to.deep.equal({ 'status': 'OK' });
     });
   });
 });
