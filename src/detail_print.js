@@ -1,6 +1,7 @@
 console.debug('Injected detail print script');
 
 import { sendBackgroundScriptAMessage, MESSAGE_TYPE } from './coms/communication.js';
+import { RegistrantDetails } from './regdesk/registrant_details.js';
 
 /**
  * Wait for an element to be present on the page.
@@ -19,22 +20,13 @@ async function waitForElement(selector) {
 }
 
 /**
- * Returns a value indicating whether the payment is complete.
- * @return {boolean} Whether payment is completed
- */
-function isPaymentCompleted() {
-  const payStatus = document.querySelector('tr[ng-if*="report.statusString"] > td').textContent;
-  return payStatus === 'Completed';
-}
-
-/**
  * Get the details for a reg data table entry.
  * @param {string} fieldName - The text field name from the reg details table
  * @return {string} The value of the table
  */
 function getDetail(fieldName) {
-  const regDetailTable = document.querySelector('div[ng-include*="data.html"] > table');
-  const th = [...regDetailTable.querySelectorAll('th')]
+  // const regDetailTable = document.querySelector('div[ng-include*="data.html"] > table');
+  const th = [...document.querySelectorAll('th')]
     .filter((el) => el.textContent.indexOf(fieldName) > -1);
 
   if (th.length > 0) {
@@ -44,38 +36,39 @@ function getDetail(fieldName) {
 }
 
 /**
- * Get an age in years between the birthdate and today.
- * @param {string} birthdate - The raw birthdate string, in YYYY-mm-dd format.
- * @param {Date} today - The 'today' value to use. Defaults to new Date().
- * @return {number} - Age in years between the birthdate and today.
+ * Get the details for a registrant off the page.
+ * @return {RegistrantDetails} The registrant details.
  */
-function getAge(birthdate, today = new Date()) {
-  // TODO: This method should move to a dedicated Registrant class.
-  const yearInMs = 3.15576e+10;
-  return Math.floor((today - new Date(birthdate).getTime()) / yearInMs);
-}
+function getRegDetails() {
+  // Check in is special in that it includes buttons. We want just the direct node text.
+  const rawCheckInData = getDetail('Checked In Status');
+  const checkSplit = rawCheckInData.split('\n');
+  let checkinDate = rawCheckInData;
+  if (checkSplit.length > 0) {
+    checkinDate = checkSplit[1].trim();
+  }
 
-/**
- * Get the details for a badge.
- * @return {*} The details to populate a BadgeLabelBuilder
- */
-function getBadgeDetails() {
-  const dob = getDetail('Date of Birth');
-  const age = getAge(dob);
-  return {
-    line1: getDetail('Badge Line 1 Text'),
-    line2: getDetail('Badge Line 2 Text'),
-    level: getDetail('Membership Levels'),
+  return new RegistrantDetails({
     badgeId: document.location.href.split('/').pop(),
-    isMinor: (age < 18),
-  };
+    badgeLine1: getDetail('Badge Line 1 Text'),
+    badgeLine2: getDetail('Badge Line 2 Text'),
+    sponsorLevel: getDetail('Membership Levels'),
+    birthdate: getDetail('Date of Birth'),
+    legalName: getDetail('Legal Name'),
+    preferredName: getDetail('Preferred first name'),
+    checkinDate: checkinDate,
+    conbookCount: getDetail('Souvenir Conbook'),
+    paymentStatus: getDetail('Status'),
+  });
 }
 
 /**
  * Send a request to print a badge to the RegDesk page and printers.
  */
 function printBadge() {
-  if (!isPaymentCompleted()) {
+  const regDetails = getRegDetails();
+
+  if (!regDetails.isPaid) {
     // Most reliable way to ask the user..
     const bypassPayment = window.confirm('The payment status in not "Completed". Are you sure you want to print this badge?');
     if (!bypassPayment) {
@@ -83,12 +76,11 @@ function printBadge() {
     }
   }
 
-  const labelDetails = getBadgeDetails();
-  console.log(labelDetails);
+  console.debug('Sending reg details to printer.', regDetails);
 
   sendBackgroundScriptAMessage(
     MESSAGE_TYPE.printLabel,
-    { labelDetails: labelDetails },
+    { registrantDetails: regDetails },
     (r) => {
       if (!r.success) {
         // Not great, but the most reliable way to pop up a dialog.
