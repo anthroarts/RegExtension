@@ -8,8 +8,10 @@ import { sendBackgroundScriptAMessage, MESSAGE_TYPE } from './coms/communication
  * @return {Element} The element being waited for
  */
 async function waitForElement(selector) {
+  let failLimit = 40; // 40 = 8 seconds.
   let element = document.querySelector(selector);
-  while (!element) {
+  while (!element && failLimit > 0) {
+    failLimit--;
     element = document.querySelector(selector);
     await new Promise((r) => setTimeout(r, 200));
   }
