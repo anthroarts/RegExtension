@@ -18,7 +18,7 @@ const getAllRegfoxTabs = async () => {
 
 const injectPrintButtonScript = (tabId, change) => {
   // Change event only includes the details that actaully changed. We only want
-  // to inject this script
+  // to inject this script on the right page.
   if (!change?.url?.match(/manage\.webconnex\.com\/a\/\d+\/reports\/orders\/\d+\/details/)) {
     return;
   }
