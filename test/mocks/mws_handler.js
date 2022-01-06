@@ -76,5 +76,5 @@ const checkInHandler = (id, getResponse) => {
 
 export {
   getRegistrantsSearchHandler, exchangeBearerTokenHandler, loginHandler,
-  getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler, checkInHandler
+  getRegistrationInfoHandler, markRegistrationCompleteHandler, addNoteHandler, checkInHandler,
 };
