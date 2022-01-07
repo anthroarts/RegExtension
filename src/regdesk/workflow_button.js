@@ -13,6 +13,8 @@ export class WorkflowButton {
   #transitionEventTarget;
   #transitionEvent;
 
+  #clickCallback;
+
   #buttonClickEvent = 'click';
 
   /**
@@ -45,6 +47,22 @@ export class WorkflowButton {
   }
 
   /**
+   * Clear the callback to call when the button is clicked.
+   * If you intend to clear the transition callback use clearTransitionCallback instead.
+   */
+  clearClickCallback() {
+    this.#clickCallback = undefined;
+  }
+
+  /**
+   * Set a callback to call when the button is clicked.
+   * @param {function()} callback - The callback to call.
+   */
+  setClickCallback(callback) {
+    this.#clickCallback = callback;
+  }
+
+  /**
    * Remove the transition callback registered on the button.
    * @return {WorkflowButton} - This button.
    */
@@ -70,9 +88,13 @@ export class WorkflowButton {
   /**
    * Dispatch a click event, if relevant to do so.
    */
-  handleClickEvent() {
+  async handleClickEvent() {
+    if (this.#clickCallback) {
+      await this.#clickCallback();
+    }
+
     if (this.#transitionEventTarget) {
-      // Only should be attempted if we acutally have a target.
+      // Only should be attempted if we actually have a target.
       this.#transitionEventTarget.dispatchTransition(
         this.#transitionEvent,
       );

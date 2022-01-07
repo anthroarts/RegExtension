@@ -1,3 +1,5 @@
+// eslint-disable-next-line no-unused-vars
+import { RegistrantDetails } from '../registrant_details.js';
 import { RegState } from './reg_state.js';
 
 /**
@@ -14,6 +16,7 @@ export class MultipleResultState extends RegState {
     };
   }
 
+  /** @type {RegistrantDetails[]} */
   #latestResults = [];
 
   /**
@@ -37,7 +40,7 @@ export class MultipleResultState extends RegState {
 
   /**
    * Enter this state.
-   * @param {CustomEvent} e - Event that resulted in this state.
+   * @param {CustomEvent<{searchResults: RegistrantDetails[]}>} e - Event that resulted in this state.
    */
   enterState(e) {
     this.show(this.screenRow);
@@ -55,8 +58,7 @@ export class MultipleResultState extends RegState {
       clone.querySelector('input[name=preferredName]').value = reg.preferredName;
       clone.querySelector('input[name=legalName]').value = reg.legalName;
       clone.querySelector('input[name=dob]').value = reg.birthdate;
-      const age = this.#getAge(reg.birthdate);
-      clone.querySelector('span[name=age]').textContent = age;
+      clone.querySelector('span[name=age]').textContent = reg.age;
       clone.querySelector('input[name=resultId]').value = index;
 
       const form = clone.querySelector('form');

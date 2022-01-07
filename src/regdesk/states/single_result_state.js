@@ -1,6 +1,10 @@
-import { RegState } from './reg_state.js';
-
+// eslint-disable-next-line no-unused-vars
 import { BadgeLabelBuilder } from '../label_builder.js';
+// eslint-disable-next-line no-unused-vars
+import { RegistrantDetails } from '../registrant_details.js';
+// eslint-disable-next-line no-unused-vars
+import { PrinterManager } from '../printer_manager.js';
+import { RegState } from './reg_state.js';
 
 /**
  * Loading state
@@ -35,7 +39,7 @@ export class SingleResultState extends RegState {
 
   /**
    * Enter this state.
-   * @param {CustomEvent} e - Event that resulted in this state.
+   * @param {CustomEvent<{searchResult: RegistrantDetails}>} e - Event that resulted in this state.
    */
   enterState(e) {
     this.show(this.screenRow);
@@ -50,17 +54,12 @@ export class SingleResultState extends RegState {
     this.regPreferredName.value = searchResult.preferredName;
     this.regLegalName.value = searchResult.legalName;
     this.regBirthdate.value = searchResult.birthdate;
-    const age = this.#getAge(searchResult.birthdate);
-    this.regAge.textContent = age;
+    this.regAge.textContent = searchResult.age;
 
-    const label = new BadgeLabelBuilder({
-      line1: searchResult.badgeLine1,
-      line2: searchResult.badgeLine2,
-      badgeId: searchResult.regNumber,
-      level: searchResult.sponsorLevel,
-      isMinor: (age < 18),
-    });
+    const label = searchResult.label;
     label.renderToImageData(this.badgeCanvas.width, this.badgeCanvas.height, this.badgeCanvas);
+
+    this.printButton.setClickCallback(this.printLabel.bind(this));
   }
 
   /**
@@ -71,17 +70,15 @@ export class SingleResultState extends RegState {
     this.cancelButton.clearTransitionCallback();
     const ctx = this.badgeCanvas.getContext('2d');
     ctx.clearRect(0, 0, this.badgeCanvas.width, this.badgeCanvas.height);
+
+    this.printButton.clearClickCallback();
   }
 
   /**
-   * Get an age in years between the birthdate and today.
-   * @param {string} birthdate - The raw birthdate string, in YYYY-mm-dd format.
-   * @param {Date} today - The 'today' value to use. Defaults to new Date().
-   * @return {number} - Age in years between the birthdate and today.
+   * Print the label from the latest result.
    */
-  #getAge(birthdate, today = new Date()) {
-    // TODO: This method should move to a dedicated Registrant class.
-    const yearInMs = 3.15576e+10;
-    return Math.floor((today - new Date(birthdate).getTime()) / yearInMs);
+  async printLabel() {
+    const label = this.#currentResult.label;
+    await this.printerManager.printLabelBuilder(label);
   }
 }
