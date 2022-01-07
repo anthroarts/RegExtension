@@ -25,7 +25,6 @@ async function waitForElement(selector) {
  * @return {string} The value of the table
  */
 function getDetail(fieldName) {
-  // const regDetailTable = document.querySelector('div[ng-include*="data.html"] > table');
   const th = [...document.querySelectorAll('th')]
     .filter((el) => el.textContent.indexOf(fieldName) > -1);
 
