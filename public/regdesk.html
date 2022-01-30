@@ -17,8 +17,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid container-no-gutter d-flex">
         <div class="navbar-nav nav-item dropdown">
-          <a class="nav-link dropdown-toggle active" href="#" id="connectConfig" role="button"
-            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+          <a class="nav-link dropdown-toggle active" href="#" id="connectConfig" role="button" data-bs-toggle="dropdown"
+            data-bs-auto-close="outside" aria-expanded="false">
             <span id="regfoxStatusIcon">✔</span> RegFox Status: <span id="regfoxsTatusText">Connected</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="connectConfig">
@@ -333,6 +333,32 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button id="manualPrintModalBtn" type="button" class="btn btn-primary">🖨 Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="loginModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalTitle">Log in</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row" id="loginForm">
+            <div class="col-md-9">
+              <label for="loginEmail" class="form-label">Email</label>
+              <input class="form-control form-control-lg" id="loginEmail" type="text" />
+            </div>
+            <div class="col-md-9">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input class="form-control form-control-lg" id="loginPassword" type="password" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Work Offline</button>
+          <button id="loginBtn" type="button" class="btn btn-primary">Login</button>
         </div>
       </div>
     </div>

@@ -5,12 +5,15 @@ import { BadgeLabelBuilder } from './label_builder.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-dark-5/dist/css/bootstrap-dark-plugin.min.css';
+
 import { RegMachineArgs } from './states/reg_machine_args.js';
 import { RegMachineManager } from './states/reg_machine_manager.js';
 import { CommunicationManager } from './communication_manager.js';
 import { PrinterConfigModal } from './printer_config_modal.js';
 import { ManualPrintModal } from './manual_print_modal.js';
 import { TogglePaymentsBtn } from './toggle_payments_btn.js';
+
+import { LoginModal } from './login/login_modal.js';
 
 /**
  * Configure the printer manager for this page
@@ -56,6 +59,9 @@ document.addEventListener('readystatechange', async () => {
     const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
 
     regStateMachine = new RegMachineManager(stateArgs);
+
+    const loginModal = LoginModal.getFromDocument(document, () => console.log('yay'));
+    loginModal.showModal();
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text
