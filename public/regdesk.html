@@ -337,12 +337,11 @@
       </div>
     </div>
   </div>
-  <div id="loginModal" class="modal fade" tabindex="-1">
+  <div id="loginModal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="loginModalTitle">Log in</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form class="row" id="loginForm">
@@ -356,7 +355,7 @@
             </div>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Work Offline</button>
           <button id="loginBtn" type="button" class="btn btn-primary">Login</button>
         </div>
