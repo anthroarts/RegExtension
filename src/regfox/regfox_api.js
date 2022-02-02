@@ -218,10 +218,12 @@ const handleBadResponseCodes = (response) => {
   return response;
 };
 
-export {
+export const RegfoxApi = {
   getRegistrationInfo, searchRegistrations, exchangeBearerToken,
   login, markRegistrationComplete, addNote, checkIn,
+};
 
+export {
   // Only exported for testing, DONT USE THESE OTHERWISE!
   REGFOX_GRAPHQL_URL as TEST_REGFOX_GRAPHQL_URL,
   REGFOX_EXCHANGE_TOKEN_URL as TEST_REGFOX_EXCHANGE_TOKEN_URL,

@@ -1,4 +1,4 @@
-import { login } from '../../regfox/regfox_api.js';
+import { RegfoxApi } from '../../regfox/regfox_api.js';
 
 const STORAGE_LOCAL_KEY = 'regfox-bearer-details';
 
@@ -19,7 +19,6 @@ export class LoginManager {
    * @param {*} bearerDetails which includes the bearerToken, and the TTL.
    */
   async #setBearerDetails(bearerDetails) {
-    console.log(bearerDetails);
     await chrome.storage.local.set({ [STORAGE_LOCAL_KEY]: bearerDetails });
   }
 
@@ -50,7 +49,7 @@ export class LoginManager {
    * @param {*} password from the login modal.
    */
   async login(email, password) {
-    const loginResponse = await login(email, password);
+    const loginResponse = await RegfoxApi.login(email, password);
     const now = new Date();
     const ttl = now.setMinutes(now.getMinutes() + 10);
     const bearerDetails = { bearerToken: loginResponse.token.token, ttl };
