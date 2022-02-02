@@ -1,5 +1,6 @@
 import { use, should, expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import { stub, useFakeTimers } from 'sinon';
 
 use(chaiAsPromised);
 should();
@@ -7,13 +8,22 @@ should();
 import chrome from 'sinon-chrome';
 global.chrome = chrome;
 
+import { RegfoxApi } from '../../../src/regfox/regfox_api.js';
 import { LoginManager } from '../../../src/regdesk/login/login_manager.js';
 
 describe('regdesk_login_manager', () => {
-  const loginManager = new LoginManager();
-
+  let clock;
+  let loginManager;
+  let exchangeBearerTokenStub;
+  before(() => {
+    clock = useFakeTimers();
+    loginManager = new LoginManager(); // must be after useFakeTimers
+    exchangeBearerTokenStub = stub(RegfoxApi, 'exchangeBearerToken');
+  });
   beforeEach(() => chrome.reset());
+  beforeEach(() => exchangeBearerTokenStub.reset());
   after(() => chrome.flush());
+  after(() => clock.uninstall());
 
   it('returns false for isLoggedIn when bearerDetails is null', () => {
     chrome.storage.local.get.returns(Promise.resolve(null));
@@ -33,5 +43,41 @@ describe('regdesk_login_manager', () => {
   it('expects storage to be null after logout', async () => {
     await loginManager.logout();
     expect(chrome.storage.local.set).to.have.been.calledOnceWith({ 'regfox-bearer-details': null });
+  });
+
+  it('throws an exception when a second instances is created', () => {
+    expect(() => new LoginManager()).to.throw();
+  });
+
+  it('refresh does a thing', async () => {
+    chrome.storage.local.get.returns(Promise.resolve({ 'regfox-bearer-details': { bearerToken: 'old', ttl: (Date.now() + 300) } }));
+    exchangeBearerTokenStub.returns({
+      token: 'new',
+      ttl: 900, // Typically what Regfox sends us.
+    });
+
+    await loginManager.refresh();
+
+    expect(exchangeBearerTokenStub).calledOnceWith('old');
+  });
+
+  it('refresh does not do a thing because the ttl is super far out', async () => {
+    chrome.storage.local.get.returns(Promise.resolve({ 'regfox-bearer-details': { bearerToken: 'old', ttl: (Date.now() + 30000000000) } }));
+
+    await loginManager.refresh();
+
+    expect(exchangeBearerTokenStub).not.called;
+  });
+
+  it('refresh does a thing because the ttl override is set', async () => {
+    chrome.storage.local.get.returns(Promise.resolve({ 'regfox-bearer-details': { bearerToken: 'old', ttl: (Date.now() + 30000000000) } }));
+    exchangeBearerTokenStub.returns({
+      token: 'new',
+      ttl: 900, // Typically what Regfox sends us.
+    });
+
+    await loginManager.refresh(true);
+
+    expect(exchangeBearerTokenStub).calledOnceWith('old');
   });
 });
