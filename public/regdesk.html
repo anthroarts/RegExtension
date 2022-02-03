@@ -19,7 +19,14 @@
         <div class="navbar-nav nav-item dropdown">
           <a class="nav-link dropdown-toggle active" href="#" id="connectConfig" role="button" data-bs-toggle="dropdown"
             data-bs-auto-close="outside" aria-expanded="false">
-            <span id="regfoxStatusIcon">✔</span> RegFox Status: <span id="regfoxsTatusText">Connected</span>
+            <span id="regfoxStatusConnected" class="visually-hidden">
+              <span id="regfoxStatusIconConnected">✔</span> RegFox Status: <span
+                id="regfoxStatusTextConnected">Connected</span>
+            </span>
+            <span id="regfoxStatusDisconnected">
+              <span id="regfoxStatusIconDisconnected">❌</span> RegFox Status: <span
+                id="regfoxStatusTextDisconnected">Disconnected</span>
+            </span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="connectConfig">
             <li>

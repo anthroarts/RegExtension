@@ -8,6 +8,14 @@ should();
 import chrome from 'sinon-chrome';
 global.chrome = chrome;
 
+global.CustomEvent = class CustomEvent extends Event {
+  // eslint-disable-next-line require-jsdoc
+  constructor(type, extra) {
+    super(type);
+    this.detail = extra.detail;
+  }
+};
+
 import { RegfoxApi } from '../../../src/regfox/regfox_api.js';
 import { LoginManager } from '../../../src/regdesk/login/login_manager.js';
 
@@ -20,9 +28,9 @@ describe('regdesk_login_manager', () => {
     loginManager = new LoginManager(); // must be after useFakeTimers
     exchangeBearerTokenStub = stub(RegfoxApi, 'exchangeBearerToken');
   });
-  beforeEach(() => chrome.reset());
+  beforeEach(() => chrome.storage.local.clear());
   beforeEach(() => exchangeBearerTokenStub.reset());
-  after(() => chrome.flush());
+  after(() => chrome.reset() && chrome.flush());
   after(() => clock.uninstall());
 
   it('returns false for isLoggedIn when bearerDetails is null', () => {
@@ -79,5 +87,15 @@ describe('regdesk_login_manager', () => {
     await loginManager.refresh(true);
 
     expect(exchangeBearerTokenStub).calledOnceWith('old');
+  });
+
+  it('sends event in response to a local storage value change', () => {
+    const listener = stub();
+    loginManager.addEventListener(LoginManager.events.SET_REGFOX_LOGIN_STATUS, listener);
+
+    chrome.storage.onChanged.dispatch({ 'regfox-bearer-details': { newValue: { bearerToken: 'old', ttl: (Date.now() + 300) } } });
+
+    expect(listener).calledOnce;
+    expect(listener.getCall(0).args[0].detail).to.deep.equal({ isLoggedIn: true });
   });
 });

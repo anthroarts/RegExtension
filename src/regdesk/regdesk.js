@@ -15,6 +15,7 @@ import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 import { LoginManager } from './login/login_manager.js';
 import { LoginModal } from './login/login_modal.js';
+import { LoginStatus } from './login/login_status.js';
 
 /**
  * Configure the printer manager for this page
@@ -63,7 +64,9 @@ document.addEventListener('readystatechange', async () => {
 
     const loginManager = new LoginManager();
     const loginModal = LoginModal.getFromDocument(document, loginManager.login.bind(loginManager));
-    loginManager.isLoggedIn().then((isLoggedIn) => (!isLoggedIn) && loginModal.showModal());
+    const loginStatus = LoginStatus.getFromDocument(document);
+    loginManager.addEventListener(LoginManager.events.SET_REGFOX_LOGIN_STATUS, (e) => loginStatus.setStatus(e.detail.isLoggedIn));
+    loginManager.isLoggedIn().then((isLoggedIn) => loginStatus.setStatus(isLoggedIn) || (!isLoggedIn) && loginModal.showModal());
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text
