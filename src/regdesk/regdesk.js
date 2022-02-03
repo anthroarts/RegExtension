@@ -13,6 +13,7 @@ import { PrinterConfigModal } from './printer_config_modal.js';
 import { ManualPrintModal } from './manual_print_modal.js';
 import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
+import { LoginManager } from './login/login_manager.js';
 import { LoginModal } from './login/login_modal.js';
 
 /**
@@ -60,8 +61,9 @@ document.addEventListener('readystatechange', async () => {
 
     regStateMachine = new RegMachineManager(stateArgs);
 
-    const loginModal = LoginModal.getFromDocument(document, () => console.log('yay'));
-    loginModal.showModal();
+    const loginManager = new LoginManager();
+    const loginModal = LoginModal.getFromDocument(document, loginManager.login.bind(loginManager));
+    loginManager.isLoggedIn().then((isLoggedIn) => (!isLoggedIn) && loginModal.showModal());
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text
