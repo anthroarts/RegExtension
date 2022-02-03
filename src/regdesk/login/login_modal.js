@@ -13,14 +13,22 @@ export class LoginModal {
    * @param {Element} f.emailField - The email field from the modal.
    * @param {Element} f.passwordField  - The password field from the modal.
    * @param {Element} f.submitButton - The submitButton from the modal.
+   * @param {Element} f.loginForm - The loginForm from the modal.
    * @param {Function} loginFunction - The LoginManager login function.
    */
-  constructor({ showModal, hideModal }, { emailField, passwordField, submitButton }, loginFunction) {
+  constructor({ showModal, hideModal }, { emailField, passwordField, submitButton, loginForm }, loginFunction) {
     this.emailField = emailField;
     this.passwordField = passwordField;
     this.showModal = showModal;
     this.hideModal = hideModal;
     this.loginFunction = loginFunction;
+    loginForm.addEventListener('keyup', function (event) {
+      if (event.code === 'Enter') {
+        event.preventDefault();
+        loginForm.submit();
+      }
+    });
+    loginForm.addEventListener('submit', this.login.bind(this));
     submitButton.addEventListener('click', this.login.bind(this));
   }
 
@@ -48,13 +56,14 @@ export class LoginModal {
     const showModal = modal.show.bind(modal);
     const hideModal = modal.hide.bind(modal);
 
+    const loginForm = document.getElementById('loginForm');
     const emailField = document.getElementById('loginEmail');
     const passwordField = document.getElementById('loginPassword');
     const submitButton = document.getElementById('loginBtn');
 
     return new LoginModal(
       { showModal, hideModal },
-      { emailField, passwordField, submitButton },
+      { emailField, passwordField, submitButton, loginForm },
       loginFunction);
   }
 }
