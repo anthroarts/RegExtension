@@ -7,7 +7,8 @@ use(chaiAsPromised);
 should();
 const { expect } = chai;
 
-import { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote, checkIn } from '../../src/regfox/regfox_api.js';
+import { RegfoxApi } from '../../src/regfox/regfox_api.js';
+const { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote, checkIn } = RegfoxApi;
 
 const loginForTest = async () => {
   const email = process.env.EMAIL;

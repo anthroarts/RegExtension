@@ -1,4 +1,4 @@
-import { login } from '../../regfox/regfox_api.js';
+import { RegfoxApi } from '../../regfox/regfox_api.js';
 
 const STORAGE_LOCAL_KEY = 'regfox-bearer-details';
 
@@ -8,6 +8,45 @@ const STORAGE_LOCAL_KEY = 'regfox-bearer-details';
  * 1. Keeps the bearer token fresh and regfox status connected.
  */
 export class LoginManager {
+  static #instance;
+  /** Only one instance of LoginManager can exist. */
+  constructor() {
+    if (LoginManager.#instance) {
+      throw new Error('LoginManager already has an instance!!!');
+    }
+    LoginManager.#instance = this;
+
+    setInterval(async () => {
+      try {
+        await this.refresh();
+      } catch (e) {
+        console.error('Failed to refresh bearer token, user will need to re-login.', e);
+        await this.#setBearerDetails(null);
+      }
+    }, 1000 * 30); // 30 seconds.
+  }
+
+  /**
+   * Will refresh the bearerDetails if they are stale.
+   * @param {boolean} ignoreTtl true if this should "force" a refresh, ignoring the ttl timeout.
+   */
+  async refresh(ignoreTtl = false) {
+    const bearerDetails = await this.#getBearerDetails();
+    if (bearerDetails == null) {
+      return;
+    }
+
+    const now = new Date();
+    const oneMinuteFromNow = now.setMinutes(now.getMinutes() + 1);
+    if (bearerDetails.ttl > oneMinuteFromNow && !ignoreTtl) {
+      return;
+    }
+
+    const response = await RegfoxApi.exchangeBearerToken(bearerDetails.bearerToken);
+    const ttl = now.setSeconds(now.getSeconds() + response.ttl);
+    await this.#setBearerDetails(this.#makeBearerDetails(response.token, ttl));
+  }
+
   /**
    * @return {*} the full bearerDetails, which includes the bearerToken, and TTL.
    */
@@ -19,7 +58,6 @@ export class LoginManager {
    * @param {*} bearerDetails which includes the bearerToken, and the TTL.
    */
   async #setBearerDetails(bearerDetails) {
-    console.log(bearerDetails);
     await chrome.storage.local.set({ [STORAGE_LOCAL_KEY]: bearerDetails });
   }
 
@@ -50,11 +88,19 @@ export class LoginManager {
    * @param {*} password from the login modal.
    */
   async login(email, password) {
-    const loginResponse = await login(email, password);
-    const now = new Date();
-    const ttl = now.setMinutes(now.getMinutes() + 10);
-    const bearerDetails = { bearerToken: loginResponse.token.token, ttl };
+    const loginResponse = await RegfoxApi.login(email, password);
+    const bearerDetails = this.#makeBearerDetails(loginResponse.token.token);
 
     await this.#setBearerDetails(bearerDetails);
+    await this.refresh(/* ignoreTtl= */ true);
+  }
+
+  /**
+   * @param {string} bearerToken from login.
+   * @param {*} ttl the time (in milliseconds since epoch) this bearerToken expires.
+   * @return {*} bearerDetails.
+   */
+  #makeBearerDetails(bearerToken, ttl = (new Date()).setMinutes((new Date()).getMinutes() + 10)) {
+    return { bearerToken, ttl };
   }
 }

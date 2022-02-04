@@ -17,10 +17,9 @@ import { setupServer } from 'msw/node/lib/index.js';
 import fetch from 'node-fetch';
 global.fetch = fetch;
 
-import {
-  exchangeBearerToken, searchRegistrations, login, getRegistrationInfo,
-  markRegistrationComplete, addNote, checkIn,
-} from '../../src/regfox/regfox_api.js';
+import { RegfoxApi } from '../../src/regfox/regfox_api.js';
+const { exchangeBearerToken, searchRegistrations, login, getRegistrationInfo,
+  markRegistrationComplete, addNote, checkIn } = RegfoxApi;
 
 describe('regfox_api', () => {
   describe('searchRegistrations', () => {
