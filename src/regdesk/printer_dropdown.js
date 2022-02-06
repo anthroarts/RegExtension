@@ -1,7 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { LabelEpl } from 'webzlp/src/LabelEpl';
-// eslint-disable-next-line no-unused-vars
-import { LP2844 } from 'webzlp/src/LP2844';
+import { LabelEpl, LP2844 } from 'webzlp';
 
 /**
  * Class for managing a printer dropdown
