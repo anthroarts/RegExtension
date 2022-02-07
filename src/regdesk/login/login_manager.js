@@ -7,14 +7,25 @@ const STORAGE_LOCAL_KEY = 'regfox-bearer-details';
  * 1. Responds to user input and grabs a new bearer token.
  * 1. Keeps the bearer token fresh and regfox status connected.
  */
-export class LoginManager {
+export class LoginManager extends EventTarget {
+  /**
+   * Get the events this class supports
+   */
+  static get events() {
+    return {
+      SET_REGFOX_LOGIN_STATUS: 'SET_REGFOX_LOGIN_STATUS',
+    };
+  }
+
   static #instance;
   /** Only one instance of LoginManager can exist. */
   constructor() {
     if (LoginManager.#instance) {
       throw new Error('LoginManager already has an instance!!!');
     }
+    super();
     LoginManager.#instance = this;
+    chrome.storage.onChanged.addListener(this.#onChange.bind(this));
 
     setInterval(async () => {
       try {
@@ -24,6 +35,17 @@ export class LoginManager {
         await this.#setBearerDetails(null);
       }
     }, 1000 * 30); // 30 seconds.
+  }
+
+  /**
+   * Listener to chrome.storage.onChanged events to trigger the isLoggedInListeners.
+   * @param {*} changes from chrome.storage.onChanged
+   */
+  #onChange(changes) {
+    const isLoggedIn = changes?.[STORAGE_LOCAL_KEY]?.newValue?.ttl > Date.now();
+    this.dispatchEvent(new CustomEvent(
+      this.constructor.events.SET_REGFOX_LOGIN_STATUS,
+      { detail: { isLoggedIn } }));
   }
 
   /**
