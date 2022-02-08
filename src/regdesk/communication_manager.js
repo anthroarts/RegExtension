@@ -4,6 +4,7 @@ import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 import { MESSAGE_TYPE } from '../coms/communication.js';
 import { RegistrantDetails } from './registrant_details.js';
+import { RegfoxApi } from '../regfox/regfox_api.js';
 
 /**
  * Manager for handling communication to the extension and APIs.
@@ -12,6 +13,7 @@ export class CommunicationManager {
   #acceptingPayments;
   #togglePaymentsBtn;
   #printerMgr;
+  #loginMgr;
 
   /**
    * Indicates whether this terminal is accepting payments.
@@ -23,10 +25,12 @@ export class CommunicationManager {
   /**
    * Iniitalizes a new instance of the CommunicationManager class.
    * @param {PrinterManager} printerMgr - The printer manager to use for print requests.
+   * @param {LoginManager} loginMgr - The login manager that gives tokens we can use to call the api.
    * @param {TogglePaymentsBtn} togglePaymentsBtn - Button to toggle payment acceptance.
    */
-  constructor(printerMgr, togglePaymentsBtn) {
+  constructor(printerMgr, loginMgr, togglePaymentsBtn) {
     this.#printerMgr = printerMgr;
+    this.#loginMgr = loginMgr;
 
     this.#acceptingPayments = false;
     this.#togglePaymentsBtn = togglePaymentsBtn;
@@ -42,26 +46,26 @@ export class CommunicationManager {
    * @param {string} searchString - The string to search for.
    * @return {Promise<RegistrantDetails[]>} The promise that will return the search results.
    */
-  startSearchForRegByName(searchString) {
-    // Start the search process, internally storing the promise and handling
-    // the return value. Something like:
-    // this.#searhPromise = this
-    //   .whateverCommunicationThing.actuallyDoTheSearch(searchString)
-    //   .then(handleSearchResults);
-
-    // We then expect the LoadingState to add its own .then to the promise and
-    // handle it appropriately.
-
-    // In the meantime, mock it out
-    const arr = [];
-    const len = Math.floor(Math.random() * (4));
-    for (let i = 0; i < len; i++) {
-      arr.push(this.#testGetRandomReg());
-    }
-
-    return new Promise((resolve) => setTimeout(resolve, 500))
-      .then(() => arr) // The mock one!
-      .then(this.handleSearchResults.bind(this)); // The real one!
+  async startSearchForRegByName(searchString) {
+    // FIXME I think we still need to do some client side filtering for cancelled/duplicate/etc memberships.
+    const bearerToken = await this.#loginMgr.getBearerToken();
+    return RegfoxApi.searchRegistrations(searchString, bearerToken)
+      .then((result) => result.registrants.slice(0, 10)) // The next call hammers regfox, so we want to limit this as much as possible
+      .then((results) => Promise.all(results.map((result) => RegfoxApi.getRegistrationInfo(result.id, bearerToken))))
+      .then((results) => results.map((result) => new RegistrantDetails({
+        preferredName: result.preferredFirstName || result.name,
+        legalName: result.name,
+        birthdate: result.dateOfBirth,
+        amountDue: result.outstandingAmount100x, // FIXME there is a bug where #maybeSingleResultToUnpaid
+        // is unable to view this value, and therefor thinks everyone is unpaid.
+        badgeLine1: result.badgeLine1Text,
+        badgeLine2: result.badgeLine2Text || '',
+        badgeId: '12345678', // I have no idea which of id is this one.
+        conbookCount: result.attendeeSwag,
+        sponsorLevel: result.reportingData.registrationOptionLabel,
+        checkinDate: result.checkedIn,
+        paymentStatus: result.statusString,
+      })));
   }
 
   /**
@@ -71,17 +75,6 @@ export class CommunicationManager {
   async markRegistrantAsPaid(reg) {
     // TODO: Do it!
     await new Promise((resolve) => setTimeout(resolve, 500));
-  }
-
-  /**
-   * Handle the results from a search.
-   * @param {*} results - The results.
-   * @return {RegistrantDetails[]} - The array of results.
-   */
-  handleSearchResults(results) {
-    // TODO: Assumes an array, who knows what we get back from the API though.
-    // TODO: Whatever massaging necessary from the real API.
-    return results;
   }
 
   /**
@@ -123,13 +116,13 @@ export class CommunicationManager {
     // where necessary to accomplish this.
 
     switch (type) {
-    case MESSAGE_TYPE.printLabel:
-      const reg = RegistrantDetails.copy(payload?.registrantDetails);
-      this.#handleExtensionPrintRequest(reg).then(callback);
-      break;
-    default:
-      console.warning(`Received message with unknown type '${type}', dropping.`);
-      break;
+      case MESSAGE_TYPE.printLabel:
+        const reg = RegistrantDetails.copy(payload?.registrantDetails);
+        this.#handleExtensionPrintRequest(reg).then(callback);
+        break;
+      default:
+        console.warning(`Received message with unknown type '${type}', dropping.`);
+        break;
     }
 
     // Indicates we will run the callback async.
@@ -142,26 +135,5 @@ export class CommunicationManager {
    */
   #togglePayments(e) {
     this.#acceptingPayments = e.detail.acceptingPayments;
-  }
-
-  /**
-   * Temp method to generate random values.
-   * @return {string} Random string
-   */
-  #testGetRandomReg() {
-    const r = (l) => (Math.random().toString(36)+'00000000000000000').slice(2, l+2);
-    return new RegistrantDetails({
-      preferredName: r(5),
-      legalName: r(10),
-      birthdate: '1994-05-22',
-      amountDue: 50,
-      badgeLine1: r(8),
-      badgeLine2: r(8) + r(8),
-      badgeId: '12345678',
-      conbookCount: 1,
-      sponsorLevel: 'Sponsor',
-      checkinDate: undefined,
-      paymentStatus: 'completed',
-    });
   }
 }
