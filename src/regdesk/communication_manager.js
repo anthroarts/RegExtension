@@ -116,13 +116,13 @@ export class CommunicationManager {
     // where necessary to accomplish this.
 
     switch (type) {
-      case MESSAGE_TYPE.printLabel:
-        const reg = RegistrantDetails.copy(payload?.registrantDetails);
-        this.#handleExtensionPrintRequest(reg).then(callback);
-        break;
-      default:
-        console.warning(`Received message with unknown type '${type}', dropping.`);
-        break;
+    case MESSAGE_TYPE.printLabel:
+      const reg = RegistrantDetails.copy(payload?.registrantDetails);
+      this.#handleExtensionPrintRequest(reg).then(callback);
+      break;
+    default:
+      console.warning(`Received message with unknown type '${type}', dropping.`);
+      break;
     }
 
     // Indicates we will run the callback async.
