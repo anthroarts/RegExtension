@@ -59,13 +59,13 @@ export class LoginManager extends EventTarget {
     }
 
     const now = new Date();
-    const oneMinuteFromNow = now.setMinutes(now.getMinutes() + 1);
+    const oneMinuteFromNow = (new Date()).setMinutes(now.getMinutes() + 1);
     if (bearerDetails.ttl > oneMinuteFromNow && !ignoreTtl) {
       return;
     }
 
     const response = await RegfoxApi.exchangeBearerToken(bearerDetails.bearerToken);
-    const ttl = now.setSeconds(now.getSeconds() + response.ttl);
+    const ttl = (new Date()).setSeconds(now.getSeconds() + response.ttl);
     await this.#setBearerDetails(this.#makeBearerDetails(response.token, ttl));
   }
 
