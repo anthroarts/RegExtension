@@ -8,7 +8,7 @@ should();
 const { expect } = chai;
 
 import { RegfoxApi } from '../../src/regfox/regfox_api.js';
-const { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote, checkIn } = RegfoxApi;
+const { searchRegistrations, login, getRegistrationInfo, markRegistrationComplete, addNote, checkIn, exchangeBearerToken } = RegfoxApi;
 
 const loginForTest = async () => {
   const email = process.env.EMAIL;
@@ -53,6 +53,15 @@ describe('regfox_api (integration testing)', () => {
 
     expect(result).to.include.keys('token');
     expect(result.token.token).to.not.be.undefined;
+  });
+
+  it.allowFail('exchanges bearer token', async () => {
+    const result = await loginForTest();
+
+    const exchangedBearerToken = await exchangeBearerToken(result.token.token);
+    const anotherExchangedBearerToken = await exchangeBearerToken(exchangedBearerToken.token);
+
+    expect(anotherExchangedBearerToken.token).to.not.be.undefined;
   });
 
   describe('workflows', () => {
