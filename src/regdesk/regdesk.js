@@ -69,9 +69,13 @@ document.addEventListener('readystatechange', async () => {
     const loginDropdown = LoginDropdown.getFromDocument(document, loginModal.showModal.bind(loginModal), loginManager.logout.bind(loginManager));
     loginManager.addEventListener(LoginManager.events.SET_REGFOX_LOGIN_STATUS, (e) => loginStatus.setStatus(e.detail.isLoggedIn));
     loginManager.addEventListener(LoginManager.events.SET_REGFOX_LOGIN_STATUS, (e) => loginDropdown.setStatus(e.detail.isLoggedIn));
-    loginManager.isLoggedIn().then((isLoggedIn) =>
-      loginStatus.setStatus(isLoggedIn) || loginDropdown.setStatus(isLoggedIn) ||
-      (!isLoggedIn) && loginModal.showModal());
+    loginManager.isLoggedIn().then((isLoggedIn) => {
+      loginStatus.setStatus(isLoggedIn);
+      loginDropdown.setStatus(isLoggedIn);
+      if (!isLoggedIn) {
+        loginModal.showModal();
+      }
+    });
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text
