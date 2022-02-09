@@ -55,18 +55,18 @@ document.addEventListener('readystatechange', async () => {
       printerMgr.printLabelBuilder(e.detail);
     });
 
-    const togglePaymentsBtn = new TogglePaymentsBtn(document.getElementById('togglePaymentsBtn'));
-    const commMgr = new CommunicationManager(printerMgr, togglePaymentsBtn);
-
-    const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
-
-    regStateMachine = new RegMachineManager(stateArgs);
-
     const loginManager = new LoginManager();
     const loginModal = LoginModal.getFromDocument(document, loginManager.login.bind(loginManager));
     const loginStatus = LoginStatus.getFromDocument(document);
     loginManager.addEventListener(LoginManager.events.SET_REGFOX_LOGIN_STATUS, (e) => loginStatus.setStatus(e.detail.isLoggedIn));
     loginManager.isLoggedIn().then((isLoggedIn) => loginStatus.setStatus(isLoggedIn) || (!isLoggedIn) && loginModal.showModal());
+
+    const togglePaymentsBtn = new TogglePaymentsBtn(document.getElementById('togglePaymentsBtn'));
+    const commMgr = new CommunicationManager(printerMgr, loginManager, togglePaymentsBtn);
+
+    const stateArgs = RegMachineArgs.getFromDocument(document, printerMgr, commMgr);
+
+    regStateMachine = new RegMachineManager(stateArgs);
 
     // At this point we can assume other things successfully loaded and can hide
     // the help text

@@ -68,7 +68,7 @@ describe('regfox_api (integration testing)', () => {
     const COMPLETED_STATUS = 3; // https://help.regfox.com/en/articles/2343628-registration-statuses-explained
     const TEST_NAME = 'First Last';
     const TEST_CUSTOMER_ID = '1662788';
-    const TEST_ID = '26564608';
+    const TEST_ID = '26564608'; // Also known as BadgeId.
 
     const findTestRegistrant = (results) => results.registrants.find((reg) => reg.status === COMPLETED_STATUS && reg.customerId === TEST_CUSTOMER_ID);
 
