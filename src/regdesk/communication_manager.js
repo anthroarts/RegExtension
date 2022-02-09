@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-import { PrinterManager } from './printer_manager.js';
 import { TogglePaymentsBtn } from './toggle_payments_btn.js';
 
 import { MESSAGE_TYPE } from '../coms/communication.js';
@@ -47,24 +46,24 @@ export class CommunicationManager {
    * @return {Promise<RegistrantDetails[]>} The promise that will return the search results.
    */
   async startSearchForRegByName(searchString) {
-    // FIXME I think we still need to do some client side filtering for cancelled/duplicate/etc memberships.
     const bearerToken = await this.#loginMgr.getBearerToken();
     return RegfoxApi.searchRegistrations(searchString, bearerToken)
-      .then((result) => result.registrants.slice(0, 10)) // The next call hammers regfox, so we want to limit this as much as possible
       .then((results) => Promise.all(results.map((result) => RegfoxApi.getRegistrationInfo(result.id, bearerToken))))
       .then((results) => results.map((result) => new RegistrantDetails({
         preferredName: result.preferredFirstName || result.name,
         legalName: result.name,
         birthdate: result.dateOfBirth,
-        amountDue: result.outstandingAmount100x, // FIXME there is a bug where #maybeSingleResultToUnpaid
+        amountDue: result.outstandingAmount100x, // TODO there is a bug where #maybeSingleResultToUnpaid
         // is unable to view this value, and therefor thinks everyone is unpaid.
-        badgeLine1: result.badgeLine1Text,
+        badgeLine1: result.badgeLine1Text || '',
         badgeLine2: result.badgeLine2Text || '',
-        badgeId: '12345678', // I have no idea which of id is this one.
+        badgeId: result.id,
         conbookCount: result.attendeeSwag,
-        sponsorLevel: result.reportingData.registrationOptionLabel,
+        sponsorLevel: result.reportingData.registrationOptionLabel, // TODO we don't check if this is
+        // "SUPPORTING/NON-ATTENDING" and so its possible to try and check in a user thats not paid for attending.
         checkinDate: result.checkedIn,
-        paymentStatus: result.statusString,
+        paymentStatus: result.statusString, // TODO we don't check if this is "completed", and so
+        // its possible to try and check in a user that is cancelled.
       })));
   }
 
