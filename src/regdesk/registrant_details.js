@@ -26,8 +26,8 @@ export class RegistrantDetails {
   }
 
   /**
-   * Initializes a new instance of the RegistrantDetails class
-   * @param {object} o - The argument object
+   * Initializes a new instance of the RegistrantDetails class.
+   * @param {object} o - Common registrant information that can be used by states.
    * @param {string} o.preferredName - The registrant's preferred name.
    * @param {string} o.legalName - The registrant's legal name.
    * @param {string} o.birthdate - Birthday, in yyyy-MM-dd format.
@@ -38,7 +38,8 @@ export class RegistrantDetails {
    * @param {string} o.badgeId - The registrant ID to use as the badge ID.
    * @param {string} o.conbookCount - The number of con books in the order.
    * @param {string} o.checkinDate - The check in date string.
-   * @param {string} o.paymentStatus - The status string for the transaction.
+   * @param {string} o.paymentStatus - The status string for the transaction. Use "COMPLETED" to indicate fully paid.
+   * @param {object} extra - Information only used by communication manager.
    */
   constructor({
     preferredName,
@@ -52,18 +53,18 @@ export class RegistrantDetails {
     conbookCount,
     checkinDate,
     paymentStatus,
-  }) {
-    this.preferredName = preferredName,
-    this.legalName = legalName,
-    this.birthdate = birthdate,
-    this.amountDue = amountDue,
-    this.badgeId = badgeId,
-    this.badgeLine1 = badgeLine1,
-    this.badgeLine2 = badgeLine2,
-    this.sponsorLevel = sponsorLevel,
-    this.conbookCount = conbookCount,
-    this.checkinDate = checkinDate,
-    this.paymentStatus = paymentStatus.toUpperCase(),
+  }, extra) {
+    this.preferredName = preferredName;
+    this.legalName = legalName;
+    this.birthdate = birthdate;
+    this.amountDue = amountDue;
+    this.badgeId = badgeId;
+    this.badgeLine1 = badgeLine1;
+    this.badgeLine2 = badgeLine2;
+    this.sponsorLevel = sponsorLevel;
+    this.conbookCount = conbookCount;
+    this.checkinDate = checkinDate;
+    this.paymentStatus = paymentStatus.toUpperCase();
 
     this.age = this.#getAge(birthdate);
     this.label = new BadgeLabelBuilder({
@@ -74,6 +75,7 @@ export class RegistrantDetails {
       line2: this.badgeLine2,
     });
 
+    this.extra = extra;
     if (this.constructor === RegistrantDetails.constructor) {
       Object.freeze(this);
     }
@@ -101,7 +103,7 @@ export class RegistrantDetails {
       paymentStatus: registrantDetails.paymentStatus,
       preferredName: registrantDetails.preferredName,
       sponsorLevel: registrantDetails.sponsorLevel,
-    });
+    }, registrantDetails.extra);
   }
 
   /**

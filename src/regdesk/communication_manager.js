@@ -48,12 +48,12 @@ export class CommunicationManager {
   async startSearchForRegByName(searchString) {
     const bearerToken = await this.#loginMgr.getBearerToken();
     return RegfoxApi.searchRegistrations(searchString, bearerToken)
-      .then((results) => Promise.all(results.map((result) => RegfoxApi.getRegistrationInfo(result.id, bearerToken))))
+      .then((results) => Promise.all(results.registrants.map((result) => RegfoxApi.getRegistrationInfo(result.id, bearerToken))))
       .then((results) => results.map((result) => new RegistrantDetails({
         preferredName: result.preferredFirstName || result.name,
         legalName: result.name,
         birthdate: result.dateOfBirth,
-        amountDue: result.outstandingAmount100x, // TODO there is a bug where #maybeSingleResultToUnpaid
+        amountDue: result.outstandingAmountString, // TODO there is a bug where #maybeSingleResultToUnpaid
         // is unable to view this value, and therefor thinks everyone is unpaid.
         badgeLine1: result.badgeLine1Text || '',
         badgeLine2: result.badgeLine2Text || '',
@@ -64,6 +64,11 @@ export class CommunicationManager {
         checkinDate: result.checkedIn,
         paymentStatus: result.statusString, // TODO we don't check if this is "completed", and so
         // its possible to try and check in a user that is cancelled.
+      }, {
+        formId: result.formId,
+        registraionId: result.registrationId,
+        transactionId: result.transactionId,
+        id: result.id,
       })));
   }
 
@@ -72,8 +77,8 @@ export class CommunicationManager {
    * @param {RegistrantDetails} reg - The registrant to mark as paid.
    */
   async markRegistrantAsPaid(reg) {
-    // TODO: Do it!
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const bearerToken = await this.#loginMgr.getBearerToken();
+    return RegfoxApi.markRegistrationComplete(reg.extra.formId, reg.extra.registraionId, reg.extra.transactionId, reg.extra.id, bearerToken);
   }
 
   /**
