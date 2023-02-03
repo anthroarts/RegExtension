@@ -1,5 +1,9 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> FCReg
 
+This project is archived. It was designed for use with a registration system we no longer use. Useful features have been ported to our new system, and we no longer needed to use a Chrome extension to work around feature gaps.
+
+
+
 This little extension provides a way to quickly and easily scan IDs and print con-goer badges.
 
 **Note!** this is only for FC (1311) and only works for the year 2022 (372652).
